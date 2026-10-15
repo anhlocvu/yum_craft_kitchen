@@ -1,0 +1,3472 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bếp Tự Do Toca Deluxe - Hòa Vị Chân Thực & Trợ Năng NVDA</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-warm: #fffaf2;
+      --surface-card: #ffffff;
+      --accent-orange: #ea580c;
+      --accent-amber: #d97706;
+      --accent-emerald: #059669;
+      --focus-ring: #2563eb;
+    }
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    body {
+      background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 50%, #ecfdf5 100%);
+      color: #1c1917;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    /* High visibility focus outline for NVDA & Keyboard users */
+    *:focus-visible {
+      outline: 3px solid var(--focus-ring) !important;
+      outline-offset: 2px !important;
+      box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.25) !important;
+    }
+    .sr-only-live {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .skip-link {
+      position: absolute;
+      top: -60px;
+      left: 8px;
+      background: #1e40af;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      z-index: 9999;
+      transition: top 0.2s;
+    }
+    .skip-link:focus {
+      top: 8px;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f5f5f4;
+      border-radius: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #d6d3d1;
+      border-radius: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #a8a29e;
+    }
+    .flavor-bar-fill {
+      transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .station-btn-active {
+      background: linear-gradient(135deg, #ea580c, #d97706) !important;
+      color: #ffffff !important;
+      border-color: #9a3412 !important;
+      box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35);
+    }
+    .char-btn-active {
+      background: #fffbeb !important;
+      border-color: #ea580c !important;
+      box-shadow: 0 0 0 2px #ea580c;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <!-- Skip Navigation Links for NVDA Screen Reader -->
+  <nav aria-label="Liên kết nhảy nhanh cho trình đọc màn hình NVDA">
+    <a href="#region-characters" class="skip-link">Nhảy tới Chọn Thực Khách (Alt+1)</a>
+    <a href="#region-pantry" class="skip-link">Nhảy tới Tủ Nguyên Liệu (Alt+2)</a>
+    <a href="#region-workbench" class="skip-link">Nhảy tới Bàn Chế Biến & Dụng Cụ (Alt+3)</a>
+    <a href="#region-spices" class="skip-link">Nhảy tới Khay Gia Vị Mở Rộng (Alt+4)</a>
+    <a href="#region-plate" class="skip-link">Nhảy tới Đĩa Thức Ăn & Phân Tích Hương Vị (Alt+5)</a>
+  </nav>
+
+  <!-- Dual ARIA Live Regions for reliable NVDA reading without dropping rapid updates -->
+  <div id="nvda-live-assertive-a" class="sr-only-live" role="alert" aria-live="assertive" aria-atomic="true"></div>
+  <div id="nvda-live-assertive-b" class="sr-only-live" role="alert" aria-live="assertive" aria-atomic="true"></div>
+  <div id="nvda-live-polite-a" class="sr-only-live" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div id="nvda-live-polite-b" class="sr-only-live" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Top Header Bar -->
+  <header class="bg-gradient-to-r from-orange-700 via-amber-600 to-emerald-700 text-white shadow-md px-3 py-2.5 sticky top-0 z-30">
+    <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center text-2xl shadow-inner" aria-hidden="true">🍳</div>
+        <div>
+          <h1 class="text-base sm:text-lg font-extrabold tracking-tight leading-tight">BẾP TỰ DO TOCA DELUXE — HÒA VỊ THỰC TẾ</h1>
+          <p class="text-xs text-amber-100 hidden sm:block">Cuốn bánh tráng, cuộn rong biển, xẻ bánh mì nhồi thịt bò xúc xích, 9 dụng cụ nấu &amp; 18 gia vị hòa quyện tự nhiên (Trợ năng NVDA)</p>
+        </div>
+      </div>
+
+      <!-- Accessibility & Sound Controls -->
+      <div class="flex flex-wrap items-center gap-1.5" role="toolbar" aria-label="Công cụ âm thanh và trợ năng NVDA">
+        <button id="btn-read-dish-summary" type="button" class="px-2.5 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-xs font-semibold flex items-center gap-1.5 transition" title="Phím tắt: I">
+          <span aria-hidden="true">📢</span>
+          <span>Đọc Món &amp; Vị (Phím I)</span>
+        </button>
+        <button id="btn-craving-hint" type="button" class="px-2.5 py-1.5 rounded-lg bg-amber-500/40 hover:bg-amber-500/60 border border-amber-200/40 text-xs font-semibold flex items-center gap-1.5 transition" title="Nghe gợi ý sở thích của thực khách (Không bắt buộc)">
+          <span aria-hidden="true">💡</span>
+          <span>Thực Khách Đang Thèm Gì?</span>
+        </button>
+        <button id="btn-toggle-sfx" type="button" aria-pressed="true" class="px-2.5 py-1.5 rounded-lg bg-emerald-900/60 hover:bg-emerald-900/80 border border-emerald-300/40 text-xs font-semibold flex items-center gap-1.5 transition">
+          <span id="icon-sfx" aria-hidden="true">🔊</span>
+          <span id="label-sfx">Âm thanh Bếp: BẬT</span>
+        </button>
+        <button id="btn-toggle-tts" type="button" aria-pressed="false" class="px-2.5 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 border border-white/25 text-xs font-semibold flex items-center gap-1.5 transition" title="Bật nếu muốn trình duyệt tự phát giọng nói song song với NVDA">
+          <span id="icon-tts" aria-hidden="true">🗣️</span>
+          <span id="label-tts">Giọng đọc Web: TẮT (Dùng NVDA)</span>
+        </button>
+        <button id="btn-open-help" type="button" class="px-2.5 py-1.5 rounded-lg bg-amber-950/60 hover:bg-amber-950/80 border border-amber-300/40 text-xs font-semibold flex items-center gap-1 transition" title="Phím tắt: H">
+          <span aria-hidden="true">⌨️</span>
+          <span>Phím tắt NVDA (H)</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Live NVDA Banner Bar (Visible + Screen Reader Readable) -->
+  <section aria-label="Thông báo trạng thái bếp trực tiếp" class="bg-amber-950 text-amber-50 px-3 py-1.5 text-xs sm:text-sm border-b border-amber-800">
+    <div class="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2 flex-1 min-w-[240px]">
+        <span class="inline-block px-2 py-0.5 rounded bg-orange-600 text-white font-bold text-[11px] uppercase tracking-wider shrink-0">Trạng thái NVDA</span>
+        <p id="visible-live-status" class="font-medium text-amber-100 truncate" aria-live="off">
+          Chào mừng bạn đến với Bếp Tự Do Toca Deluxe! Hãy chọn nguyên liệu (Alt+2), chế biến tại bàn dụng cụ (Alt+3), nêm gia vị (Alt+4) và đút cho thực khách ăn (Alt+5).
+        </p>
+      </div>
+      <div class="text-[11px] text-amber-300 shrink-0 hidden md:block">
+        Phím tắt: <strong>Alt+1..6</strong> chuyển khu vực | <strong>C</strong> Nấu/Cắt | <strong>R</strong> Cuốn/Nhồi | <strong>P</strong> Cho ra đĩa | <strong>F</strong> Đút ăn | <strong>I</strong> Đọc vị món
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Workspace Grid -->
+  <main class="max-w-[1600px] w-full mx-auto flex-1 p-2.5 sm:p-4 grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-start">
+
+    <!-- LEFT COLUMN (4 cols): Diners / Characters + Ingredient Pantry -->
+    <div class="lg:col-span-4 flex flex-col gap-3.5">
+
+      <!-- SECTION 1: CHARACTER / DINER STAGE -->
+      <section id="region-characters" tabindex="-1" aria-labelledby="heading-characters" class="bg-white rounded-2xl shadow-sm border border-amber-200/80 p-3.5">
+        <div class="flex items-center justify-between gap-2 mb-2.5">
+          <h2 id="heading-characters" class="text-sm sm:text-base font-extrabold text-stone-800 flex items-center gap-1.5">
+            <span aria-hidden="true">🧑‍🍳</span>
+            <span>1. Thực Khách Thưởng Thức (Alt+1)</span>
+          </h2>
+          <span id="active-char-badge" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-800">Bếp Trưởng Gấu Bự</span>
+        </div>
+
+        <!-- Character Selector Tabs -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mb-3" role="radiogroup" aria-label="Chọn nhân vật thực khách">
+          <div id="character-buttons-container" class="contents"></div>
+        </div>
+
+        <!-- Character Interactive Visual Canvas + Accessible Status Card -->
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center bg-gradient-to-br from-amber-50/90 via-orange-50/60 to-emerald-50/70 rounded-xl p-2.5 border border-amber-200/60">
+          <div class="sm:col-span-5 flex flex-col items-center justify-center gap-1.5">
+            <canvas id="character-canvas" width="180" height="165" class="w-[155px] h-[142px] sm:w-[170px] sm:h-[155px] rounded-xl bg-white/80 shadow-inner border border-amber-100" aria-hidden="true"></canvas>
+            <button id="btn-drink-water" type="button" class="w-full py-1 px-2 rounded-lg bg-sky-100 hover:bg-sky-200 text-sky-900 font-bold text-[11px] flex items-center justify-center gap-1 transition" title="Cho thực khách uống nước lọc tráng miệng hoặc giải cay/giải mặn">
+              <span aria-hidden="true">🥤</span>
+              <span>Cho Uống Nước Lọc Giải Khát</span>
+            </button>
+          </div>
+          <div class="sm:col-span-7 flex flex-col gap-1.5">
+            <div class="flex items-center justify-between">
+              <h3 id="char-detail-name" class="font-bold text-stone-900 text-sm">Bếp Trưởng Gấu Bự (Chef Hùng)</h3>
+              <span id="char-mood-tag" class="text-[11px] font-bold px-2 py-0.5 rounded bg-amber-200 text-amber-900">Đang đói bụng 😋</span>
+            </div>
+            <p id="char-detail-pref" class="text-xs text-stone-600 leading-relaxed">
+              Thích vị đậm đà Umami (thịt bò, nước mắm, tiêu, tỏi), bánh mì nhồi đầy đặn và món nướng thơm. Ghét đồ sống tanh hoặc cháy khét.
+            </p>
+            <div class="mt-1 p-2 rounded-lg bg-white border border-amber-200/80 shadow-sm">
+              <div class="text-[11px] font-bold text-orange-800 uppercase tracking-wider mb-0.5">Phản ứng &amp; Lời nhận xét thực khách:</div>
+              <p id="char-reaction-speech" class="text-xs sm:text-sm font-semibold text-stone-800 leading-snug">
+                "Hôm nay đầu bếp định đãi tôi món gì đây? Cuốn bánh tráng hay làm ổ bánh mì nhồi thịt bò xúc xích thật đầy nhé!"
+              </p>
+              <div id="char-score-row" class="mt-1.5 flex items-center justify-between text-xs text-stone-600 border-t border-stone-100 pt-1">
+                <span>Điểm hài lòng lần ăn gần nhất:</span>
+                <strong id="char-last-score" class="text-orange-700 font-extrabold">Chưa ăn</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: INGREDIENT PANTRY -->
+      <section id="region-pantry" tabindex="-1" aria-labelledby="heading-pantry" class="bg-white rounded-2xl shadow-sm border border-amber-200/80 p-3.5 flex flex-col">
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <h2 id="heading-pantry" class="text-sm sm:text-base font-extrabold text-stone-800 flex items-center gap-1.5">
+            <span aria-hidden="true">🧺</span>
+            <span>2. Tủ Nguyên Liệu Tươi Ngon (Alt+2)</span>
+          </h2>
+          <span class="text-xs text-stone-500 font-medium">32 nguyên liệu</span>
+        </div>
+
+        <p class="text-xs text-stone-600 mb-2">
+          Chọn nơi muốn bỏ nguyên liệu vào rồi bấm vào nguyên liệu bên dưới:
+        </p>
+
+        <!-- Target Destination Selector for Ingredients -->
+        <div class="grid grid-cols-2 gap-1.5 mb-2.5 bg-stone-100 p-1 rounded-xl" role="group" aria-label="Chọn nơi nhận nguyên liệu khi lấy từ tủ">
+          <button id="btn-dest-station" type="button" aria-pressed="true" class="py-1.5 px-2 rounded-lg text-xs font-bold bg-orange-600 text-white shadow-sm transition">
+            📥 Bỏ vào Dụng Cụ Đang Chọn
+          </button>
+          <button id="btn-dest-plate" type="button" aria-pressed="false" class="py-1.5 px-2 rounded-lg text-xs font-bold bg-transparent text-stone-700 hover:bg-white/60 transition">
+            🍽️ Bỏ thẳng lên Đĩa Ăn
+          </button>
+        </div>
+
+        <!-- Category Filter Tabs -->
+        <div id="pantry-category-tabs" class="flex flex-wrap gap-1 mb-2.5" role="tablist" aria-label="Danh mục nguyên liệu">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Search Input for quick NVDA navigation -->
+        <div class="mb-2.5">
+          <label for="input-search-ingredient" class="sr-only">Tìm nhanh nguyên liệu theo tên hoặc vị</label>
+          <input id="input-search-ingredient" type="search" placeholder="🔍 Tìm nguyên liệu (vd: thịt bò, xúc xích, cơm, cá hồi, bún...)" class="w-full px-3 py-1.5 rounded-lg border border-stone-300 text-xs focus:border-orange-500" />
+        </div>
+
+        <!-- Ingredients Grid -->
+        <div id="pantry-items-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-[340px] overflow-y-auto custom-scroll pr-1" role="region" aria-label="Danh sách nguyên liệu trong tủ">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+    </div>
+
+    <!-- CENTER COLUMN (5 cols): COOKING WORKBENCH + 9 TOOLS + EXTENDED SPICE RACK -->
+    <div class="lg:col-span-5 flex flex-col gap-3.5">
+
+      <!-- SECTION 3: COOKING WORKBENCH & SPECIALTY STATIONS -->
+      <section id="region-workbench" tabindex="-1" aria-labelledby="heading-workbench" class="bg-white rounded-2xl shadow-sm border border-amber-200/80 p-3.5">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+          <h2 id="heading-workbench" class="text-sm sm:text-base font-extrabold text-stone-800 flex items-center gap-1.5">
+            <span aria-hidden="true">🔥</span>
+            <span>3. Bàn Chế Biến &amp; 9 Dụng Cụ (Alt+3)</span>
+          </h2>
+          <span id="active-station-badge" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+            Đang dùng: Thớt &amp; Dao Sắc
+          </span>
+        </div>
+
+        <!-- 9 Cooking Tools Bar (Toca Kitchen 2 Full Set + Rolling Mat + Stuffing/Sandwich Station + Charcoal Grill) -->
+        <div id="station-selector-grid" class="grid grid-cols-3 sm:grid-cols-3 gap-1.5 mb-3" role="toolbar" aria-label="Chọn dụng cụ nấu ăn hoặc trạm cuốn/nhồi">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Dynamic Sub-Selector for Wrapper (when in Rolling Station) or Vessel/Bread (when in Stuffing Station) -->
+        <div id="wrapper-vessel-panel" class="hidden mb-3 p-2.5 rounded-xl bg-amber-50 border border-amber-300">
+          <div class="flex items-center justify-between mb-1.5">
+            <h3 id="wrapper-panel-title" class="text-xs font-extrabold text-amber-950 uppercase tracking-wide">
+              Chọn Vỏ Cuốn / Vỏ Bánh Để Nhồi:
+            </h3>
+            <span id="wrapper-current-label" class="text-xs font-bold text-orange-700">Bánh tráng gạo mỏng</span>
+          </div>
+          <div id="wrapper-options-list" class="grid grid-cols-2 sm:grid-cols-3 gap-1.5" role="radiogroup" aria-label="Chọn loại vỏ cuốn hoặc vỏ bánh nhồi">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Interactive Visual Stage for the Active Cooking Tool -->
+        <div class="relative rounded-xl overflow-hidden bg-stone-900 border-2 border-stone-800 shadow-inner mb-3">
+          <canvas id="workbench-canvas" width="520" height="230" class="w-full h-[200px] sm:h-[225px] block" aria-hidden="true"></canvas>
+          <div class="absolute top-2 left-2 right-2 flex items-center justify-between pointer-events-none">
+            <span id="canvas-station-overlay" class="px-2.5 py-1 rounded-lg bg-black/65 text-amber-200 text-xs font-bold backdrop-blur-sm">
+              🔪 Thớt &amp; Dao Sắc
+            </span>
+            <span id="canvas-temp-overlay" class="px-2.5 py-1 rounded-lg bg-black/65 text-white text-xs font-semibold backdrop-blur-sm">
+              Nhiệt độ: 25°C (Bình thường)
+            </span>
+          </div>
+        </div>
+
+        <!-- Station Action Controls (Accessible Buttons for Chop, Cook, Roll, Stuff, Transfer to Plate, Clear) -->
+        <div class="bg-stone-50 rounded-xl p-2.5 border border-stone-200 mb-3">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-extrabold text-stone-700 uppercase tracking-wider">Thao tác trên dụng cụ hiện tại:</span>
+            <span id="station-item-count" class="text-xs font-bold text-orange-700">0 nguyên liệu trong dụng cụ</span>
+          </div>
+
+          <!-- Dynamic Action Buttons specific to the current tool -->
+          <div id="station-primary-actions" class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 mb-2">
+            <!-- Populated by JS -->
+          </div>
+
+          <!-- Universal Station Transfer Actions -->
+          <div class="grid grid-cols-2 gap-1.5 pt-2 border-t border-stone-200">
+            <button id="btn-move-station-to-plate" type="button" class="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-1.5 transition" title="Phím tắt: P">
+              <span aria-hidden="true">🍽️</span>
+              <span>Bày Ra Đĩa Ăn (Phím P)</span>
+            </button>
+            <button id="btn-clear-station" type="button" class="py-2 px-3 rounded-xl bg-stone-200 hover:bg-red-100 hover:text-red-800 text-stone-700 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition">
+              <span aria-hidden="true">🗑️</span>
+              <span>Dọn Sạch Dụng Cụ</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Accessible List of Ingredients Currently Inside the Active Tool -->
+        <div>
+          <h3 class="text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+            Chi tiết nguyên liệu đang nằm trong dụng cụ (NVDA duyệt từng món):
+          </h3>
+          <div id="station-contents-list" class="space-y-1.5 max-h-[165px] overflow-y-auto custom-scroll pr-1" role="list" aria-label="Các nguyên liệu đang ở trong dụng cụ chế biến">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: EXPANDED SPICE & CONDIMENT RACK -->
+      <section id="region-spices" tabindex="-1" aria-labelledby="heading-spices" class="bg-white rounded-2xl shadow-sm border border-amber-200/80 p-3.5">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+          <div>
+            <h2 id="heading-spices" class="text-sm sm:text-base font-extrabold text-stone-800 flex items-center gap-1.5">
+              <span aria-hidden="true">🧂</span>
+              <span>4. Khay Gia Vị &amp; Nước Sốt Mở Rộng (Alt+4)</span>
+            </h2>
+            <p class="text-xs text-stone-600">
+              18 loại gia vị hòa quyện thực tế (Nêm trước khi nấu sẽ thấm sâu dậy mùi gấp đôi!)
+            </p>
+          </div>
+          <!-- Target for Spice Seasoning -->
+          <div class="flex items-center gap-1 bg-stone-100 p-1 rounded-lg" role="group" aria-label="Chọn nơi rắc gia vị">
+            <button id="btn-spice-target-station" type="button" aria-pressed="true" class="px-2 py-1 rounded text-[11px] font-bold bg-amber-600 text-white">
+              Nêm vào Dụng cụ
+            </button>
+            <button id="btn-spice-target-plate" type="button" aria-pressed="false" class="px-2 py-1 rounded text-[11px] font-bold text-stone-700 hover:bg-white">
+              Nêm lên Đĩa ăn
+            </button>
+          </div>
+        </div>
+
+        <div id="spice-rack-grid" class="grid grid-cols-3 sm:grid-cols-6 gap-1.5" role="region" aria-label="18 hũ gia vị và nước sốt">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+    </div>
+
+    <!-- RIGHT COLUMN (3 cols): SERVING PLATE + REAL-LIFE FLAVOR HARMONY ANALYZER + FEED BUTTON -->
+    <div class="lg:col-span-3 flex flex-col gap-3.5">
+
+      <!-- SECTION 5 & 6: SERVING PLATE & FLAVOR CHEMISTRY ENGINE -->
+      <section id="region-plate" tabindex="-1" aria-labelledby="heading-plate" class="bg-white rounded-2xl shadow-sm border border-amber-200/80 p-3.5 flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-2">
+          <h2 id="heading-plate" class="text-sm sm:text-base font-extrabold text-stone-800 flex items-center gap-1.5">
+            <span aria-hidden="true">🍽️</span>
+            <span>5. Đĩa Thức Ăn &amp; Hòa Vị (Alt+5)</span>
+          </h2>
+          <span id="plate-count-badge" class="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-900">0 thành phần</span>
+        </div>
+
+        <!-- Dynamic Dish Auto-Identified Title Card -->
+        <div class="p-2.5 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200">
+          <div class="text-[11px] font-bold text-amber-800 uppercase tracking-wider">Tên món tự chế nhận diện:</div>
+          <div id="dish-dynamic-name" class="text-sm font-extrabold text-stone-900 mt-0.5">
+            Đĩa đang trống (Hãy chế biến hoặc gắp đồ ăn lên đĩa)
+          </div>
+          <div id="dish-structure-summary" class="text-xs text-stone-600 mt-0.5">
+            Chưa có nguyên liệu nào trên đĩa hoặc trong dụng cụ.
+          </div>
+        </div>
+
+        <!-- Feed Character CTA + Transfer Back to Workbench -->
+        <div class="flex flex-col gap-1.5">
+          <button id="btn-feed-character" type="button" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-extrabold text-sm shadow-md flex items-center justify-center gap-2 transition transform active:scale-[0.99]" title="Phím tắt: F">
+            <span class="text-lg" aria-hidden="true">🥄</span>
+            <span id="feed-btn-label">Đút Cho Bếp Trưởng Gấu Bự Ăn! (Phím F)</span>
+          </button>
+          <div class="grid grid-cols-2 gap-1.5">
+            <button id="btn-plate-to-station" type="button" class="py-1.5 px-2.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold text-xs flex items-center justify-center gap-1 transition" title="Đưa món trên đĩa (kể cả gỏi cuốn hay bánh mì đã nhồi) vào lại dụng cụ để chiên/nướng/xay tiếp!">
+              <span aria-hidden="true">🔄</span>
+              <span>Đưa Lại Vào Bếp Nấu</span>
+            </button>
+            <button id="btn-clear-plate" type="button" class="py-1.5 px-2.5 rounded-lg bg-stone-100 hover:bg-red-100 hover:text-red-800 text-stone-700 font-bold text-xs flex items-center justify-center gap-1 transition">
+              <span aria-hidden="true">🧹</span>
+              <span>Đổ Đĩa Làm Lại</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- REAL-LIFE FLAVOR BLENDING RADAR / BARS -->
+        <div class="p-3 rounded-xl bg-stone-50 border border-stone-200" role="region" aria-labelledby="heading-flavor-harmony">
+          <div class="flex items-center justify-between mb-1.5">
+            <h3 id="heading-flavor-harmony" class="text-xs font-extrabold text-stone-800 uppercase tracking-wider">
+              🧪 Bản Đồ Hòa Vị Thực Tế (8 Chiều)
+            </h3>
+            <span id="flavor-harmony-score" class="text-xs font-extrabold text-emerald-700">Độ hài hòa: --</span>
+          </div>
+
+          <p id="flavor-chemistry-explanation" class="text-xs text-stone-700 bg-white p-2 rounded-lg border border-stone-200 mb-2.5 leading-relaxed">
+            Khi kết hợp nguyên liệu và gia vị, các vị sẽ tương tác hóa học như ngoài đời (Chua + Ngọt dịu lại thành Chua Ngọt thanh mát; Chanh + Tiêu + Muối tôn vị ngọt thịt bò; Chanh cắt độ ngấy mỡ).
+          </p>
+
+          <!-- 8 Flavor Bars -->
+          <div id="flavor-bars-container" class="space-y-1.5">
+            <!-- Populated by JS -->
+          </div>
+
+          <!-- Detected Culinary Chemistry Badges -->
+          <div class="mt-2.5 pt-2 border-t border-stone-200">
+            <div class="text-[11px] font-bold text-stone-600 mb-1">Phản ứng hòa vị phát hiện được:</div>
+            <div id="chemistry-synergy-tags" class="flex flex-wrap gap-1">
+              <span class="text-[11px] text-stone-400 italic">Chưa có phản ứng hương vị</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Items on Plate List -->
+        <div>
+          <h3 class="text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+            Các phần ăn đang có trên đĩa:
+          </h3>
+          <div id="plate-contents-list" class="space-y-1.5 max-h-[210px] overflow-y-auto custom-scroll pr-1" role="list" aria-label="Danh sách các phần ăn trên đĩa">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Accessible Action & Tasting History Log for NVDA review -->
+        <div class="border-t border-stone-200 pt-2.5">
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="text-xs font-bold text-stone-700 uppercase tracking-wider">
+              📜 Nhật ký Bếp &amp; NVDA (Mới nhất ở trên)
+            </h3>
+            <button id="btn-clear-log" type="button" class="text-[11px] text-stone-500 hover:text-stone-800 underline">Xóa nhật ký</button>
+          </div>
+          <ul id="nvda-history-log" class="space-y-1 max-h-[120px] overflow-y-auto custom-scroll text-xs text-stone-600 bg-stone-50 p-2 rounded-lg border border-stone-200" aria-label="Nhật ký hoạt động chi tiết">
+            <!-- Populated by JS -->
+          </ul>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Keyboard Shortcuts & NVDA Guide Modal -->
+  <div id="modal-help" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-help-title">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-5 shadow-2xl border border-amber-200 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-stone-200 pb-3 mb-3">
+        <h2 id="modal-help-title" class="text-lg font-extrabold text-stone-900">⌨️ Hướng Dẫn Trợ Năng NVDA &amp; Phím Tắt Nhanh</h2>
+        <button id="btn-close-help" type="button" class="px-3 py-1 rounded-lg bg-stone-200 hover:bg-stone-300 font-bold text-xs">Đóng (Esc)</button>
+      </div>
+      <div class="space-y-3 text-xs sm:text-sm text-stone-700 leading-relaxed">
+        <p>
+          <strong>Bếp Tự Do Toca Deluxe</strong> được thiết kế chuyên biệt để người dùng trình đọc màn hình <strong>NVDA</strong> có thể tự do sáng tạo mọi món ăn thông qua hệ thống thông báo trực tiếp (ARIA Live) và hiệu ứng âm thanh bếp chân thực (Web Audio API).
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 bg-amber-50 p-3 rounded-xl border border-amber-200">
+          <div>
+            <h3 class="font-bold text-amber-950 mb-1">Phím nhảy nhanh khu vực:</h3>
+            <ul class="space-y-1">
+              <li><kbd class="px-1.5 py-0.5 bg-white rounded border font-mono text-xs">Alt + 1</kbd>: Chọn Thực Khách (4 nhân vật)</li>
+              <li><kbd class="px-1.5 py-0.5 bg-white rounded border font-mono text-xs">Alt + 2</kbd>: Tủ Nguyên Liệu (32 nguyên liệu)</li>
+              <li><kbd class="px-1.5 py-0.5 bg-white rounded border font-mono text-xs">Alt + 3</kbd>: Bàn Chế Biến (9 công cụ nấu/cuốn/nhồi)</li>
+              <li><kbd class="px-1.5 py-0.5 bg-white rounded border font-mono text-xs">Alt + 4</kbd>: Khay Gia Vị Mở Rộng (18 gia vị)</li>
+              <li><kbd class="px-1.5 py-0.5 bg-white rounded border font-mono text-xs">Alt + 5</kbd>: Đĩa Thức Ăn &amp; Phân Tích Hòa Vị</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-bold text-amber-950 mb-1">Phím thao tác nấu nướng nhanh:</h3>
+            <ul class="space-y-1">
+              <li><kbd class="px-1.5 py-0.5 bg-white rounded border font-mono text-xs">Phím C</kbd>: Thực hiện Cắt / Đun Nấu / Xay tại dụng cụ hiện tại</li>
+              <li><kbd class="px-1.5 py-0.5 bg-white rounded border font-mono text-xs">Phím R</kbd>: Cuộn Tròn (ở Bàn Cuốn) hoặc Nhồi Kẹp (ở Trạm Bánh Mì)</li>
+              <li><kbd class="px-1.5 py-0.5 bg-white rounded border font-mono text-xs">Phím P</kbd>: Bày thức ăn từ dụng cụ ra Đĩa Ăn</li>
+              <li><kbd class="px-1.5 py-0.5 bg-white rounded border font-mono text-xs">Phím F</kbd>: Đút món ăn cho Thực Khách thưởng thức</li>
+              <li><kbd class="px-1.5 py-0.5 bg-white rounded border font-mono text-xs">Phím I</kbd>: Nghe đọc báo cáo chi tiết Hương Vị &amp; Món Ăn hiện tại</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <h3 class="font-bold text-stone-900 mb-1">Mẹo Hòa Vị &amp; Sử Dụng Công Cụ Mới:</h3>
+          <ul class="list-disc pl-5 space-y-1">
+            <li><strong>Trạm Cuốn Bánh Tráng &amp; Rong Biển:</strong> Chọn dụng cụ <em>Bàn Cuốn Đa Năng</em>, chọn vỏ cuốn (Bánh tráng, Rong biển Nori, Lá lốt, Bánh phở...), bỏ nhiều nguyên liệu vào (ví dụ: Cơm trắng + Cá hồi + Trứng + Dưa leo), nêm chút gia vị rồi bấm <strong>Cuộn Tròn Một Lượt (Phím R)</strong>. Bạn có thể cho ra đĩa ăn ngay hoặc đem cuốn đó qua Chảo Chiên để làm Nem Rán / Bò Nướng Lá Lốt!</li>
+            <li><strong>Trạm Xẻ &amp; Nhồi Bánh Mì:</strong> Chọn dụng cụ <em>Trạm Kẹp &amp; Nhồi Nhân</em>, chọn <em>Ổ Bánh Mì Việt Nam</em> hoặc <em>Vỏ Burger</em>, bỏ Thịt bò đã áp chảo, Xúc xích, Dưa leo, Rau mùi, rắc Tiêu + Chanh + Muối rồi bấm <strong>Nhồi &amp; Kẹp Chặt (Phím R)</strong>!</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /*************************************************************************
+     * 1. CƠ SỞ DỮ LIỆU NGUYÊN LIỆU, GIA VỊ, DỤNG CỤ & NHÂN VẬT
+     *************************************************************************/
+
+    const CHARACTERS = [
+      {
+        id: 'chef_bear',
+        name: 'Bếp Trưởng Gấu Bự',
+        title: 'Đầu bếp sành ăn Đậm Đà',
+        emoji: '🐻‍❄️',
+        color: '#d97706',
+        desc: 'Mê thịt bò, xúc xích, bánh mì nhồi đầy nhân, món nướng than hoa dậy mùi thơm và vị hài hòa Chua - Cay - Mặn - Ngọt.',
+        cravings: [
+          'Hôm nay tôi thèm một ổ Bánh Mì Việt Nam nhồi Thịt bò áp chảo, Xúc xích, Dưa leo và nêm chút Tiêu đen, Chanh, Muối!',
+          'Đầu bếp thử làm món Thịt bò băm cuộn Lá lốt đem nướng trên than hoa thơm lừng xem sao!',
+          'Tôi đang thèm một món xào hoặc nướng thật đậm đà vị Umami từ Thịt bò, Nấm hương, Tỏi và Dầu hào!'
+        ],
+        likes: ['umami', 'aroma', 'salty', 'sweet'],
+        lovesStructures: ['stuffed', 'rolled'],
+        maxSpiceTolerance: 7.5,
+        hatesRawMeat: true
+      },
+      {
+        id: 'cat_miu',
+        name: 'Cô Bé Mèo Miu',
+        title: 'Tín đồ Món Cuốn & Chua Ngọt',
+        emoji: '🐱',
+        color: '#ec4899',
+        desc: 'Cực thích gỏi cuốn bánh tráng, cơm cuộn rong biển cá hồi/tôm, vị chua ngọt thanh mát và béo dịu. Sợ ăn quá cay.',
+        cravings: [
+          'Miu thèm một cuốn Gỏi Cuốn Bánh Tráng có Tôm luộc, Bún tươi, Xà lách rau thơm và pha vị Nước mắm + Chanh + Đường chua ngọt!',
+          'Làm cho Miu món Cơm Cuộn Rong Biển (Kimbap) nhân Cá hồi, Trứng chiên, Thanh cua, Dưa leo và Sốt Mayonnaise béo ngậy nha!',
+          'Miu thích một ly Sinh tố Dâu tây + Chuối + Mật ong ngọt ngào mát lạnh từ Máy Xay!'
+        ],
+        likes: ['sweet', 'sour', 'umami', 'fatty'],
+        lovesStructures: ['rolled'],
+        maxSpiceTolerance: 4.0,
+        hatesRawMeat: true
+      },
+      {
+        id: 'dragon_long',
+        name: 'Anh Chàng Rồng Lửa',
+        title: 'Vua Ăn Cay & Chiên Giòn',
+        emoji: '🐲',
+        color: '#dc2626',
+        desc: 'Đam mê vị cay nồng của ớt, tiêu đen, sả, tỏi phi, các món chiên giòn rụm và bánh mì kẹp thịt nướng cay.',
+        cravings: [
+          'Ta thèm một chiếc Bánh Taco hoặc Bánh Mì nhồi Thịt bò, Xúc xích nướng than, thêm thật nhiều Ớt hiểm, Sả băm và Tương ớt!',
+          'Hãy cuốn Bánh tráng nhân Thịt ba chỉ, Tôm, Nấm rồi đem nhúng vào Chảo Chiên Ngập Dầu làm món Chả Giò chiên giòn rụm!',
+          'Làm cho ta đĩa Mực tươi và Thịt bò xào Sả Ớt Tỏi cay nồng bốc khói nhé!'
+        ],
+        likes: ['spicy', 'aroma', 'umami', 'salty'],
+        lovesStructures: ['stuffed', 'loose'],
+        maxSpiceTolerance: 10.0,
+        hatesRawMeat: true
+      },
+      {
+        id: 'owl_prof',
+        name: 'Giáo Sư Cú Thông Thái',
+        title: 'Nhà phê bình Ẩm thực Tinh tế',
+        emoji: '🦉',
+        color: '#4f46e5',
+        desc: 'Đánh giá khắt khe sự cân bằng âm dương ngũ hành: thịt phải có gia vị ướp, món béo phải có chanh/rau thơm giải ngấy.',
+        cravings: [
+          'Tôi muốn thưởng thức Phở Cuốn Hà Nội nhân Thịt bò xào Tỏi Tiêu và Xà lách rau thơm chấm vị Chua Ngọt hài hòa.',
+          'Hãy thử làm Quả Ớt Chuông Khoét Ruột nhồi Thịt bò băm, Nấm hương, Hành tây và Phô mai rồi đem đút Lò Nướng!',
+          'Tôi muốn kiểm chứng khả năng cân bằng vị: Một món có Thịt ba chỉ béo ngậy nhưng được giải ngấy hoàn hảo bằng Đồ chua, Chanh tươi và Rau thơm.'
+        ],
+        likes: ['aroma', 'umami', 'sour', 'sweet'],
+        lovesStructures: ['rolled', 'stuffed'],
+        maxSpiceTolerance: 6.5,
+        hatesRawMeat: true
+      }
+    ];
+
+    const PANTRY_CATEGORIES = [
+      { id: 'all', name: 'Tất cả (32)' },
+      { id: 'meat', name: '🥩 Thịt & Xúc xích' },
+      { id: 'seafood', name: '🦐 Hải sản & Trứng' },
+      { id: 'starch', name: '🍚 Tinh bột & Phô mai' },
+      { id: 'veg', name: '🥬 Rau củ & Thảo mộc' },
+      { id: 'fruit', name: '🍍 Trái cây & Nấm' }
+    ];
+
+    // Base flavors on 0..10 scale per portion before cooking/seasoning
+    const INGREDIENTS = [
+      // MEAT & SAUSAGE
+      {
+        id: 'beef',
+        name: 'Thịt bò thăn tươi',
+        category: 'meat',
+        emoji: '🥩',
+        color: '#b91c1c',
+        cookedColor: '#78350f',
+        needsCooking: true,
+        flavorDesc: 'Ngọt đạm tự nhiên (Umami cao), mặn dịu, mềm mọng',
+        flavors: { umami: 3.6, salty: 0.8, sweet: 1.2, sour: 0.0, spicy: 0.0, fatty: 1.8, bitter: 0.0, aroma: 1.5, crunch: 0.5 }
+      },
+      {
+        id: 'sausage',
+        name: 'Xúc xích hun khói',
+        category: 'meat',
+        emoji: '🌭',
+        color: '#dc2626',
+        cookedColor: '#991b1b',
+        needsCooking: false,
+        flavorDesc: 'Mặn đậm, béo ngậy, dậy mùi khói thơm lừng',
+        flavors: { umami: 3.0, salty: 2.4, sweet: 0.8, sour: 0.0, spicy: 0.4, fatty: 3.2, bitter: 0.0, aroma: 2.8, crunch: 1.5 }
+      },
+      {
+        id: 'pork_belly',
+        name: 'Thịt ba chỉ heo',
+        category: 'meat',
+        emoji: '🥓',
+        color: '#f43f5e',
+        cookedColor: '#b45309',
+        needsCooking: true,
+        flavorDesc: 'Béo ngậy xen lẫn nạc ngọt mềm, cực hợp luộc cuốn bánh tráng hoặc nướng',
+        flavors: { umami: 3.1, salty: 0.7, sweet: 1.1, sour: 0.0, spicy: 0.0, fatty: 3.8, bitter: 0.0, aroma: 1.4, crunch: 0.5 }
+      },
+      {
+        id: 'chicken',
+        name: 'Ức gà phi lê',
+        category: 'meat',
+        emoji: '🍗',
+        color: '#fda4af',
+        cookedColor: '#d97706',
+        needsCooking: true,
+        flavorDesc: 'Ngọt thanh, ít béo, dễ thấm gia vị ướp',
+        flavors: { umami: 2.8, salty: 0.6, sweet: 1.0, sour: 0.0, spicy: 0.0, fatty: 1.0, bitter: 0.0, aroma: 1.2, crunch: 0.4 }
+      },
+      {
+        id: 'pate',
+        name: 'Pate gan béo thơm',
+        category: 'meat',
+        emoji: '🤎',
+        color: '#78350f',
+        cookedColor: '#57534e',
+        needsCooking: false,
+        flavorDesc: 'Béo mịn, đậm đà, linh hồn của ổ Bánh Mì Việt Nam',
+        flavors: { umami: 3.4, salty: 1.9, sweet: 0.6, sour: 0.0, spicy: 0.3, fatty: 3.6, bitter: 0.2, aroma: 2.9, crunch: 0.0 }
+      },
+      {
+        id: 'ham_chaca',
+        name: 'Chả lụa Việt Nam',
+        category: 'meat',
+        emoji: '🍥',
+        color: '#fecdd3',
+        cookedColor: '#fde68a',
+        needsCooking: false,
+        flavorDesc: 'Giòn dai, thơm mùi nước mắm và lá chuối, ngọt thanh',
+        flavors: { umami: 2.9, salty: 1.6, sweet: 0.9, sour: 0.0, spicy: 0.2, fatty: 1.4, bitter: 0.0, aroma: 2.2, crunch: 1.2 }
+      },
+
+      // SEAFOOD & EGGS
+      {
+        id: 'shrimp',
+        name: 'Tôm sú tươi',
+        category: 'seafood',
+        emoji: '🦐',
+        color: '#fb923c',
+        cookedColor: '#ea580c',
+        needsCooking: true,
+        flavorDesc: 'Ngọt thanh đậm vị biển, thịt săn giòn, cuốn gỏi cuốn cực hợp',
+        flavors: { umami: 3.5, salty: 1.1, sweet: 2.0, sour: 0.0, spicy: 0.0, fatty: 0.6, bitter: 0.0, aroma: 1.8, crunch: 1.8 }
+      },
+      {
+        id: 'salmon',
+        name: 'Cá hồi tươi Na Uy',
+        category: 'seafood',
+        emoji: '🍣',
+        color: '#f97316',
+        cookedColor: '#fdba74',
+        needsCooking: false,
+        flavorDesc: 'Béo mềm tan trong miệng, ngọt thanh, ăn sống cuộn rong biển hoặc áp chảo đều ngon',
+        flavors: { umami: 3.4, salty: 0.8, sweet: 1.4, sour: 0.0, spicy: 0.0, fatty: 3.1, bitter: 0.0, aroma: 1.6, crunch: 0.2 }
+      },
+      {
+        id: 'squid',
+        name: 'Mực ống tươi giòn',
+        category: 'seafood',
+        emoji: '🦑',
+        color: '#f5f5f4',
+        cookedColor: '#fef08a',
+        needsCooking: true,
+        flavorDesc: 'Giòn sần sật, ngọt vị biển, hợp xào sả ớt hoặc nướng than',
+        flavors: { umami: 3.0, salty: 1.2, sweet: 1.5, sour: 0.0, spicy: 0.0, fatty: 0.5, bitter: 0.0, aroma: 1.5, crunch: 2.5 }
+      },
+      {
+        id: 'egg',
+        name: 'Trứng gà ta',
+        category: 'seafood',
+        emoji: '🥚',
+        color: '#facc15',
+        cookedColor: '#eab308',
+        needsCooking: true,
+        flavorDesc: 'Béo bùi, thơm ngậy, chiên cuộn cơm rong biển hoặc ốp la kẹp bánh mì',
+        flavors: { umami: 2.4, salty: 0.5, sweet: 0.8, sour: 0.0, spicy: 0.0, fatty: 2.6, bitter: 0.0, aroma: 1.6, crunch: 0.2 }
+      },
+      {
+        id: 'crab_stick',
+        name: 'Thanh cua Surimi',
+        category: 'seafood',
+        emoji: '🦀',
+        color: '#ef4444',
+        cookedColor: '#dc2626',
+        needsCooking: false,
+        flavorDesc: 'Ngọt dịu, mềm dai, nguyên liệu vàng cho món cơm cuộn rong biển',
+        flavors: { umami: 2.6, salty: 1.4, sweet: 1.9, sour: 0.0, spicy: 0.0, fatty: 0.6, bitter: 0.0, aroma: 1.5, crunch: 0.8 }
+      },
+
+      // STARCH & CHEESE
+      {
+        id: 'sushi_rice',
+        name: 'Cơm trắng dẻo thơm',
+        category: 'starch',
+        emoji: '🍚',
+        color: '#fafaf9',
+        cookedColor: '#f59e0b',
+        needsCooking: false,
+        flavorDesc: 'Ngọt dịu tinh bột lúa mới, dẻo mềm, dùng cuộn rong biển hoặc chiên cơm',
+        flavors: { umami: 0.8, salty: 0.2, sweet: 1.8, sour: 0.0, spicy: 0.0, fatty: 0.3, bitter: 0.0, aroma: 2.0, crunch: 0.2 }
+      },
+      {
+        id: 'rice_vermicelli',
+        name: 'Bún tươi sợi trắng',
+        category: 'starch',
+        emoji: '🍜',
+        color: '#f5f5f4',
+        cookedColor: '#fde68a',
+        needsCooking: false,
+        flavorDesc: 'Mềm mướt, thanh nhẹ, thấm đẫm nước sốt khi cuốn bánh tráng',
+        flavors: { umami: 0.4, salty: 0.1, sweet: 1.1, sour: 0.2, spicy: 0.0, fatty: 0.1, bitter: 0.0, aroma: 1.0, crunch: 0.1 }
+      },
+      {
+        id: 'potato',
+        name: 'Khoai tây Đà Lạt',
+        category: 'starch',
+        emoji: '🥔',
+        color: '#eab308',
+        cookedColor: '#ca8a04',
+        needsCooking: true,
+        flavorDesc: 'Bùi béo, ngọt nhẹ, chiên ngập dầu giòn rụm hoặc hầm súp',
+        flavors: { umami: 0.9, salty: 0.2, sweet: 1.4, sour: 0.0, spicy: 0.0, fatty: 0.5, bitter: 0.0, aroma: 1.1, crunch: 1.5 }
+      },
+      {
+        id: 'tofu',
+        name: 'Đậu hũ non mềm',
+        category: 'starch',
+        emoji: '🧈',
+        color: '#fef9c3',
+        cookedColor: '#f59e0b',
+        needsCooking: false,
+        flavorDesc: 'Thanh mát, béo dịu đậu nành, chiên giòn hoặc nấu canh đều tuyệt',
+        flavors: { umami: 1.5, salty: 0.3, sweet: 1.0, sour: 0.0, spicy: 0.0, fatty: 1.4, bitter: 0.0, aroma: 1.2, crunch: 0.3 }
+      },
+      {
+        id: 'cheese_slice',
+        name: 'Phô mai Cheddar lát',
+        category: 'starch',
+        emoji: '🧀',
+        color: '#f59e0b',
+        cookedColor: '#d97706',
+        needsCooking: false,
+        flavorDesc: 'Béo ngậy, mặn dịu, tan chảy thơm lừng khi nướng cùng bánh mì/thịt bò',
+        flavors: { umami: 2.5, salty: 2.0, sweet: 0.6, sour: 0.3, spicy: 0.0, fatty: 3.8, bitter: 0.0, aroma: 2.2, crunch: 0.2 }
+      },
+      {
+        id: 'sweet_corn',
+        name: 'Bắp ngọt (Ngô Mỹ)',
+        category: 'starch',
+        emoji: '🌽',
+        color: '#fde047',
+        cookedColor: '#eab308',
+        needsCooking: false,
+        flavorDesc: 'Ngọt lịm, giòn sần sật, xào bơ hoặc nướng phô mai cực ngon',
+        flavors: { umami: 0.8, salty: 0.2, sweet: 2.8, sour: 0.0, spicy: 0.0, fatty: 0.4, bitter: 0.0, aroma: 1.6, crunch: 2.0 }
+      },
+
+      // VEGETABLES & HERBS
+      {
+        id: 'cucumber',
+        name: 'Dưa leo (Chuột) giòn',
+        category: 'veg',
+        emoji: '🥒',
+        color: '#16a34a',
+        cookedColor: '#15803d',
+        needsCooking: false,
+        isFreshBalancer: true,
+        flavorDesc: 'Giòn tan, mọng nước, thanh mát giải ngấy cho bánh mì và gỏi cuốn',
+        flavors: { umami: 0.3, salty: 0.1, sweet: 1.0, sour: 0.2, spicy: 0.0, fatty: 0.0, bitter: 0.1, aroma: 1.4, crunch: 3.2 }
+      },
+      {
+        id: 'lettuce_herbs',
+        name: 'Xà lách & Rau thơm tổng hợp',
+        category: 'veg',
+        emoji: '🥬',
+        color: '#22c55e',
+        cookedColor: '#166534',
+        needsCooking: false,
+        isFreshBalancer: true,
+        flavorDesc: 'Thơm tinh dầu húng quế, ngò rí, tươi giòn giúp cân bằng món thịt/đồ chiên',
+        flavors: { umami: 0.4, salty: 0.1, sweet: 0.8, sour: 0.1, spicy: 0.2, fatty: 0.0, bitter: 0.3, aroma: 3.5, crunch: 2.4 }
+      },
+      {
+        id: 'pickled_daikon',
+        name: 'Đồ chua (Cà rốt & Củ cải ngâm)',
+        category: 'veg',
+        emoji: '🥕',
+        color: '#fb923c',
+        cookedColor: '#ea580c',
+        needsCooking: false,
+        isFreshBalancer: true,
+        flavorDesc: 'Chua ngọt giòn sần sật, cắt độ béo ngấy của pate, thịt bò và xúc xích',
+        flavors: { umami: 0.4, salty: 0.8, sweet: 2.4, sour: 2.8, spicy: 0.0, fatty: 0.0, bitter: 0.0, aroma: 1.6, crunch: 3.0 }
+      },
+      {
+        id: 'tomato',
+        name: 'Cà chua chín đỏ',
+        category: 'veg',
+        emoji: '🍅',
+        color: '#ef4444',
+        cookedColor: '#b91c1c',
+        needsCooking: false,
+        isFreshBalancer: true,
+        flavorDesc: 'Chua dịu xen lẫn vị ngọt Umami tự nhiên, mọng nước',
+        flavors: { umami: 2.2, salty: 0.2, sweet: 1.8, sour: 1.9, spicy: 0.0, fatty: 0.0, bitter: 0.0, aroma: 1.5, crunch: 1.0 }
+      },
+      {
+        id: 'onion',
+        name: 'Hành tây tím',
+        category: 'veg',
+        emoji: '🧅',
+        color: '#a855f7',
+        cookedColor: '#d97706',
+        needsCooking: false,
+        flavorDesc: 'Khi sống hơi hăng cay giòn, khi xào/nướng chuyển sang ngọt lịm thơm nức',
+        flavors: { umami: 1.2, salty: 0.1, sweet: 1.6, sour: 0.0, spicy: 1.4, fatty: 0.0, bitter: 0.2, aroma: 2.6, crunch: 2.2 }
+      },
+      {
+        id: 'bell_pepper',
+        name: 'Ớt chuông Đà Lạt',
+        category: 'veg',
+        emoji: '🫑',
+        color: '#10b981',
+        cookedColor: '#059669',
+        needsCooking: false,
+        flavorDesc: 'Giòn ngọt thanh mát, không cay gắt, dậy mùi thơm khi xào thịt bò',
+        flavors: { umami: 0.7, salty: 0.1, sweet: 2.0, sour: 0.2, spicy: 0.2, fatty: 0.0, bitter: 0.2, aroma: 2.2, crunch: 2.8 }
+      },
+      {
+        id: 'carrot',
+        name: 'Cà rốt tươi ngọt',
+        category: 'veg',
+        emoji: '🥕',
+        color: '#f97316',
+        cookedColor: '#ea580c',
+        needsCooking: false,
+        flavorDesc: 'Giòn cứng khi sống, ngọt thanh khi luộc/hầm hoặc thái sợi cuộn kimbap',
+        flavors: { umami: 0.6, salty: 0.2, sweet: 2.2, sour: 0.0, spicy: 0.0, fatty: 0.0, bitter: 0.0, aroma: 1.2, crunch: 3.0 }
+      },
+      {
+        id: 'avocado',
+        name: 'Bơ sáp dẻo béo',
+        category: 'veg',
+        emoji: '🥑',
+        color: '#84cc16',
+        cookedColor: '#65a30d',
+        needsCooking: false,
+        flavorDesc: 'Béo ngậy thực vật, mềm mịn, cuộn sushi cá hồi hoặc kẹp bánh mì cực ngon',
+        flavors: { umami: 0.8, salty: 0.1, sweet: 0.9, sour: 0.0, spicy: 0.0, fatty: 3.4, bitter: 0.0, aroma: 1.2, crunch: 0.2 }
+      },
+      {
+        id: 'broccoli',
+        name: 'Bông cải xanh (Súp lơ)',
+        category: 'veg',
+        emoji: '🥦',
+        color: '#15803d',
+        cookedColor: '#166534',
+        needsCooking: false,
+        isFreshBalancer: true,
+        flavorDesc: 'Giòn ngọt, thanh mát, giữ trọn dưỡng chất khi xào tỏi hoặc luộc',
+        flavors: { umami: 0.9, salty: 0.1, sweet: 1.2, sour: 0.0, spicy: 0.0, fatty: 0.0, bitter: 0.3, aroma: 1.3, crunch: 2.4 }
+      },
+
+      // FRUITS & MUSHROOMS
+      {
+        id: 'shiitake',
+        name: 'Nấm hương & Nấm đùi gà',
+        category: 'fruit',
+        emoji: '🍄',
+        color: '#a16207',
+        cookedColor: '#713f12',
+        needsCooking: true,
+        flavorDesc: 'Kho báu vị ngọt đạm thực vật (Umami cực cao), dai giòn thơm nức',
+        flavors: { umami: 3.8, salty: 0.3, sweet: 1.3, sour: 0.0, spicy: 0.0, fatty: 0.2, bitter: 0.0, aroma: 3.2, crunch: 1.6 }
+      },
+      {
+        id: 'pineapple',
+        name: 'Dứa (Thơm) chín vàng',
+        category: 'fruit',
+        emoji: '🍍',
+        color: '#facc15',
+        cookedColor: '#eab308',
+        needsCooking: false,
+        isFreshBalancer: true,
+        flavorDesc: 'Chua ngọt rực rỡ, làm mềm thớ thịt bò/hải sản và dậy hương nhiệt đới',
+        flavors: { umami: 0.4, salty: 0.1, sweet: 3.4, sour: 2.6, spicy: 0.0, fatty: 0.0, bitter: 0.0, aroma: 3.0, crunch: 1.6 }
+      },
+      {
+        id: 'green_mango',
+        name: 'Xoài xanh giòn chua',
+        category: 'fruit',
+        emoji: '🥭',
+        color: '#a3e635',
+        cookedColor: '#84cc16',
+        needsCooking: false,
+        isFreshBalancer: true,
+        flavorDesc: 'Chua thanh giòn tan, cuốn bánh tráng hoặc trộn gỏi tôm thịt chấm mắm đường',
+        flavors: { umami: 0.2, salty: 0.0, sweet: 1.5, sour: 3.5, spicy: 0.0, fatty: 0.0, bitter: 0.0, aroma: 2.4, crunch: 3.1 }
+      },
+      {
+        id: 'strawberry',
+        name: 'Dâu tây Đà Lạt',
+        category: 'fruit',
+        emoji: '🍓',
+        color: '#e11d48',
+        cookedColor: '#9f1239',
+        needsCooking: false,
+        flavorDesc: 'Chua dịu ngọt thanh, thơm lừng khi xay sinh tố hoặc làm sốt trái cây',
+        flavors: { umami: 0.1, salty: 0.0, sweet: 3.0, sour: 2.1, spicy: 0.0, fatty: 0.0, bitter: 0.0, aroma: 3.2, crunch: 1.0 }
+      },
+      {
+        id: 'banana',
+        name: 'Chuối chín ngọt',
+        category: 'fruit',
+        emoji: '🍌',
+        color: '#fef08a',
+        cookedColor: '#ca8a04',
+        needsCooking: false,
+        flavorDesc: 'Ngọt đậm, dẻo thơm, có thể xay sinh tố hoặc chiên giòn làm bánh chuối',
+        flavors: { umami: 0.1, salty: 0.0, sweet: 3.6, sour: 0.2, spicy: 0.0, fatty: 0.6, bitter: 0.0, aroma: 2.5, crunch: 0.2 }
+      },
+      {
+        id: 'watermelon',
+        name: 'Dưa hấu đỏ mọng nước',
+        category: 'fruit',
+        emoji: '🍉',
+        color: '#f43f5e',
+        cookedColor: '#be123c',
+        needsCooking: false,
+        flavorDesc: 'Ngọt mát, cực nhiều nước, ép nước hoặc ăn tráng miệng',
+        flavors: { umami: 0.1, salty: 0.0, sweet: 3.2, sour: 0.2, spicy: 0.0, fatty: 0.0, bitter: 0.0, aroma: 1.8, crunch: 1.8 }
+      }
+    ];
+
+    // 9 COOKING & PREPARATION STATIONS (Toca Kitchen 2 Complete + Rolling Mat + Stuffing/Sandwich + Charcoal Grill)
+    const STATIONS = [
+      {
+        id: 'cutting_board',
+        name: 'Thớt & Dao Sắc',
+        shortName: '1. Dao Thớt',
+        emoji: '🔪',
+        temp: '25°C (Sơ chế)',
+        desc: 'Thái lát mỏng, thái hạt lựu hoặc băm nhuyễn nguyên liệu để dễ cuốn, nhồi và thấm gia vị.',
+        actions: [
+          { id: 'slice', label: '🔪 Thái Lát Mỏng (C)', desc: 'Cắt nguyên liệu thành từng lát đều đặn' },
+          { id: 'dice', label: '🎲 Thái Hạt Lựu', desc: 'Cắt nhỏ vuông vức vừa miệng' },
+          { id: 'mince', label: '⚡ Băm Nhuyễn', desc: 'Băm thật nhỏ để cuốn lá lốt hoặc nhồi nhân' }
+        ]
+      },
+      {
+        id: 'rolling_mat',
+        name: 'Trạm Cuốn Đa Năng (Bánh Tráng / Rong Biển)',
+        shortName: '2. Bàn Cuốn (MỚI)',
+        emoji: '🌯',
+        temp: '25°C (Cuốn tay)',
+        desc: 'Chọn vỏ bánh tráng, rong biển Nori, lá lốt hoặc bánh phở để cuộn gọn một lượt tất cả nguyên liệu và gia vị bên trong!',
+        isWrapperStation: true,
+        actions: [
+          { id: 'roll_tight', label: '🌯 Cuộn Tròn Một Lượt (R)', desc: 'Cuộn tất cả nguyên liệu trên mành vào trong lớp vỏ đã chọn' }
+        ]
+      },
+      {
+        id: 'stuffing_station',
+        name: 'Trạm Kẹp & Nhồi Nhân (Bánh Mì / Burger)',
+        shortName: '3. Kẹp & Nhồi (MỚI)',
+        emoji: '🥖',
+        temp: '45°C (Bàn kẹp ấm)',
+        desc: 'Xẻ dọc ổ Bánh Mì Việt Nam giòn rụm, mở vỏ Burger, Taco hoặc Ớt chuông để nhồi thịt bò, xúc xích, rau sốt vào bên trong!',
+        isStuffingStation: true,
+        actions: [
+          { id: 'stuff_pack', label: '🥖 Nhồi Đầy & Kẹp Chặt (R)', desc: 'Nhồi toàn bộ nguyên liệu và sốt vào trong ruột vỏ bánh' }
+        ]
+      },
+      {
+        id: 'frying_pan',
+        name: 'Chảo Chiên Xào',
+        shortName: '4. Chảo Xào',
+        emoji: '🍳',
+        temp: '185°C (Lửa vừa)',
+        desc: 'Áp chảo thịt bò, chiên trứng, xào rau củ dậy mùi thơm Maillard (Nấu 1 lần: Chín tới; 2 lần: Áp chảo vàng thơm; 3 lần: Cháy khét!).',
+        actions: [
+          { id: 'fry_step', label: '🔥 Đảo Chảo / Áp Chảo (C)', desc: 'Chiên xào trên chảo nóng cho chín vàng dậy mùi' }
+        ]
+      },
+      {
+        id: 'boiling_pot',
+        name: 'Nồi Luộc & Hầm Súp',
+        shortName: '5. Nồi Luộc',
+        emoji: '🍲',
+        temp: '100°C (Nước sôi)',
+        desc: 'Luộc tôm thịt cuốn bánh tráng hoặc hầm súp làm các vị hòa quyện thanh ngọt, dịu bớt vị mặn/cay gắt.',
+        actions: [
+          { id: 'boil_step', label: '💧 Đun Sôi / Hầm Mềm (C)', desc: 'Luộc chín mềm và tiết vị ngọt tự nhiên vào nước' }
+        ]
+      },
+      {
+        id: 'deep_fryer',
+        name: 'Chảo Chiên Ngập Dầu',
+        shortName: '6. Chiên Giòn',
+        emoji: '🍟',
+        temp: '195°C (Dầu sôi)',
+        desc: 'Chiên giòn rụm khoai tây, xúc xích, tôm hoặc chiên cả cuốn bánh tráng thành Chả Giò / Nem Rán vàng ươm!',
+        actions: [
+          { id: 'deep_fry_step', label: '✨ Nhúng Dầu Chiên Giòn (C)', desc: 'Chiên ngập dầu tạo lớp vỏ giòn tan béo ngậy' }
+        ]
+      },
+      {
+        id: 'oven',
+        name: 'Lò Nướng Đa Năng',
+        shortName: '7. Lò Nướng',
+        emoji: '♨️',
+        temp: '210°C (Nhiệt đối lưu)',
+        desc: 'Nướng thịt tảng, đút lò phô mai tan chảy hoặc nướng nóng giòn lại ổ Bánh Mì đã nhồi nhân!',
+        actions: [
+          { id: 'bake_step', label: '⏲️ Bật Lò Nướng Vàng (C)', desc: 'Nướng chín đều và làm tan chảy phô mai/bơ' }
+        ]
+      },
+      {
+        id: 'charcoal_grill',
+        name: 'Vỉ Nướng Than Hoa',
+        shortName: '8. Nướng Than',
+        emoji: '🔥',
+        temp: '240°C (Than hồng)',
+        desc: 'Nướng thịt bò, xúc xích, hải sản hoặc bò cuộn lá lốt trên than hoa tạo hương khói thơm lừng.',
+        actions: [
+          { id: 'grill_step', label: '🍖 Quạt Than Nướng Thơm (C)', desc: 'Nướng trên vỉ than hồng dậy mùi khói BBQ' }
+        ]
+      },
+      {
+        id: 'blender',
+        name: 'Máy Xay Sinh Tố & Sốt',
+        shortName: '9. Máy Xay',
+        emoji: '🌪️',
+        temp: '18°C (Xay tốc độ cao)',
+        desc: 'Xay nhuyễn trái cây thành sinh tố, hoặc xay hỗn hợp nguyên liệu & gia vị thành nước sốt/súp đặc biệt.',
+        actions: [
+          { id: 'blend_smooth', label: '🌪️ Bấm Máy Xay Nhuyễn (C)', desc: 'Xay tất cả nguyên liệu trong cối thành hỗn hợp sánh mịn' }
+        ]
+      }
+    ];
+
+    // WRAPPERS FOR STATION 2 (ROLLING MAT)
+    const WRAPPERS = [
+      {
+        id: 'rice_paper',
+        name: 'Bánh tráng gạo mỏng',
+        emoji: '⚪',
+        desc: 'Trong suốt, dẻo dai nhẹ, làm Gỏi cuốn hoặc cuốn Chả giò đem chiên',
+        flavors: { umami: 0.3, salty: 0.4, sweet: 0.9, sour: 0.0, spicy: 0.0, fatty: 0.0, bitter: 0.0, aroma: 1.2, crunch: 0.8 },
+        color: '#f5f5f4',
+        dishPrefix: 'Gỏi Cuốn Bánh Tráng'
+      },
+      {
+        id: 'nori_seaweed',
+        name: 'Lá rong biển Nori',
+        emoji: '⬛',
+        desc: 'Thơm mùi biển, giàu Umami, chuyên cuộn cơm Kimbap / Sushi',
+        flavors: { umami: 2.6, salty: 1.1, sweet: 0.5, sour: 0.0, spicy: 0.0, fatty: 0.2, bitter: 0.0, aroma: 2.8, crunch: 1.4 },
+        color: '#1c1917',
+        dishPrefix: 'Cuộn Rong Biển Nori'
+      },
+      {
+        id: 'betel_leaf',
+        name: 'Lá lốt tươi xanh',
+        emoji: '🍃',
+        desc: 'Hương thơm nồng ấm đặc trưng, cuộn thịt bò băm rồi đem nướng/áp chảo cực đỉnh',
+        flavors: { umami: 0.8, salty: 0.1, sweet: 0.4, sour: 0.0, spicy: 0.6, fatty: 0.0, bitter: 0.2, aroma: 3.8, crunch: 0.6 },
+        color: '#14532d',
+        dishPrefix: 'Cuốn Lá Lốt Thơm Lừng'
+      },
+      {
+        id: 'pho_sheet',
+        name: 'Bánh phở cuốn mềm',
+        emoji: '🏳️',
+        desc: 'Mềm mướt, ngọt dịu bột gạo, chuyên cuốn thịt bò xào và rau thơm',
+        flavors: { umami: 0.6, salty: 0.2, sweet: 1.4, sour: 0.0, spicy: 0.0, fatty: 0.3, bitter: 0.0, aroma: 1.5, crunch: 0.1 },
+        color: '#ffffff',
+        dishPrefix: 'Phở Cuốn Hà Nội'
+      },
+      {
+        id: 'tortilla_wrap',
+        name: 'Vỏ bánh Burrito lúa mì',
+        emoji: '🫓',
+        desc: 'Mềm dai thơm bơ, cuộn thịt nướng, xúc xích, phô mai và bắp ngọt',
+        flavors: { umami: 0.7, salty: 0.7, sweet: 1.3, sour: 0.0, spicy: 0.0, fatty: 1.1, bitter: 0.0, aroma: 1.8, crunch: 0.5 },
+        color: '#fde68a',
+        dishPrefix: 'Bánh Cuộn Burrito'
+      },
+      {
+        id: 'mustard_green',
+        name: 'Lá cải bẹ xanh tươi',
+        emoji: '🥬',
+        desc: 'Thanh mát, the nhẹ đầu lưỡi, cuốn thịt luộc hoặc hải sản giúp giải ngấy',
+        flavors: { umami: 0.4, salty: 0.1, sweet: 0.6, sour: 0.0, spicy: 0.5, fatty: 0.0, bitter: 0.4, aroma: 2.0, crunch: 2.0 },
+        color: '#15803d',
+        dishPrefix: 'Cuốn Cải Bẹ Xanh'
+      }
+    ];
+
+    // VESSELS / BREADS FOR STATION 3 (STUFFING / SANDWICH STATION)
+    const VESSELS = [
+      {
+        id: 'banh_mi_vn',
+        name: 'Ổ Bánh Mì Việt Nam Giòn',
+        emoji: '🥖',
+        desc: 'Vỏ giòn rụm, ruột mềm thơm, xẻ dọc nhồi thịt bò, xúc xích, pate, đồ chua, rau thơm',
+        flavors: { umami: 1.0, salty: 0.8, sweet: 1.6, sour: 0.0, spicy: 0.0, fatty: 0.9, bitter: 0.0, aroma: 3.0, crunch: 3.6 },
+        color: '#d97706',
+        dishPrefix: 'Bánh Mì Kẹp Nhân'
+      },
+      {
+        id: 'burger_bun',
+        name: 'Vỏ Bánh Burger Mè Rang',
+        emoji: '🍔',
+        desc: 'Mềm xốp thơm bơ và mè rang, kẹp thịt bò nướng, phô mai, cà chua, xà lách',
+        flavors: { umami: 0.9, salty: 0.7, sweet: 2.0, sour: 0.0, spicy: 0.0, fatty: 1.5, bitter: 0.0, aroma: 2.5, crunch: 0.8 },
+        color: '#f59e0b',
+        dishPrefix: 'Burger Kẹp Đầy Đặn'
+      },
+      {
+        id: 'taco_shell',
+        name: 'Vỏ Bánh Taco Ngô Giòn',
+        emoji: '🌮',
+        desc: 'Giòn rụm thơm mùi bắp non, nhồi thịt băm xào cay, phô mai và chanh tươi',
+        flavors: { umami: 0.8, salty: 0.9, sweet: 1.5, sour: 0.0, spicy: 0.0, fatty: 1.2, bitter: 0.0, aroma: 2.4, crunch: 3.5 },
+        color: '#eab308',
+        dishPrefix: 'Bánh Taco Giòn Nhồi'
+      },
+      {
+        id: 'pita_pocket',
+        name: 'Túi Bánh Mì Pita Nướng',
+        emoji: '🥙',
+        desc: 'Mềm dai có túi rỗng ở giữa để nhồi đầy thịt nướng, xúc xích và rau củ',
+        flavors: { umami: 0.8, salty: 0.6, sweet: 1.2, sour: 0.0, spicy: 0.0, fatty: 0.6, bitter: 0.0, aroma: 2.0, crunch: 1.2 },
+        color: '#fcd34d',
+        dishPrefix: 'Bánh Pita Nhồi'
+      },
+      {
+        id: 'bell_pepper_cup',
+        name: 'Quả Ớt Chuông Khoét Ruột',
+        emoji: '🫑',
+        desc: 'Khoét rỗng ruột quả ớt chuông để nhồi thịt bò, xúc xích, nấm rồi đem bỏ lò nướng',
+        flavors: { umami: 0.9, salty: 0.1, sweet: 2.1, sour: 0.2, spicy: 0.2, fatty: 0.0, bitter: 0.1, aroma: 2.5, crunch: 2.4 },
+        color: '#10b981',
+        dishPrefix: 'Ớt Chuông Nhồi Nhân'
+      },
+      {
+        id: 'bao_bun',
+        name: 'Vỏ Bánh Bao Mềm Trắng',
+        emoji: '🥟',
+        desc: 'Trắng ngần thơm sữa, nhồi thịt băm, trứng, xúc xích, nấm hương',
+        flavors: { umami: 0.7, salty: 0.4, sweet: 2.2, sour: 0.0, spicy: 0.0, fatty: 0.8, bitter: 0.0, aroma: 2.1, crunch: 0.1 },
+        color: '#fafaf9',
+        dishPrefix: 'Bánh Bao Nhồi Nhân'
+      }
+    ];
+
+    // 18 EXPANDED SPICES & CONDIMENTS
+    const SPICES = [
+      {
+        id: 'salt',
+        name: 'Muối biển',
+        emoji: '🧂',
+        type: 'powder',
+        desc: 'Thêm vị mặn thuần khiết và kích hoạt vị ngọt đạm (Umami) của thịt cá',
+        add: { salty: 1.6, umami: 0.5, sweet: 0.0, sour: 0.0, spicy: 0.0, fatty: 0.0, bitter: -0.2, aroma: 0.2 }
+      },
+      {
+        id: 'black_pepper',
+        name: 'Tiêu đen xay',
+        emoji: '⚫',
+        type: 'powder',
+        desc: 'Thêm vị cay nồng ấm áp và hương thơm hạt tiêu dậy mùi thịt bò, trứng, súp',
+        add: { salty: 0.0, umami: 0.3, sweet: 0.0, sour: 0.0, spicy: 1.5, fatty: 0.0, bitter: 0.0, aroma: 1.9 }
+      },
+      {
+        id: 'lime',
+        name: 'Chanh tươi',
+        emoji: '🍋',
+        type: 'liquid',
+        desc: 'Thêm vị chua thanh mát, hương tinh dầu chanh, cắt độ béo ngấy và dịu độ mặn',
+        add: { salty: -0.2, umami: 0.3, sweet: 0.1, sour: 1.8, spicy: 0.0, fatty: -0.6, bitter: 0.0, aroma: 1.6 }
+      },
+      {
+        id: 'sugar',
+        name: 'Đường mía',
+        emoji: '🍬',
+        type: 'powder',
+        desc: 'Thêm vị ngọt dịu, cân bằng độ chua của chanh và độ mặn của muối/nước mắm',
+        add: { salty: -0.2, umami: 0.2, sweet: 1.7, sour: -0.3, spicy: -0.2, fatty: 0.0, bitter: -0.3, aroma: 0.3 }
+      },
+      {
+        id: 'chili',
+        name: 'Ớt hiểm tươi',
+        emoji: '🌶️',
+        type: 'powder',
+        desc: 'Thêm vị cay bùng nổ kích thích vị giác',
+        add: { salty: 0.0, umami: 0.2, sweet: 0.1, sour: 0.0, spicy: 2.2, fatty: -0.2, bitter: 0.0, aroma: 1.1 }
+      },
+      {
+        id: 'fish_sauce',
+        name: 'Nước mắm nhĩ',
+        emoji: '🏺',
+        type: 'liquid',
+        desc: 'Đậm đà vị mặn và Umami cá cơm truyền thống, dậy mùi thơm đặc trưng',
+        add: { salty: 1.5, umami: 2.0, sweet: 0.3, sour: 0.0, spicy: 0.0, fatty: 0.0, bitter: 0.0, aroma: 1.8 }
+      },
+      {
+        id: 'soy_sauce',
+        name: 'Nước tương (Xì dầu)',
+        emoji: '🍾',
+        type: 'liquid',
+        desc: 'Mặn dịu, ngọt hậu Umami đậu nành, cực hợp chan bánh mì ốp la hoặc chấm kimbap',
+        add: { salty: 1.2, umami: 1.7, sweet: 0.5, sour: 0.0, spicy: 0.0, fatty: 0.0, bitter: 0.0, aroma: 1.5 }
+      },
+      {
+        id: 'chili_sauce',
+        name: 'Tương ớt cay ngọt',
+        emoji: '🥫',
+        type: 'liquid',
+        desc: 'Cay vừa, ngọt dịu, chua thanh, xịt vào bánh mì kẹp thịt bò xúc xích là chuẩn bài',
+        add: { salty: 0.5, umami: 0.7, sweet: 1.1, sour: 0.6, spicy: 1.4, fatty: 0.0, bitter: 0.0, aroma: 1.2 }
+      },
+      {
+        id: 'honey',
+        name: 'Mật ong rừng',
+        emoji: '🍯',
+        type: 'liquid',
+        desc: 'Ngọt thanh tao, hương hoa rừng, phết lên thịt nướng tạo màu vàng óng tuyệt đẹp',
+        add: { salty: 0.0, umami: 0.2, sweet: 2.0, sour: 0.1, spicy: -0.2, fatty: 0.2, bitter: -0.3, aroma: 1.8 }
+      },
+      {
+        id: 'garlic',
+        name: 'Tỏi băm / Tỏi phi',
+        emoji: '🧄',
+        type: 'powder',
+        desc: 'Hương thơm quyến rũ bậc nhất khi gặp dầu nóng/bơ, khử sạch mùi tanh',
+        add: { salty: 0.0, umami: 0.9, sweet: 0.5, sour: 0.0, spicy: 0.5, fatty: 0.1, bitter: 0.0, aroma: 2.4 },
+        removesFishy: true
+      },
+      {
+        id: 'ginger',
+        name: 'Gừng tươi thái chỉ',
+        emoji: '🫚',
+        type: 'powder',
+        desc: 'Cay ấm, thơm sảng khoái, khử mùi tanh hải sản và thịt bò cực nhạy',
+        add: { salty: 0.0, umami: 0.3, sweet: 0.2, sour: 0.0, spicy: 1.1, fatty: -0.3, bitter: 0.0, aroma: 2.1 },
+        removesFishy: true
+      },
+      {
+        id: 'lemongrass',
+        name: 'Sả tươi băm',
+        emoji: '🌿',
+        type: 'powder',
+        desc: 'Dậy hương tinh dầu sả vùng nhiệt đới, tuyệt hảo khi ướp thịt bò, gà, mực nướng',
+        add: { salty: 0.0, umami: 0.4, sweet: 0.2, sour: 0.1, spicy: 0.4, fatty: -0.2, bitter: 0.0, aroma: 2.5 },
+        removesFishy: true
+      },
+      {
+        id: 'mayo',
+        name: 'Sốt Mayonnaise',
+        emoji: '🍶',
+        type: 'liquid',
+        desc: 'Béo ngậy mịn màng, làm dịu độ cay gắt và tăng độ mướt cho cơm cuộn/bánh mì',
+        add: { salty: 0.4, umami: 0.7, sweet: 0.6, sour: 0.4, spicy: -0.6, fatty: 2.1, bitter: 0.0, aroma: 0.9 }
+      },
+      {
+        id: 'butter',
+        name: 'Bơ lạt Pháp',
+        emoji: '🧈',
+        type: 'liquid',
+        desc: 'Béo thơm ngậy mùi sữa, giúp món áp chảo và bánh mì nướng dậy hương quyến rũ',
+        add: { salty: 0.2, umami: 0.6, sweet: 0.5, sour: 0.0, spicy: -0.4, fatty: 2.3, bitter: 0.0, aroma: 2.2 }
+      },
+      {
+        id: 'five_spice',
+        name: 'Ngũ vị hương',
+        emoji: '✨',
+        type: 'powder',
+        desc: 'Hương thảo mộc 5 vị (quế, hồi, đinh hương...), linh hồn của các món thịt nướng/quay',
+        add: { salty: 0.1, umami: 0.6, sweet: 0.4, sour: 0.0, spicy: 0.7, fatty: 0.0, bitter: 0.1, aroma: 2.6 },
+        removesFishy: true
+      },
+      {
+        id: 'oyster_sauce',
+        name: 'Dầu hào đậm đặc',
+        emoji: '🦪',
+        type: 'liquid',
+        desc: 'Sánh mịn, giàu vị ngọt đạm Umami và mặn ngọt hài hòa cho món xào/ướp',
+        add: { salty: 1.1, umami: 2.1, sweet: 0.8, sour: 0.0, spicy: 0.0, fatty: 0.2, bitter: 0.0, aroma: 1.4 }
+      },
+      {
+        id: 'vinegar',
+        name: 'Giấm gạo lên men',
+        emoji: '🍶',
+        type: 'liquid',
+        desc: 'Vị chua thanh dịu nhẹ, trộn cơm sushi hoặc làm gỏi chua ngọt',
+        add: { salty: 0.0, umami: 0.2, sweet: 0.2, sour: 1.6, spicy: 0.0, fatty: -0.5, bitter: 0.0, aroma: 1.0 }
+      },
+      {
+        id: 'cheese_powder',
+        name: 'Phô mai bào sợi',
+        emoji: '🧀',
+        type: 'powder',
+        desc: 'Thêm vị béo mặn thơm lừng, kéo sợi hấp dẫn khi rắc lên đồ nóng',
+        add: { salty: 0.9, umami: 1.4, sweet: 0.4, sour: 0.0, spicy: -0.3, fatty: 1.9, bitter: 0.0, aroma: 1.7 }
+      }
+    ];
+
+    const FLAVOR_DIMENSIONS = [
+      { key: 'umami', label: 'Đậm đà (Umami/Ngọt thịt)', color: '#d97706', bg: 'bg-amber-500' },
+      { key: 'salty', label: 'Vị Mặn', color: '#0284c7', bg: 'bg-sky-600' },
+      { key: 'sweet', label: 'Vị Ngọt', color: '#ec4899', bg: 'bg-pink-500' },
+      { key: 'sour', label: 'Vị Chua', color: '#65a30d', bg: 'bg-lime-600' },
+      { key: 'spicy', label: 'Vị Cay', color: '#dc2626', bg: 'bg-red-600' },
+      { key: 'fatty', label: 'Độ Béo ngậy', color: '#eab308', bg: 'bg-yellow-500' },
+      { key: 'aroma', label: 'Hương Thơm dậy mùi', color: '#059669', bg: 'bg-emerald-600' },
+      { key: 'bitter', label: 'Vị Đắng / Cháy khét', color: '#57534e', bg: 'bg-stone-600' }
+    ];
+
+    /*************************************************************************
+     * 2. TRẠNG THÁI TRÒ CHƠI (GAME STATE)
+     *************************************************************************/
+    const state = {
+      activeCharacterId: 'chef_bear',
+      activeCategoryId: 'all',
+      searchQuery: '',
+      ingredientDestination: 'station',
+      spiceTarget: 'station',
+      activeStationId: 'cutting_board',
+      selectedWrapperId: 'rice_paper',
+      selectedVesselId: 'banh_mi_vn',
+
+      stationItems: [],
+      plateItems: [],
+
+      sfxEnabled: true,
+      ttsEnabled: false,
+      liveToggleBuffer: false,
+      cravingIndex: 0,
+
+      animTick: 0,
+      stationActionFlash: 0,
+      stationActionType: '',
+      charAnimState: 'idle',
+      charAnimTimer: 0,
+      nextItemUid: 1
+    };
+
+    /*************************************************************************
+     * 3. HỆ THỐNG TRỢ NĂNG NVDA & ĐỌC MÀN HÌNH (ARIA LIVE + OPTIONAL TTS)
+     *************************************************************************/
+    function announceNVDA(message, priority = 'polite') {
+      if (!message) return;
+
+      const visibleEl = document.getElementById('visible-live-status');
+      if (visibleEl) {
+        visibleEl.textContent = message;
+      }
+
+      state.liveToggleBuffer = !state.liveToggleBuffer;
+      const suffix = state.liveToggleBuffer ? 'a' : 'b';
+      const otherSuffix = state.liveToggleBuffer ? 'b' : 'a';
+
+      const targetId = priority === 'assertive'
+        ? `nvda-live-assertive-${suffix}`
+        : `nvda-live-polite-${suffix}`;
+      const clearId = priority === 'assertive'
+        ? `nvda-live-assertive-${otherSuffix}`
+        : `nvda-live-polite-${otherSuffix}`;
+
+      const targetEl = document.getElementById(targetId);
+      const clearEl = document.getElementById(clearId);
+
+      if (clearEl) clearEl.textContent = '';
+      if (targetEl) {
+        targetEl.textContent = '';
+        setTimeout(() => {
+          targetEl.textContent = message;
+        }, 25);
+      }
+
+      const logList = document.getElementById('nvda-history-log');
+      if (logList) {
+        const li = document.createElement('li');
+        const now = new Date();
+        const timeStr = now.toTimeString().slice(0, 8);
+        li.className = 'py-1 border-b border-stone-200/70 last:border-none';
+        li.textContent = `[${timeStr}] ${message}`;
+        logList.prepend(li);
+        while (logList.children.length > 25) {
+          logList.removeChild(logList.lastChild);
+        }
+      }
+
+      if (state.ttsEnabled && 'speechSynthesis' in window) {
+        try {
+          window.speechSynthesis.cancel();
+          const utter = new SpeechSynthesisUtterance(message);
+          utter.lang = 'vi-VN';
+          utter.rate = 1.08;
+          window.speechSynthesis.speak(utter);
+        } catch (err) {
+          // Ignore TTS errors
+        }
+      }
+    }
+
+    /*************************************************************************
+     * 4. BỘ TỔNG HỢP ÂM THANH BẾP ĐA TẦNG (WEB AUDIO API PROCEDURAL FOLEY)
+     *************************************************************************/
+    let audioCtx = null;
+
+    function ensureAudioContext() {
+      if (!state.sfxEnabled) return null;
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          audioCtx = new AudioContextClass();
+        }
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSoundEffect(type) {
+      const ctx = ensureAudioContext();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+
+      if (type === 'pick') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.exponentialRampToValueAtTime(640, now + 0.09);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.1);
+      } else if (type === 'chop') {
+        [0, 0.14, 0.28].forEach((offset) => {
+          const t = now + offset;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(190, t);
+          osc.frequency.exponentialRampToValueAtTime(55, t + 0.07);
+          gain.gain.setValueAtTime(0.32, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.085);
+
+          const bufSize = Math.floor(ctx.sampleRate * 0.05);
+          const buffer = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufSize * 0.4));
+          }
+          const noise = ctx.createBufferSource();
+          noise.buffer = buffer;
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.frequency.value = 1800;
+          const nGain = ctx.createGain();
+          nGain.gain.setValueAtTime(0.22, t);
+          nGain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+          noise.connect(filter);
+          filter.connect(nGain);
+          nGain.connect(ctx.destination);
+          noise.start(t);
+        });
+      } else if (type === 'sizzle' || type === 'deep_fry' || type === 'grill') {
+        const duration = 0.65;
+        const bufSize = Math.floor(ctx.sampleRate * duration);
+        const buffer = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufSize; i++) {
+          const mod = 0.6 + 0.4 * Math.sin(i * 0.03);
+          data[i] = (Math.random() * 2 - 1) * mod;
+        }
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(type === 'deep_fry' ? 2800 : 1900, now);
+        filter.Q.value = 1.2;
+
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.01, now);
+        gain.gain.linearRampToValueAtTime(0.26, now + 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.005, now + duration);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        noise.start(now);
+      } else if (type === 'boil') {
+        [0, 0.11, 0.23, 0.36, 0.48].forEach((offset) => {
+          const t = now + offset;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          const baseFreq = 220 + Math.random() * 180;
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(baseFreq, t);
+          osc.frequency.exponentialRampToValueAtTime(baseFreq * 2.1, t + 0.08);
+          gain.gain.setValueAtTime(0.16, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.095);
+        });
+      } else if (type === 'oven') {
+        const osc = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc2.type = 'triangle';
+        osc.frequency.setValueAtTime(1046.5, now);
+        osc2.frequency.setValueAtTime(1567.98, now);
+        gain.gain.setValueAtTime(0.24, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
+        osc.connect(gain);
+        osc2.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc2.start(now);
+        osc.stop(now + 0.66);
+        osc2.stop(now + 0.66);
+      } else if (type === 'blend') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(95, now);
+        osc.frequency.linearRampToValueAtTime(280, now + 0.35);
+        osc.frequency.linearRampToValueAtTime(140, now + 0.6);
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 700;
+
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.005, now + 0.62);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.63);
+      } else if (type === 'roll' || type === 'stuff') {
+        const dur = 0.28;
+        const bufSize = Math.floor(ctx.sampleRate * dur);
+        const buffer = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.sin((i / bufSize) * Math.PI);
+        }
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = type === 'stuff' ? 1200 : 2200;
+        const nGain = ctx.createGain();
+        nGain.gain.value = 0.25;
+        noise.connect(filter);
+        filter.connect(nGain);
+        nGain.connect(ctx.destination);
+        noise.start(now);
+
+        [523.25, 659.25, 783.99].forEach((freq, idx) => {
+          const t = now + 0.12 + idx * 0.08;
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, t);
+          g.gain.setValueAtTime(0.18, t);
+          g.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+          osc.connect(g);
+          g.connect(ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.17);
+        });
+      } else if (type === 'spice_powder' || type === 'spice_liquid') {
+        if (type === 'spice_powder') {
+          [0, 0.1].forEach((offset) => {
+            const t = now + offset;
+            const bufSize = Math.floor(ctx.sampleRate * 0.06);
+            const buffer = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'highpass';
+            filter.frequency.value = 3200;
+            const g = ctx.createGain();
+            g.gain.setValueAtTime(0.2, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+            noise.connect(filter);
+            filter.connect(g);
+            g.connect(ctx.destination);
+            noise.start(t);
+          });
+        } else {
+          [0, 0.11].forEach((offset, idx) => {
+            const t = now + offset;
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(380 + idx * 90, t);
+            osc.frequency.exponentialRampToValueAtTime(720 + idx * 90, t + 0.08);
+            g.gain.setValueAtTime(0.2, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+            osc.connect(g);
+            g.connect(ctx.destination);
+            osc.start(t);
+            osc.stop(t + 0.095);
+          });
+        }
+      } else if (type === 'drink') {
+        [0, 0.14, 0.28].forEach((offset, idx) => {
+          const t = now + offset;
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(280 + idx * 60, t);
+          osc.frequency.exponentialRampToValueAtTime(520 + idx * 60, t + 0.1);
+          g.gain.setValueAtTime(0.2, t);
+          g.gain.exponentialRampToValueAtTime(0.001, t + 0.11);
+          osc.connect(g);
+          g.connect(ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.12);
+        });
+      } else if (type === 'react_love') {
+        [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
+          const t = now + idx * 0.09;
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, t);
+          g.gain.setValueAtTime(0.22, t);
+          g.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+          osc.connect(g);
+          g.connect(ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.29);
+        });
+      } else if (type === 'react_good') {
+        [440, 554.37, 659.25].forEach((freq, idx) => {
+          const t = now + idx * 0.1;
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, t);
+          g.gain.setValueAtTime(0.2, t);
+          g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+          osc.connect(g);
+          g.connect(ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.23);
+        });
+      } else if (type === 'react_spicy' || type === 'react_sour' || type === 'react_yuck') {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = type === 'react_spicy' ? 'sawtooth' : 'sine';
+        osc.frequency.setValueAtTime(520, now);
+        osc.frequency.exponentialRampToValueAtTime(130, now + 0.45);
+        g.gain.setValueAtTime(0.22, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.48);
+        osc.connect(g);
+        g.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.49);
+      }
+    }
+
+    /*************************************************************************
+     * 5. ENGINE HÒA VỊ THỰC TẾ (REAL-LIFE CULINARY CHEMISTRY ENGINE)
+     *************************************************************************/
+    function createFoodItemFromIngredient(ing) {
+      return {
+        uid: state.nextItemUid++,
+        kind: 'single',
+        baseId: ing.id,
+        name: ing.name,
+        emoji: ing.displayEmoji || ing.emoji,
+        category: ing.category,
+        color: ing.color,
+        cookedColor: ing.cookedColor,
+        needsCooking: ing.needsCooking,
+        isFreshBalancer: !!ing.isFreshBalancer,
+        cutState: 'whole',
+        cookLevel: 0,
+        cookMethod: 'none',
+        spicesApplied: [],
+        subItems: [],
+        wrapperOrVessel: null,
+        flavors: { ...ing.flavors }
+      };
+    }
+
+    function describeItemStateShort(item) {
+      const parts = [];
+      if (item.kind === 'rolled' && item.wrapperOrVessel) {
+        parts.push(`Cuốn trong ${item.wrapperOrVessel.name}`);
+      } else if (item.kind === 'stuffed' && item.wrapperOrVessel) {
+        parts.push(`Nhồi trong ${item.wrapperOrVessel.name}`);
+      } else {
+        if (item.cutState === 'sliced') parts.push('thái lát');
+        else if (item.cutState === 'diced') parts.push('thái hạt lựu');
+        else if (item.cutState === 'minced') parts.push('băm nhuyễn');
+      }
+
+      const methodLabels = {
+        fried: 'áp chảo/xào',
+        boiled: 'luộc/hầm',
+        deep_fried: 'chiên ngập dầu',
+        baked: 'đút lò nướng',
+        grilled: 'nướng than hoa',
+        blended: 'xay nhuyễn'
+      };
+
+      if (item.cookMethod === 'blended') {
+        parts.push('xay sánh mịn');
+      } else if (item.cookLevel === 0) {
+        parts.push(item.needsCooking ? 'còn sống' : 'tươi');
+      } else if (item.cookLevel === 1) {
+        parts.push(`chín tới (${methodLabels[item.cookMethod] || 'đã nấu'})`);
+      } else if (item.cookLevel === 2) {
+        parts.push(`chín vàng giòn thơm (${methodLabels[item.cookMethod] || 'đã nấu'})`);
+      } else if (item.cookLevel >= 3) {
+        parts.push('cháy khét đen');
+      }
+
+      if (item.spicesApplied.length > 0) {
+        const counts = {};
+        item.spicesApplied.forEach(s => {
+          counts[s.name] = (counts[s.name] || 0) + 1;
+        });
+        const spiceStr = Object.entries(counts)
+          .map(([n, c]) => (c > 1 ? `${n} x${c}` : n))
+          .join(', ');
+        parts.push(`nêm: ${spiceStr}`);
+      }
+
+      return parts.join(', ');
+    }
+
+    function analyzeCulinaryChemistry(items) {
+      const totals = {
+        umami: 0,
+        salty: 0,
+        sweet: 0,
+        sour: 0,
+        spicy: 0,
+        fatty: 0,
+        bitter: 0,
+        aroma: 0,
+        crunch: 0
+      };
+
+      if (!items || items.length === 0) {
+        return {
+          totals,
+          normalized: { ...totals },
+          synergies: [],
+          warnings: [],
+          dishTitle: 'Đĩa đang trống (Hãy chọn nguyên liệu từ tủ)',
+          structureSummary: 'Chưa có thành phần nào.',
+          harmonyScore: 0,
+          hasRawMeatOrSeafood: false,
+          hasBurntItem: false,
+          hasFreshBalancer: false,
+          allStructures: []
+        };
+      }
+
+      let hasRawMeatOrSeafood = false;
+      let hasBurntItem = false;
+      let hasFreshBalancer = false;
+      let marinationCount = 0;
+      let hasBoiledSoup = false;
+      const allStructures = new Set();
+      const allSpiceIds = new Set();
+
+      function accumulateItem(it, weight = 1.0) {
+        if (it.kind === 'rolled') allStructures.add('rolled');
+        else if (it.kind === 'stuffed') allStructures.add('stuffed');
+        else if (it.kind === 'blended') allStructures.add('blended');
+        else allStructures.add('loose');
+
+        if (it.isFreshBalancer && it.cookLevel <= 1) {
+          hasFreshBalancer = true;
+        }
+        if (it.cookMethod === 'boiled' && it.cookLevel >= 1) {
+          hasBoiledSoup = true;
+        }
+        if (it.cookLevel >= 3) {
+          hasBurntItem = true;
+        }
+
+        if (it.needsCooking && it.cookLevel === 0) {
+          hasRawMeatOrSeafood = true;
+        }
+
+        Object.keys(totals).forEach(k => {
+          totals[k] += (it.flavors[k] || 0) * weight;
+        });
+
+        it.spicesApplied.forEach(sp => {
+          allSpiceIds.add(sp.id);
+          if (sp.cookedIn) marinationCount++;
+        });
+
+        if (it.subItems && it.subItems.length > 0) {
+          it.subItems.forEach(sub => {
+            if (sub.needsCooking && sub.cookLevel === 0 && it.cookLevel === 0) {
+              hasRawMeatOrSeafood = true;
+            }
+            if (sub.isFreshBalancer) hasFreshBalancer = true;
+            sub.spicesApplied.forEach(sp => {
+              allSpiceIds.add(sp.id);
+              if (sp.cookedIn) marinationCount++;
+            });
+          });
+        }
+      }
+
+      items.forEach(it => accumulateItem(it, 1.0));
+
+      const countFactor = Math.max(1, Math.sqrt(items.length) * 0.88);
+      const blended = {};
+      Object.keys(totals).forEach(k => {
+        blended[k] = Math.max(0, totals[k] / countFactor);
+      });
+
+      const synergies = [];
+      const warnings = [];
+
+      // 1. Sweet + Sour Harmony
+      if (blended.sour >= 1.4 && blended.sweet >= 1.4) {
+        blended.sour *= 0.82;
+        blended.sweet *= 0.88;
+        blended.aroma += 1.2;
+        synergies.push('🍋🍬 Hòa vị Chua Ngọt Thanh Mát (Chua và Ngọt làm dịu độ gắt của nhau)');
+      }
+
+      // 2. Salt unlocks Umami & Natural Sweetness
+      if (blended.salty >= 1.0 && blended.salty <= 4.8 && blended.umami >= 1.5) {
+        blended.umami *= 1.22;
+        blended.sweet += 0.4;
+        synergies.push('🧂🥩 Muối/Mắm Tôn Vị Ngọt Đạm (Kích hoạt vị ngọt thịt tự nhiên)');
+      }
+
+      // 3. Signature Vietnamese 5-Flavor Dipping/Seasoning Harmony
+      if (
+        blended.salty >= 1.2 &&
+        blended.sweet >= 1.2 &&
+        blended.sour >= 1.0 &&
+        blended.spicy >= 0.8 &&
+        blended.umami >= 1.8
+      ) {
+        blended.aroma += 1.6;
+        synergies.push('🌟 Ngũ Vị Hòa Quyện Đỉnh Cao (Mặn - Ngọt - Chua - Cay - Đậm đà cân bằng hoàn hảo)');
+      }
+
+      // 4. Acid + Fresh Herbs/Pickles cut Fatty Richness
+      if (blended.fatty >= 2.5 && (blended.sour >= 1.2 || hasFreshBalancer)) {
+        blended.fatty *= 0.68;
+        blended.aroma += 1.0;
+        synergies.push('🥒🍋 Rau Tươi & Vị Chua Cắt Độ Ngấy Béo (Giúp món thịt/đồ chiên thanh thoát, không ngấy mỡ)');
+      } else if (blended.fatty >= 4.5 && blended.sour < 0.8 && !hasFreshBalancer) {
+        warnings.push('⚠️ Món ăn đang khá béo ngậy, dễ ngấy (Gợi ý: vắt thêm Chanh, thêm Dưa leo, Đồ chua hoặc Rau thơm)');
+      }
+
+      // 5. Fat/Dairy tames extreme Spice
+      if (blended.spicy >= 3.2 && blended.fatty >= 2.0) {
+        blended.spicy *= 0.78;
+        synergies.push('🧈🌶️ Vị Béo Làm Dịu Độ Cay Gắt (Chuyển thành vị cay béo ấm nồng dễ chịu)');
+      }
+
+      // 6. Marination before Cooking
+      if (marinationCount > 0) {
+        blended.aroma += Math.min(2.2, marinationCount * 0.65);
+        blended.umami += Math.min(1.5, marinationCount * 0.4);
+        synergies.push('🔥🧄 Gia Vị Ướp Thấm Sâu Khi Nấu (Dậy hương thơm gấp đôi nhờ phản ứng nhiệt)');
+      }
+
+      // 7. Boiling Broth Harmony
+      if (hasBoiledSoup && items.length >= 2) {
+        blended.salty *= 0.88;
+        blended.umami += 0.9;
+        synergies.push('🍲 Nước Dùng Hòa Quyện (Các nguyên liệu luộc/hầm tiết vị ngọt thanh vào nhau)');
+      }
+
+      // 8. Structural Synergies
+      if (allStructures.has('rolled')) {
+        synergies.push('🌯 Kết Cấu Món Cuốn Đa Tầng (Vỏ cuốn ôm trọn nhân và gia vị trong từng miếng cắn)');
+      }
+      if (allStructures.has('stuffed')) {
+        synergies.push('🥖 Kết Cấu Bánh Kẹp Nhồi Nhân (Vỏ bánh ngoài kết hợp nhân đậm đà bên trong)');
+      }
+
+      if (hasRawMeatOrSeafood) {
+        warnings.push('🤢 Có thịt/hải sản/trứng sống chưa nấu chín! Thực khách sẽ thấy tanh và đau bụng.');
+      }
+      if (hasBurntItem) {
+        blended.bitter += 4.5;
+        warnings.push('炭 Có nguyên liệu bị nấu quá lửa cháy khét đen, gây vị đắng khét!');
+      }
+      if (blended.salty > 5.6) {
+        warnings.push('🧂 Món ăn đang bị MẶN CHÁT vì nêm quá nhiều muối/nước mắm (Hãy thêm đường, chanh hoặc tinh bột/rau để trung hòa).');
+      }
+      if (blended.spicy > 6.0) {
+        warnings.push('🌶️ Món ăn CỰC KỲ CAY (Chỉ những thực khách mê ăn cay như Rồng Lửa mới chịu nổi!).');
+      }
+      if (blended.sour > 5.5) {
+        warnings.push('🍋 Món ăn đang CHUA GẮT ê răng (Có thể thêm Đường hoặc Mật ong để dịu thành vị chua ngọt).');
+      }
+
+      const normalized = {};
+      Object.keys(blended).forEach(k => {
+        normalized[k] = Math.min(10, Math.max(0, Number(blended[k].toFixed(1))));
+      });
+
+      let score = 58;
+      score += Math.min(22, normalized.umami * 2.8);
+      score += Math.min(18, normalized.aroma * 2.4);
+      score += synergies.length * 7;
+
+      if (normalized.salty > 5.6) score -= (normalized.salty - 5.6) * 10;
+      if (normalized.sour > 5.5) score -= (normalized.sour - 5.5) * 8;
+      if (normalized.bitter > 2.2) score -= (normalized.bitter - 2.2) * 11;
+      if (hasRawMeatOrSeafood) score -= 38;
+      if (hasBurntItem) score -= 35;
+
+      score = Math.max(5, Math.min(100, Math.round(score)));
+
+      const dishTitle = buildDynamicDishTitle(items, normalized);
+      const structureSummary = items.map(it => `${it.name} (${describeItemStateShort(it)})`).join(' + ');
+
+      return {
+        totals,
+        normalized,
+        synergies,
+        warnings,
+        dishTitle,
+        structureSummary,
+        harmonyScore: score,
+        hasRawMeatOrSeafood,
+        hasBurntItem,
+        hasFreshBalancer,
+        allStructures: Array.from(allStructures)
+      };
+    }
+
+    function buildDynamicDishTitle(items, normFlavors) {
+      if (!items || items.length === 0) return 'Đĩa đang trống';
+
+      const rolledItem = items.find(i => i.kind === 'rolled');
+      const stuffedItem = items.find(i => i.kind === 'stuffed');
+      const blendedItem = items.find(i => i.kind === 'blended');
+
+      let flavorSuffix = '';
+      if (normFlavors.sour >= 1.5 && normFlavors.sweet >= 1.5 && normFlavors.spicy >= 1.2) {
+        flavorSuffix = ' Vị Chua Cay Mặn Ngọt';
+      } else if (normFlavors.sour >= 1.5 && normFlavors.sweet >= 1.5) {
+        flavorSuffix = ' Chua Ngọt Thanh Mát';
+      } else if (normFlavors.spicy >= 2.2 && normFlavors.salty >= 1.2) {
+        flavorSuffix = ' Cay Nồng Đậm Đà';
+      } else if (normFlavors.fatty >= 2.5 && normFlavors.aroma >= 2.0) {
+        flavorSuffix = ' Béo Thơm Ngậy';
+      } else if (normFlavors.umami >= 2.5) {
+        flavorSuffix = ' Đậm Vị Ngọt Thịt';
+      }
+
+      if (rolledItem && items.length === 1) {
+        return `${rolledItem.name}${flavorSuffix}`;
+      }
+      if (stuffedItem && items.length === 1) {
+        return `${stuffedItem.name}${flavorSuffix}`;
+      }
+      if (blendedItem && items.length === 1) {
+        return `${blendedItem.name}${flavorSuffix}`;
+      }
+
+      const mainNames = items.slice(0, 3).map(i => i.name).join(' & ');
+      const extraCount = items.length > 3 ? ` (+${items.length - 3} món)` : '';
+      return `${mainNames}${extraCount}${flavorSuffix}`;
+    }
+
+    /*************************************************************************
+     * 6. THAO TÁC CHẾ BIẾN, CUỐN, NHỒI, NÊM GIA VỊ & ĐÚT ĂN
+     *************************************************************************/
+
+    function addIngredientFromPantry(ingId) {
+      const ing = INGREDIENTS.find(i => i.id === ingId);
+      if (!ing) return;
+
+      const newItem = createFoodItemFromIngredient(ing);
+      playSoundEffect('pick');
+
+      if (state.ingredientDestination === 'plate') {
+        state.plateItems.push(newItem);
+        announceNVDA(
+          `Đã lấy ${ing.name} (${ing.flavorDesc}) bỏ thẳng lên Đĩa Ăn. Trên đĩa hiện có ${state.plateItems.length} thành phần.`,
+          'polite'
+        );
+      } else {
+        const station = STATIONS.find(s => s.id === state.activeStationId);
+        state.stationItems.push(newItem);
+        announceNVDA(
+          `Đã bỏ ${ing.name} (${ing.flavorDesc}) vào ${station.name}. Trong dụng cụ hiện có ${state.stationItems.length} nguyên liệu.`,
+          'polite'
+        );
+      }
+      renderAll();
+    }
+
+    function applySpice(spiceId) {
+      const spice = SPICES.find(s => s.id === spiceId);
+      if (!spice) return;
+
+      const targetArray = state.spiceTarget === 'plate' ? state.plateItems : state.stationItems;
+      const targetName = state.spiceTarget === 'plate'
+        ? 'Đĩa Thức Ăn'
+        : STATIONS.find(s => s.id === state.activeStationId).name;
+
+      if (targetArray.length === 0) {
+        announceNVDA(
+          `Chưa có thức ăn nào trong ${targetName} để nêm ${spice.name}! Hãy lấy nguyên liệu trước.`,
+          'assertive'
+        );
+        return;
+      }
+
+      playSoundEffect(spice.type === 'powder' ? 'spice_powder' : 'spice_liquid');
+
+      const share = 1 / Math.sqrt(targetArray.length);
+      targetArray.forEach(item => {
+        item.spicesApplied.push({ id: spice.id, name: spice.name, cookedIn: false });
+        Object.keys(spice.add).forEach(k => {
+          item.flavors[k] = Math.max(0, (item.flavors[k] || 0) + spice.add[k] * share);
+        });
+      });
+
+      state.stationActionFlash = 18;
+      state.stationActionType = 'spice';
+
+      const analysis = analyzeCulinaryChemistry(targetArray);
+      const topSynergy = analysis.synergies.length > 0
+        ? ` Hòa vị: ${analysis.synergies[0].replace(/^[^\s]+\s/, '')}.`
+        : '';
+
+      announceNVDA(
+        `Đã nêm ${spice.name} (${spice.desc}) vào ${targetName}.${topSynergy}`,
+        'polite'
+      );
+      renderAll();
+    }
+
+    function performStationAction(actionId) {
+      const station = STATIONS.find(s => s.id === state.activeStationId);
+      if (!station) return;
+
+      if (state.stationItems.length === 0) {
+        announceNVDA(
+          `${station.name} đang trống! Hãy chọn nguyên liệu ở Tủ Nguyên Liệu (Alt+2) bỏ vào dụng cụ trước.`,
+          'assertive'
+        );
+        return;
+      }
+
+      state.stationActionFlash = 26;
+      state.stationActionType = actionId;
+
+      if (actionId === 'slice' || actionId === 'dice' || actionId === 'mince') {
+        playSoundEffect('chop');
+        const labelMap = {
+          slice: 'thái lát mỏng',
+          dice: 'thái hạt lựu vuông vức',
+          mince: 'băm nhuyễn'
+        };
+        state.stationItems.forEach(item => {
+          item.cutState = actionId === 'slice' ? 'sliced' : actionId === 'dice' ? 'diced' : 'minced';
+          item.flavors.aroma += 0.45;
+          item.flavors.umami += 0.2;
+        });
+        const names = state.stationItems.map(i => i.name).join(', ');
+        announceNVDA(
+          `Đã dùng dao ${labelMap[actionId]} ${names} trên thớt gỗ. Nguyên liệu dậy mùi thơm và sẵn sàng để cuốn, nhồi hoặc nấu!`,
+          'polite'
+        );
+        renderAll();
+        return;
+      }
+
+      if (actionId === 'roll_tight') {
+        const wrapper = WRAPPERS.find(w => w.id === state.selectedWrapperId) || WRAPPERS[0];
+        playSoundEffect('roll');
+
+        const innerNames = state.stationItems.map(i => i.name);
+        const combinedFlavors = { ...wrapper.flavors };
+        const combinedSpices = [];
+        let anyNeedsCooking = false;
+        let maxCookLevel = 0;
+
+        state.stationItems.forEach(item => {
+          Object.keys(combinedFlavors).forEach(k => {
+            combinedFlavors[k] = (combinedFlavors[k] || 0) + (item.flavors[k] || 0) * 0.85;
+          });
+          if (item.needsCooking && item.cookLevel === 0) {
+            anyNeedsCooking = true;
+          }
+          if (item.cookLevel > maxCookLevel) maxCookLevel = item.cookLevel;
+          item.spicesApplied.forEach(sp => combinedSpices.push({ ...sp }));
+        });
+
+        combinedFlavors.aroma += 1.4;
+        combinedFlavors.umami += 0.8;
+
+        const shortInner = innerNames.slice(0, 3).join(', ') + (innerNames.length > 3 ? ` và ${innerNames.length - 3} nguyên liệu khác` : '');
+        const rolledItem = {
+          uid: state.nextItemUid++,
+          kind: 'rolled',
+          baseId: `roll_${wrapper.id}`,
+          name: `${wrapper.dishPrefix} (${shortInner})`,
+          emoji: '🌯',
+          category: 'composite',
+          color: wrapper.color,
+          cookedColor: '#d97706',
+          needsCooking: anyNeedsCooking,
+          isFreshBalancer: state.stationItems.some(i => i.isFreshBalancer),
+          cutState: 'whole',
+          cookLevel: anyNeedsCooking ? 0 : Math.max(1, maxCookLevel),
+          cookMethod: 'none',
+          spicesApplied: combinedSpices,
+          subItems: [...state.stationItems],
+          wrapperOrVessel: wrapper,
+          flavors: combinedFlavors
+        };
+
+        state.stationItems = [rolledItem];
+        announceNVDA(
+          `Đã trải ${wrapper.name} và cuộn tròn một lượt ${innerNames.join(', ')} thành món "${rolledItem.name}"! Bạn có thể bấm Phím P để bày ra đĩa ăn ngay, hoặc chuyển cuốn này sang Chảo Chiên / Vỉ Nướng để làm Nem rán hoặc Bò nướng lá lốt!`,
+          'assertive'
+        );
+        renderAll();
+        return;
+      }
+
+      if (actionId === 'stuff_pack') {
+        const vessel = VESSELS.find(v => v.id === state.selectedVesselId) || VESSELS[0];
+        playSoundEffect('stuff');
+
+        const innerNames = state.stationItems.map(i => i.name);
+        const combinedFlavors = { ...vessel.flavors };
+        const combinedSpices = [];
+        let anyNeedsCooking = false;
+
+        state.stationItems.forEach(item => {
+          Object.keys(combinedFlavors).forEach(k => {
+            combinedFlavors[k] = (combinedFlavors[k] || 0) + (item.flavors[k] || 0) * 0.85;
+          });
+          if (item.needsCooking && item.cookLevel === 0) {
+            anyNeedsCooking = true;
+          }
+          item.spicesApplied.forEach(sp => combinedSpices.push({ ...sp }));
+        });
+
+        combinedFlavors.aroma += 1.6;
+        combinedFlavors.crunch += vessel.flavors.crunch * 0.5;
+
+        const shortInner = innerNames.slice(0, 3).join(', ') + (innerNames.length > 3 ? ` + ${innerNames.length - 3} nhân khác` : '');
+        const stuffedItem = {
+          uid: state.nextItemUid++,
+          kind: 'stuffed',
+          baseId: `stuffed_${vessel.id}`,
+          name: `${vessel.dishPrefix}: ${shortInner}`,
+          emoji: vessel.emoji,
+          category: 'composite',
+          color: vessel.color,
+          cookedColor: '#b45309',
+          needsCooking: anyNeedsCooking,
+          isFreshBalancer: state.stationItems.some(i => i.isFreshBalancer),
+          cutState: 'whole',
+          cookLevel: anyNeedsCooking ? 0 : 1,
+          cookMethod: 'none',
+          spicesApplied: combinedSpices,
+          subItems: [...state.stationItems],
+          wrapperOrVessel: vessel,
+          flavors: combinedFlavors
+        };
+
+        state.stationItems = [stuffedItem];
+        announceNVDA(
+          `Đã xẻ ${vessel.name}, nhồi đầy ${innerNames.join(', ')} vào ruột và kẹp chặt thành món "${stuffedItem.name}"! Bấm Phím P để cho ra đĩa thưởng thức hoặc đem bỏ Lò Nướng cho nóng giòn!`,
+          'assertive'
+        );
+        renderAll();
+        return;
+      }
+
+      if (actionId === 'blend_smooth') {
+        playSoundEffect('blend');
+        const innerNames = state.stationItems.map(i => i.name);
+        const combinedFlavors = {
+          umami: 0, salty: 0, sweet: 0, sour: 0, spicy: 0, fatty: 0, bitter: 0, aroma: 0.8, crunch: 0
+        };
+        const combinedSpices = [];
+        let anyRawMeat = false;
+
+        state.stationItems.forEach(item => {
+          Object.keys(combinedFlavors).forEach(k => {
+            if (k !== 'crunch') {
+              combinedFlavors[k] += (item.flavors[k] || 0) * 0.85;
+            }
+          });
+          if (item.needsCooking && item.cookLevel === 0) anyRawMeat = true;
+          item.spicesApplied.forEach(sp => combinedSpices.push({ ...sp }));
+        });
+
+        const isFruitSmoothie = state.stationItems.every(i => i.category === 'fruit' || i.id === 'avocado');
+        const prefix = isFruitSmoothie ? 'Ly Sinh Tố' : 'Hỗn Hợp Xay Sánh Mịn';
+        const shortInner = innerNames.slice(0, 3).join(', ');
+
+        const blendedItem = {
+          uid: state.nextItemUid++,
+          kind: 'blended',
+          baseId: 'blended_mix',
+          name: `${prefix} (${shortInner})`,
+          emoji: isFruitSmoothie ? '🥤' : '🥣',
+          category: 'composite',
+          color: state.stationItems[0].color,
+          cookedColor: state.stationItems[0].cookedColor,
+          needsCooking: anyRawMeat,
+          isFreshBalancer: state.stationItems.some(i => i.isFreshBalancer),
+          cutState: 'minced',
+          cookLevel: anyRawMeat ? 0 : 1,
+          cookMethod: 'blended',
+          spicesApplied: combinedSpices,
+          subItems: [...state.stationItems],
+          wrapperOrVessel: null,
+          flavors: combinedFlavors
+        };
+
+        state.stationItems = [blendedItem];
+        announceNVDA(
+          `Máy xay đã xay nhuyễn ${innerNames.join(', ')} thành "${blendedItem.name}" sánh mịn, các hương vị hòa tan hoàn toàn vào nhau!`,
+          'polite'
+        );
+        renderAll();
+        return;
+      }
+
+      const heatMap = {
+        fry_step: { method: 'fried', sound: 'sizzle', verb: 'Áp chảo / Xào lửa vừa' },
+        boil_step: { method: 'boiled', sound: 'boil', verb: 'Đun sôi / Luộc hầm' },
+        deep_fry_step: { method: 'deep_fried', sound: 'deep_fry', verb: 'Chiên ngập dầu' },
+        bake_step: { method: 'baked', sound: 'oven', verb: 'Nướng trong lò' },
+        grill_step: { method: 'grilled', sound: 'grill', verb: 'Nướng trên than hoa' }
+      };
+
+      const heatInfo = heatMap[actionId];
+      if (heatInfo) {
+        playSoundEffect(heatInfo.sound);
+
+        const statusDescriptions = [];
+        state.stationItems.forEach(item => {
+          item.cookLevel += 1;
+          item.cookMethod = heatInfo.method;
+
+          item.spicesApplied.forEach(sp => {
+            sp.cookedIn = true;
+          });
+
+          if (item.subItems && item.subItems.length > 0) {
+            item.subItems.forEach(sub => {
+              sub.cookLevel = Math.max(sub.cookLevel, item.cookLevel);
+              sub.cookMethod = heatInfo.method;
+              sub.spicesApplied.forEach(sp => { sp.cookedIn = true; });
+            });
+          }
+
+          if (item.cookLevel === 1) {
+            item.needsCooking = false;
+            item.flavors.umami += 0.9;
+            item.flavors.aroma += 1.3;
+            item.flavors.sweet += 0.35;
+            if (heatInfo.method === 'deep_fried') {
+              item.flavors.fatty += 1.5;
+              item.flavors.crunch += 2.2;
+            } else if (heatInfo.method === 'grilled') {
+              item.flavors.aroma += 1.1;
+            } else if (heatInfo.method === 'boiled') {
+              item.flavors.fatty = Math.max(0, item.flavors.fatty - 0.4);
+            }
+            statusDescriptions.push(`${item.name} đã chín tới thơm ngon`);
+          } else if (item.cookLevel === 2) {
+            item.needsCooking = false;
+            item.flavors.aroma += 1.4;
+            item.flavors.umami += 0.6;
+            item.flavors.crunch += 1.6;
+            if (item.kind === 'rolled' && item.wrapperOrVessel && item.wrapperOrVessel.id === 'rice_paper' && heatInfo.method === 'deep_fried') {
+              item.name = item.name.replace('Gỏi Cuốn Bánh Tráng', 'Chả Giò / Nem Rán Giòn Rụm');
+            }
+            if (item.kind === 'rolled' && item.wrapperOrVessel && item.wrapperOrVessel.id === 'betel_leaf') {
+              item.name = item.name.replace('Cuốn Lá Lốt Thơm Lừng', 'Bò/Thịt Nướng Lá Lốt Chín Vàng');
+            }
+            statusDescriptions.push(`${item.name} đã chín vàng giòn rụm, dậy mùi thơm phức`);
+          } else {
+            item.flavors.bitter += 3.5;
+            item.flavors.sweet = Math.max(0, item.flavors.sweet - 1.2);
+            item.flavors.aroma = Math.max(0, item.flavors.aroma - 1.5);
+            statusDescriptions.push(`CẢNH BÁO: ${item.name} đã bị nấu quá lâu nên CHÁY KHÉT ĐEN và đắng!`);
+          }
+        });
+
+        announceNVDA(
+          `${heatInfo.verb}: ${statusDescriptions.join('; ')}.`,
+          state.stationItems.some(i => i.cookLevel >= 3) ? 'assertive' : 'polite'
+        );
+        renderAll();
+      }
+    }
+
+    function moveStationToPlate() {
+      if (state.stationItems.length === 0) {
+        announceNVDA('Không có thức ăn nào trong dụng cụ để bày ra đĩa!', 'assertive');
+        return;
+      }
+      playSoundEffect('pick');
+      const count = state.stationItems.length;
+      const movedNames = state.stationItems.map(i => i.name).join(', ');
+      state.plateItems.push(...state.stationItems);
+      state.stationItems = [];
+
+      const analysis = analyzeCulinaryChemistry(state.plateItems);
+      announceNVDA(
+        `Đã bày ${count} phần (${movedNames}) ra Đĩa Ăn. Món trên đĩa hiện tại: "${analysis.dishTitle}". Độ hài hòa hương vị: ${analysis.harmonyScore} trên 100 điểm. Bấm Phím F để đút cho thực khách ăn!`,
+        'polite'
+      );
+      renderAll();
+    }
+
+    function movePlateBackToStation() {
+      if (state.plateItems.length === 0) {
+        announceNVDA('Đĩa ăn đang trống, không có gì để đưa lại vào bếp!', 'assertive');
+        return;
+      }
+      playSoundEffect('pick');
+      const station = STATIONS.find(s => s.id === state.activeStationId);
+      const movedNames = state.plateItems.map(i => i.name).join(', ');
+      state.stationItems.push(...state.plateItems);
+      state.plateItems = [];
+      announceNVDA(
+        `Đã chuyển ${movedNames} từ đĩa ăn quay lại ${station.name} để chế biến tiếp!`,
+        'polite'
+      );
+      renderAll();
+    }
+
+    function feedCharacter() {
+      let sourceItems = state.plateItems;
+      let autoMoved = false;
+      if (sourceItems.length === 0 && state.stationItems.length > 0) {
+        state.plateItems.push(...state.stationItems);
+        state.stationItems = [];
+        sourceItems = state.plateItems;
+        autoMoved = true;
+      }
+
+      const char = CHARACTERS.find(c => c.id === state.activeCharacterId) || CHARACTERS[0];
+
+      if (sourceItems.length === 0) {
+        announceNVDA(
+          `Đĩa thức ăn và dụng cụ đều đang trống! Hãy chọn nguyên liệu (Alt+2), chế biến hoặc cuốn/nhồi (Alt+3) rồi đút cho ${char.name} ăn nhé.`,
+          'assertive'
+        );
+        return;
+      }
+
+      const analysis = analyzeCulinaryChemistry(sourceItems);
+      const f = analysis.normalized;
+
+      let reactionType = 'good';
+      let speech = '';
+      let moodTag = '';
+      let finalScore = analysis.harmonyScore;
+
+      char.likes.forEach(likedKey => {
+        if (f[likedKey] >= 2.0) finalScore += 5;
+      });
+      if (char.lovesStructures.some(st => analysis.allStructures.includes(st))) {
+        finalScore += 8;
+      }
+      finalScore = Math.max(0, Math.min(100, finalScore));
+
+      if (analysis.hasRawMeatOrSeafood) {
+        reactionType = 'yuck';
+        finalScore = Math.min(finalScore, 22);
+        moodTag = 'Tanh & Sống quá! 🤢';
+        speech = `"Ối giời ơi! Món ${analysis.dishTitle} còn thịt/hải sản SỐNG chưa nấu chín! Ăn vào vừa tanh vừa đau bụng mất thôi, đầu bếp nhớ chiên, luộc hoặc nướng chín trước nhé!"`;
+        playSoundEffect('react_yuck');
+      } else if (analysis.hasBurntItem) {
+        reactionType = 'yuck';
+        finalScore = Math.min(finalScore, 25);
+        moodTag = 'Cháy khét lẹt! 炭';
+        speech = `"Khụ khụ! Món ${analysis.dishTitle} bị nấu quá lửa cháy đen thui, đắng nghét mùi khói than rồi! Lần sau canh lửa vừa chín vàng thôi nha!"`;
+        playSoundEffect('react_yuck');
+      } else if (f.salty > 5.6) {
+        reactionType = 'salty';
+        finalScore = Math.min(finalScore, 38);
+        moodTag = 'Mặn chát khát nước! 🧂💦';
+        speech = `"Ái chà! Món ${analysis.dishTitle} nêm quá tay muối/mắm nên mặn chát cả lưỡi, cho tôi xin ly nước lọc gấp! Lần sau nhớ vắt thêm chanh, chút đường hoặc thêm rau/cơm để cân bằng vị mặn nhé!"`;
+        playSoundEffect('react_sour');
+      } else if (f.spicy > char.maxSpiceTolerance) {
+        reactionType = 'spicy';
+        finalScore = Math.min(finalScore, 48);
+        moodTag = 'Cay xè phun lửa! 🔥🌶️';
+        speech = `"Hààà! Cay xé lưỡi luôn! Món ${analysis.dishTitle} có độ cay ${f.spicy}/10 vượt quá sức chịu cay của tôi rồi! Nếu thêm chút bơ, sốt mayonnaise hoặc phô mai sẽ dịu độ cay lại ngay!"`;
+        playSoundEffect('react_spicy');
+      } else if (f.sour > 5.2 && f.sweet < 1.5) {
+        reactionType = 'sour';
+        finalScore = Math.min(finalScore, 45);
+        moodTag = 'Chua nhăn mặt! 🍋😖';
+        speech = `"Chu choa ơi nó chua ê cả răng! Món ${analysis.dishTitle} nhiều chanh/giấm quá mà thiếu vị ngọt đối trọng. Chỉ cần thêm chút đường hoặc mật ong là thành vị chua ngọt thanh mát liền!"`;
+        playSoundEffect('react_sour');
+      } else if (finalScore >= 80) {
+        reactionType = 'love';
+        moodTag = 'Tuyệt phẩm 5 Sao! 🤩🌟';
+        const synergyNote = analysis.synergies.length > 0
+          ? ` Đặc biệt: ${analysis.synergies.slice(0, 2).map(s => s.replace(/^[^\s]+\s/, '')).join(' và ')}.`
+          : '';
+        speech = `"Nhoàm nhoàm... TUYỆT CÚ MÈO! Món ${analysis.dishTitle} hòa vị như ngoài đời thực! Vị đậm đà (${f.umami}/10), hương thơm (${f.aroma}/10), mặn (${f.salty}/10), ngọt (${f.sweet}/10), chua (${f.sour}/10), cay (${f.spicy}/10) quyện vào nhau xuất sắc!${synergyNote}"`;
+        playSoundEffect('react_love');
+      } else {
+        reactionType = 'good';
+        moodTag = 'Ngon miệng! 😋👍';
+        speech = `"Măm măm! Món ${analysis.dishTitle} ăn khá vừa miệng (Điểm hài hòa: ${finalScore}/100). Hương vị chính gồm Đậm đà ${f.umami}/10, Mặn ${f.salty}/10, Ngọt ${f.sweet}/10, Chua ${f.sour}/10, Cay ${f.spicy}/10. Nếu ướp thêm chút gia vị hoặc kết hợp rau thơm sẽ đạt điểm tuyệt đối!"`;
+        playSoundEffect('react_good');
+      }
+
+      state.charAnimState = reactionType;
+      state.charAnimTimer = 95;
+
+      const moodEl = document.getElementById('char-mood-tag');
+      const speechEl = document.getElementById('char-reaction-speech');
+      const scoreEl = document.getElementById('char-last-score');
+
+      if (moodEl) moodEl.textContent = moodTag;
+      if (speechEl) speechEl.textContent = speech;
+      if (scoreEl) scoreEl.textContent = `${finalScore} / 100 điểm (${moodTag})`;
+
+      state.plateItems = [];
+
+      const autoNote = autoMoved ? 'Đã tự động dọn thức ăn từ dụng cụ ra đĩa. ' : '';
+      announceNVDA(
+        `${autoNote}${char.name} vừa thưởng thức món "${analysis.dishTitle}". Biểu cảm: ${moodTag} (${finalScore} trên 100 điểm). Nhận xét: ${speech}`,
+        'assertive'
+      );
+
+      renderAll();
+    }
+
+    function readCurrentDishAndFlavorReport() {
+      const targetItems = state.plateItems.length > 0 ? state.plateItems : state.stationItems;
+      const locationLabel = state.plateItems.length > 0
+        ? 'trên Đĩa Ăn'
+        : `trong dụng cụ ${STATIONS.find(s => s.id === state.activeStationId).name}`;
+
+      if (targetItems.length === 0) {
+        announceNVDA(
+          'Hiện tại cả Đĩa Ăn và Dụng Cụ Chế Biến đều đang trống. Hãy bấm Alt+2 để chọn nguyên liệu từ tủ.',
+          'assertive'
+        );
+        return;
+      }
+
+      const analysis = analyzeCulinaryChemistry(targetItems);
+      const f = analysis.normalized;
+      const synergyText = analysis.synergies.length > 0
+        ? `Phản ứng hòa vị: ${analysis.synergies.map(s => s.replace(/^[^\s]+\s/, '')).join('; ')}. `
+        : '';
+      const warningText = analysis.warnings.length > 0
+        ? `Lưu ý: ${analysis.warnings.map(w => w.replace(/^[^\s]+\s/, '')).join('; ')}. `
+        : '';
+
+      const report = `Báo cáo món ăn ${locationLabel}: Tên món "${analysis.dishTitle}". Thành phần: ${analysis.structureSummary}. Độ hài hòa: ${analysis.harmonyScore} trên 100 điểm. Chi tiết 8 vị: Đậm đà Umami ${f.umami}, Mặn ${f.salty}, Ngọt ${f.sweet}, Chua ${f.sour}, Cay ${f.spicy}, Béo ${f.fatty}, Hương thơm ${f.aroma}, Đắng khét ${f.bitter}. ${synergyText}${warningText}`;
+      announceNVDA(report, 'assertive');
+    }
+
+    /*************************************************************************
+     * 7. RENDER GIAO DIỆN DOM & CẬP NHẬT TRẠNG THÁI TRỢ NĂNG NVDA
+     *************************************************************************/
+
+    function renderCharacters() {
+      const container = document.getElementById('character-buttons-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const activeChar = CHARACTERS.find(c => c.id === state.activeCharacterId) || CHARACTERS[0];
+
+      CHARACTERS.forEach(c => {
+        const isSelected = c.id === state.activeCharacterId;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.setAttribute('role', 'radio');
+        btn.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+        btn.setAttribute('aria-label', `${c.name} - ${c.title}. ${c.desc}`);
+        btn.className = `p-2 rounded-xl border text-left transition flex flex-col items-center text-center gap-0.5 ${
+          isSelected ? 'char-btn-active font-bold' : 'bg-stone-50 hover:bg-amber-50/50 border-stone-200 text-stone-700'
+        }`;
+        btn.innerHTML = `
+          <span class="text-2xl leading-none" aria-hidden="true">${c.emoji}</span>
+          <span class="text-[11px] font-bold leading-tight mt-1 line-clamp-1">${c.name}</span>
+        `;
+        btn.addEventListener('click', () => {
+          state.activeCharacterId = c.id;
+          state.charAnimState = 'idle';
+          playSoundEffect('pick');
+          announceNVDA(`Đã chọn thực khách: ${c.name} (${c.title}). Sở thích: ${c.desc}`, 'polite');
+          renderAll();
+        });
+        container.appendChild(btn);
+      });
+
+      document.getElementById('active-char-badge').textContent = activeChar.name;
+      document.getElementById('char-detail-name').textContent = `${activeChar.name} (${activeChar.title})`;
+      document.getElementById('char-detail-pref').textContent = activeChar.desc;
+      document.getElementById('feed-btn-label').textContent = `Đút Cho ${activeChar.name} Ăn! (Phím F)`;
+    }
+
+    function renderPantry() {
+      const tabsContainer = document.getElementById('pantry-category-tabs');
+      if (tabsContainer) {
+        tabsContainer.innerHTML = '';
+        PANTRY_CATEGORIES.forEach(cat => {
+          const isActive = cat.id === state.activeCategoryId;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.setAttribute('role', 'tab');
+          btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          btn.className = `px-2.5 py-1 rounded-lg text-xs font-bold transition ${
+            isActive ? 'bg-amber-600 text-white shadow-sm' : 'bg-stone-100 hover:bg-stone-200 text-stone-700'
+          }`;
+          btn.textContent = cat.name;
+          btn.addEventListener('click', () => {
+            state.activeCategoryId = cat.id;
+            announceNVDA(`Đã lọc danh mục nguyên liệu: ${cat.name}`, 'polite');
+            renderPantry();
+          });
+          tabsContainer.appendChild(btn);
+        });
+      }
+
+      const grid = document.getElementById('pantry-items-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const q = state.searchQuery.trim().toLowerCase();
+      const filtered = INGREDIENTS.filter(ing => {
+        const matchCat = state.activeCategoryId === 'all' || ing.category === state.activeCategoryId;
+        const matchQuery = !q || ing.name.toLowerCase().includes(q) || ing.flavorDesc.toLowerCase().includes(q);
+        return matchCat && matchQuery;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-xs text-stone-500 italic p-3 text-center">Không tìm thấy nguyên liệu phù hợp.</div>`;
+        return;
+      }
+
+      filtered.forEach(ing => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.setAttribute(
+          'aria-label',
+          `Lấy ${ing.name}. Đặc tính vị: ${ing.flavorDesc}. ${ing.needsCooking ? 'Cần nấu chín trước khi ăn.' : 'Có thể ăn ngay hoặc chế biến.'}`
+        );
+        btn.className = 'p-2 rounded-xl border border-stone-200 hover:border-orange-400 bg-stone-50/70 hover:bg-orange-50/70 text-left transition flex flex-col justify-between gap-1 group';
+        btn.innerHTML = `
+          <div class="flex items-center justify-between w-full">
+            <span class="text-xl group-hover:scale-110 transition-transform" aria-hidden="true">${ing.displayEmoji || ing.emoji}</span>
+            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${
+              ing.needsCooking ? 'bg-red-100 text-red-800' : 'bg-emerald-100 text-emerald-800'
+            }">${ing.needsCooking ? 'Cần nấu' : 'Ăn tươi/Nấu'}</span>
+          </div>
+          <div class="font-bold text-xs text-stone-800 leading-snug">${ing.name}</div>
+          <div class="text-[10px] text-stone-500 line-clamp-2 leading-tight">${ing.flavorDesc}</div>
+        `;
+        btn.addEventListener('click', () => addIngredientFromPantry(ing.id));
+        grid.appendChild(btn);
+      });
+    }
+
+    function renderWorkbench() {
+      const stationGrid = document.getElementById('station-selector-grid');
+      const activeStation = STATIONS.find(s => s.id === state.activeStationId) || STATIONS[0];
+
+      if (stationGrid) {
+        stationGrid.innerHTML = '';
+        STATIONS.forEach(st => {
+          const isActive = st.id === state.activeStationId;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+          btn.setAttribute('aria-label', `${st.name}. ${st.desc}`);
+          btn.className = `p-2 rounded-xl border text-left transition flex items-center gap-1.5 ${
+            isActive
+              ? 'station-btn-active font-bold'
+              : 'bg-stone-50 hover:bg-amber-50 border-stone-200 text-stone-800'
+          }`;
+          btn.innerHTML = `
+            <span class="text-lg shrink-0" aria-hidden="true">${st.emoji}</span>
+            <span class="text-xs font-bold leading-tight truncate">${st.shortName}</span>
+          `;
+          btn.addEventListener('click', () => {
+            state.activeStationId = st.id;
+            playSoundEffect('pick');
+            announceNVDA(
+              `Đã chuyển sang dụng cụ: ${st.name}. ${st.desc} Hiện đang có ${state.stationItems.length} nguyên liệu trong dụng cụ.`,
+              'polite'
+            );
+            renderAll();
+          });
+          stationGrid.appendChild(btn);
+        });
+      }
+
+      document.getElementById('active-station-badge').textContent = `Đang dùng: ${activeStation.name}`;
+      document.getElementById('canvas-station-overlay').textContent = `${activeStation.emoji} ${activeStation.name}`;
+      document.getElementById('canvas-temp-overlay').textContent = `Nhiệt độ: ${activeStation.temp}`;
+      document.getElementById('station-item-count').textContent = `${state.stationItems.length} nguyên liệu trong dụng cụ`;
+
+      const wrapperPanel = document.getElementById('wrapper-vessel-panel');
+      const wrapperList = document.getElementById('wrapper-options-list');
+      const wrapperTitle = document.getElementById('wrapper-panel-title');
+      const wrapperCurLabel = document.getElementById('wrapper-current-label');
+
+      if (activeStation.isWrapperStation) {
+        wrapperPanel.classList.remove('hidden');
+        const curW = WRAPPERS.find(w => w.id === state.selectedWrapperId) || WRAPPERS[0];
+        wrapperTitle.textContent = '🌯 Chọn Lớp Vỏ Để Cuộn Các Nguyên Liệu Bên Dưới:';
+        wrapperCurLabel.textContent = curW.name;
+        wrapperList.innerHTML = '';
+        WRAPPERS.forEach(w => {
+          const isSel = w.id === state.selectedWrapperId;
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.setAttribute('role', 'radio');
+          b.setAttribute('aria-checked', isSel ? 'true' : 'false');
+          b.setAttribute('aria-label', `Vỏ cuốn ${w.name}. ${w.desc}`);
+          b.className = `p-1.5 rounded-lg border text-left text-xs transition flex items-center gap-1.5 ${
+            isSel ? 'bg-orange-600 text-white border-orange-700 font-bold' : 'bg-white hover:bg-orange-50 border-amber-200 text-stone-800'
+          }`;
+          b.innerHTML = `<span aria-hidden="true">${w.emoji}</span><span class="truncate">${w.name}</span>`;
+          b.addEventListener('click', () => {
+            state.selectedWrapperId = w.id;
+            playSoundEffect('pick');
+            announceNVDA(`Đã chọn vỏ cuốn: ${w.name} (${w.desc}). Hãy bỏ nguyên liệu vào rồi bấm Phím R để cuộn tròn một lượt!`, 'polite');
+            renderWorkbench();
+          });
+          wrapperList.appendChild(b);
+        });
+      } else if (activeStation.isStuffingStation) {
+        wrapperPanel.classList.remove('hidden');
+        const curV = VESSELS.find(v => v.id === state.selectedVesselId) || VESSELS[0];
+        wrapperTitle.textContent = '🥖 Chọn Loại Bánh / Vỏ Để Xẻ Ruột & Nhồi Nhân:';
+        wrapperCurLabel.textContent = curV.name;
+        wrapperList.innerHTML = '';
+        VESSELS.forEach(v => {
+          const isSel = v.id === state.selectedVesselId;
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.setAttribute('role', 'radio');
+          b.setAttribute('aria-checked', isSel ? 'true' : 'false');
+          b.setAttribute('aria-label', `Vỏ nhồi ${v.name}. ${v.desc}`);
+          b.className = `p-1.5 rounded-lg border text-left text-xs transition flex items-center gap-1.5 ${
+            isSel ? 'bg-orange-600 text-white border-orange-700 font-bold' : 'bg-white hover:bg-orange-50 border-amber-200 text-stone-800'
+          }`;
+          b.innerHTML = `<span aria-hidden="true">${v.emoji}</span><span class="truncate">${v.name}</span>`;
+          b.addEventListener('click', () => {
+            state.selectedVesselId = v.id;
+            playSoundEffect('pick');
+            announceNVDA(`Đã chọn vỏ nhồi: ${v.name} (${v.desc}). Hãy bỏ thịt bò, xúc xích, rau sốt vào rồi bấm Phím R để nhồi và kẹp chặt!`, 'polite');
+            renderWorkbench();
+          });
+          wrapperList.appendChild(b);
+        });
+      } else {
+        wrapperPanel.classList.add('hidden');
+      }
+
+      const actionsContainer = document.getElementById('station-primary-actions');
+      if (actionsContainer) {
+        actionsContainer.innerHTML = '';
+        activeStation.actions.forEach(act => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.setAttribute('aria-label', `${act.label}. ${act.desc}`);
+          btn.className = 'py-2 px-3 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-1.5 transition col-span-full sm:col-span-1';
+          if (activeStation.actions.length === 1) {
+            btn.className = 'py-2.5 px-4 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-extrabold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-2 transition col-span-full';
+          }
+          btn.textContent = act.label;
+          btn.addEventListener('click', () => performStationAction(act.id));
+          actionsContainer.appendChild(btn);
+        });
+      }
+
+      const listEl = document.getElementById('station-contents-list');
+      if (listEl) {
+        listEl.innerHTML = '';
+        if (state.stationItems.length === 0) {
+          listEl.innerHTML = `
+            <div class="p-3 rounded-xl bg-stone-50 border border-dashed border-stone-300 text-xs text-stone-500 text-center">
+              Chưa có nguyên liệu nào trong <strong>${activeStation.name}</strong>. Hãy bấm vào nguyên liệu bên Tủ Nguyên Liệu (Alt+2) để bỏ vào đây!
+            </div>
+          `;
+        } else {
+          state.stationItems.forEach((item, idx) => {
+            const stateDesc = describeItemStateShort(item);
+            const row = document.createElement('div');
+            row.setAttribute('role', 'listitem');
+            row.className = 'p-2 rounded-xl bg-amber-50/70 border border-amber-200/80 flex items-center justify-between gap-2 text-xs';
+            row.innerHTML = `
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="text-lg shrink-0" aria-hidden="true">${item.emoji}</span>
+                <div class="min-w-0">
+                  <div class="font-bold text-stone-900 truncate">${idx + 1}. ${item.name}</div>
+                  <div class="text-[11px] text-stone-600 truncate">${stateDesc}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-1 shrink-0">
+                <button type="button" data-plate-idx="${idx}" class="px-2 py-1 rounded bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-bold text-[11px]" aria-label="Gắp ${item.name} (${stateDesc}) ra Đĩa Ăn">
+                  Ra đĩa
+                </button>
+                <button type="button" data-remove-idx="${idx}" class="px-2 py-1 rounded bg-stone-200 hover:bg-red-200 text-stone-700 hover:text-red-900 font-bold text-[11px]" aria-label="Bỏ ${item.name} khỏi dụng cụ">
+                  Xóa
+                </button>
+              </div>
+            `;
+            row.querySelector(`[data-plate-idx="${idx}"]`).addEventListener('click', () => {
+              const [moved] = state.stationItems.splice(idx, 1);
+              state.plateItems.push(moved);
+              playSoundEffect('pick');
+              announceNVDA(`Đã gắp ${moved.name} (${describeItemStateShort(moved)}) ra Đĩa Ăn.`, 'polite');
+              renderAll();
+            });
+            row.querySelector(`[data-remove-idx="${idx}"]`).addEventListener('click', () => {
+              const [removed] = state.stationItems.splice(idx, 1);
+              announceNVDA(`Đã bỏ ${removed.name} khỏi dụng cụ.`, 'polite');
+              renderAll();
+            });
+            listEl.appendChild(row);
+          });
+        }
+      }
+    }
+
+    function renderSpices() {
+      const grid = document.getElementById('spice-rack-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      SPICES.forEach(sp => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.setAttribute('aria-label', `Nêm ${sp.name}. ${sp.desc}`);
+        btn.className = 'p-2 rounded-xl border border-stone-200 hover:border-amber-500 bg-amber-50/40 hover:bg-amber-100/70 transition flex flex-col items-center text-center gap-1 group';
+        btn.innerHTML = `
+          <span class="text-xl group-hover:scale-110 transition-transform" aria-hidden="true">${sp.emoji}</span>
+          <span class="text-[11px] font-bold text-stone-800 leading-tight">${sp.name}</span>
+        `;
+        btn.addEventListener('click', () => applySpice(sp.id));
+        grid.appendChild(btn);
+      });
+    }
+
+    function renderPlateAndFlavorAnalysis() {
+      const countBadge = document.getElementById('plate-count-badge');
+      if (countBadge) {
+        countBadge.textContent = `${state.plateItems.length} phần trên đĩa`;
+      }
+
+      const itemsToAnalyze = state.plateItems.length > 0 ? state.plateItems : state.stationItems;
+      const isPreviewingStation = state.plateItems.length === 0 && state.stationItems.length > 0;
+      const analysis = analyzeCulinaryChemistry(itemsToAnalyze);
+
+      const dishNameEl = document.getElementById('dish-dynamic-name');
+      const dishStructEl = document.getElementById('dish-structure-summary');
+      const harmonyScoreEl = document.getElementById('flavor-harmony-score');
+
+      if (dishNameEl) {
+        dishNameEl.textContent = isPreviewingStation
+          ? `[Đang nấu trong bếp] ${analysis.dishTitle}`
+          : analysis.dishTitle;
+      }
+      if (dishStructEl) {
+        dishStructEl.textContent = analysis.structureSummary;
+      }
+      if (harmonyScoreEl) {
+        harmonyScoreEl.textContent = itemsToAnalyze.length > 0
+          ? `Độ hài hòa: ${analysis.harmonyScore}/100`
+          : 'Độ hài hòa: --';
+      }
+
+      const barsContainer = document.getElementById('flavor-bars-container');
+      if (barsContainer) {
+        barsContainer.innerHTML = '';
+        FLAVOR_DIMENSIONS.forEach(dim => {
+          const val = analysis.normalized[dim.key] || 0;
+          const pct = Math.min(100, Math.round(val * 10));
+          const row = document.createElement('div');
+          row.className = 'text-xs';
+          row.innerHTML = `
+            <div class="flex items-center justify-between mb-0.5">
+              <span class="font-semibold text-stone-700">${dim.label}</span>
+              <span class="font-bold text-stone-900">${val.toFixed(1)} / 10</span>
+            </div>
+            <div class="w-full h-2 bg-stone-200 rounded-full overflow-hidden" role="progressbar" aria-label="${dim.label}" aria-valuenow="${val}" aria-valuemin="0" aria-valuemax="10">
+              <div class="h-full ${dim.bg} flavor-bar-fill rounded-full" style="width: ${pct}%"></div>
+            </div>
+          `;
+          barsContainer.appendChild(row);
+        });
+      }
+
+      const tagsContainer = document.getElementById('chemistry-synergy-tags');
+      if (tagsContainer) {
+        tagsContainer.innerHTML = '';
+        if (analysis.synergies.length === 0 && analysis.warnings.length === 0) {
+          tagsContainer.innerHTML = `<span class="text-[11px] text-stone-400 italic">Hãy kết hợp nguyên liệu và gia vị để xem phản ứng hòa vị</span>`;
+        } else {
+          analysis.synergies.forEach(syn => {
+            const span = document.createElement('span');
+            span.className = 'px-2 py-1 rounded-lg bg-emerald-100 text-emerald-900 font-semibold text-[11px] leading-snug';
+            span.textContent = syn;
+            tagsContainer.appendChild(span);
+          });
+          analysis.warnings.forEach(warn => {
+            const span = document.createElement('span');
+            span.className = 'px-2 py-1 rounded-lg bg-red-100 text-red-900 font-semibold text-[11px] leading-snug';
+            span.textContent = warn;
+            tagsContainer.appendChild(span);
+          });
+        }
+      }
+
+      const plateList = document.getElementById('plate-contents-list');
+      if (plateList) {
+        plateList.innerHTML = '';
+        if (state.plateItems.length === 0) {
+          plateList.innerHTML = `
+            <div class="p-3 rounded-xl bg-stone-50 border border-dashed border-stone-300 text-xs text-stone-500 text-center">
+              Đĩa ăn đang trống. Sau khi chế biến, cuốn bánh tráng hoặc nhồi bánh mì xong, hãy bấm <strong>Bày Ra Đĩa Ăn (Phím P)</strong>!
+            </div>
+          `;
+        } else {
+          state.plateItems.forEach((item, idx) => {
+            const stateDesc = describeItemStateShort(item);
+            const div = document.createElement('div');
+            div.setAttribute('role', 'listitem');
+            div.className = 'p-2 rounded-xl bg-orange-50/70 border border-orange-200 flex items-center justify-between gap-2 text-xs';
+            div.innerHTML = `
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="text-lg shrink-0" aria-hidden="true">${item.emoji}</span>
+                <div class="min-w-0">
+                  <div class="font-bold text-stone-900 truncate">${idx + 1}. ${item.name}</div>
+                  <div class="text-[11px] text-stone-600 truncate">${stateDesc}</div>
+                </div>
+              </div>
+              <button type="button" data-del-plate="${idx}" class="px-2 py-1 rounded bg-stone-200 hover:bg-red-200 text-stone-700 hover:text-red-900 font-bold text-[11px] shrink-0" aria-label="Bỏ ${item.name} khỏi đĩa ăn">
+                Xóa
+              </button>
+            `;
+            div.querySelector(`[data-del-plate="${idx}"]`).addEventListener('click', () => {
+              const [removed] = state.plateItems.splice(idx, 1);
+              announceNVDA(`Đã bỏ ${removed.name} khỏi Đĩa Ăn.`, 'polite');
+              renderAll();
+            });
+            plateList.appendChild(div);
+          });
+        }
+      }
+    }
+
+    function renderAll() {
+      renderCharacters();
+      renderPantry();
+      renderWorkbench();
+      renderSpices();
+      renderPlateAndFlavorAnalysis();
+    }
+
+    /*************************************************************************
+     * 8. HỆ THỐNG ĐỒ HỌA CANVAS ĐỘNG (WORKBENCH + CHARACTER EXPRESSIONS)
+     *************************************************************************/
+    function drawWorkbenchCanvas() {
+      const canvas = document.getElementById('workbench-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width;
+      const H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      const stId = state.activeStationId;
+
+      if (stId === 'cutting_board') {
+        ctx.fillStyle = '#451a03';
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = '#d97706';
+        ctx.beginPath();
+        ctx.roundRect(35, 28, W - 70, H - 48, 18);
+        ctx.fill();
+        ctx.strokeStyle = '#92400e';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+        ctx.strokeStyle = 'rgba(120, 53, 15, 0.22)';
+        ctx.lineWidth = 2;
+        for (let y = 48; y < H - 35; y += 22) {
+          ctx.beginPath();
+          ctx.moveTo(50, y);
+          ctx.lineTo(W - 50, y);
+          ctx.stroke();
+        }
+      } else if (stId === 'rolling_mat') {
+        ctx.fillStyle = '#1c1917';
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = '#fde68a';
+        ctx.beginPath();
+        ctx.roundRect(40, 26, W - 80, H - 44, 12);
+        ctx.fill();
+        ctx.strokeStyle = '#ca8a04';
+        ctx.lineWidth = 2;
+        for (let x = 52; x < W - 45; x += 14) {
+          ctx.beginPath();
+          ctx.moveTo(x, 28);
+          ctx.lineTo(x, H - 20);
+          ctx.stroke();
+        }
+        const wrapper = WRAPPERS.find(w => w.id === state.selectedWrapperId) || WRAPPERS[0];
+        ctx.save();
+        ctx.fillStyle = wrapper.id === 'rice_paper' ? 'rgba(255,255,255,0.72)' : wrapper.color;
+        ctx.strokeStyle = '#78716c';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        if (wrapper.id === 'nori_seaweed' || wrapper.id === 'pho_sheet') {
+          ctx.roundRect(130, 40, W - 260, H - 72, 8);
+        } else {
+          ctx.arc(W / 2, H / 2 + 4, 72, 0, Math.PI * 2);
+        }
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      } else if (stId === 'stuffing_station') {
+        ctx.fillStyle = '#292524';
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = '#fef3c7';
+        ctx.beginPath();
+        ctx.roundRect(40, 28, W - 80, H - 48, 16);
+        ctx.fill();
+
+        const vessel = VESSELS.find(v => v.id === state.selectedVesselId) || VESSELS[0];
+        ctx.save();
+        ctx.fillStyle = vessel.color;
+        ctx.strokeStyle = '#78350f';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.ellipse(W / 2, H / 2 + 8, 145, 54, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#fffbeb';
+        ctx.beginPath();
+        ctx.ellipse(W / 2, H / 2 + 8, 120, 30, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      } else if (stId === 'frying_pan' || stId === 'deep_fryer') {
+        ctx.fillStyle = '#18181b';
+        ctx.fillRect(0, 0, W, H);
+        const grad = ctx.createRadialGradient(W / 2, H / 2 + 8, 20, W / 2, H / 2 + 8, 115);
+        grad.addColorStop(0, '#ea580c');
+        grad.addColorStop(1, 'rgba(234, 88, 12, 0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(W / 2, H / 2 + 8, 115, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = stId === 'deep_fryer' ? '#ca8a04' : '#27272a';
+        ctx.strokeStyle = '#52525b';
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.arc(W / 2, H / 2 + 8, 86, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      } else if (stId === 'boiling_pot') {
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = '#38bdf8';
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 7;
+        ctx.beginPath();
+        ctx.arc(W / 2, H / 2 + 8, 86, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,0.65)';
+        for (let i = 0; i < 8; i++) {
+          const bx = W / 2 + Math.cos(state.animTick * 0.05 + i) * 48;
+          const by = H / 2 + 8 + Math.sin(state.animTick * 0.07 + i * 2) * 42;
+          const br = 4 + (i % 4) * 2;
+          ctx.beginPath();
+          ctx.arc(bx, by, br, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else if (stId === 'oven' || stId === 'charcoal_grill') {
+        ctx.fillStyle = '#1c1917';
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = stId === 'charcoal_grill' ? '#7f1d1d' : '#431407';
+        ctx.beginPath();
+        ctx.roundRect(55, 32, W - 110, H - 52, 14);
+        ctx.fill();
+        ctx.strokeStyle = '#a8a29e';
+        ctx.lineWidth = 3;
+        for (let x = 75; x < W - 70; x += 24) {
+          ctx.beginPath();
+          ctx.moveTo(x, 34);
+          ctx.lineTo(x, H - 22);
+          ctx.stroke();
+        }
+      } else if (stId === 'blender') {
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = 'rgba(224, 242, 254, 0.25)';
+        ctx.strokeStyle = '#bae6fd';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.roundRect(W / 2 - 75, 26, 150, H - 46, 18);
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      const count = state.stationItems.length;
+      if (count === 0) {
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.font = '600 13px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Chưa có nguyên liệu — Hãy chọn từ Tủ Nguyên Liệu (Alt+2)', W / 2, H / 2 + 12);
+      } else {
+        state.stationItems.forEach((item, idx) => {
+          const angle = (idx / Math.max(1, count)) * Math.PI * 2 + (state.stationActionFlash > 0 ? state.animTick * 0.15 : 0);
+          const radius = count === 1 ? 0 : Math.min(58, 22 + count * 6);
+          const cx = W / 2 + Math.cos(angle) * radius;
+          const cy = H / 2 + 8 + Math.sin(angle) * (radius * 0.6);
+
+          ctx.save();
+          let fillCol = item.cookLevel === 0 ? item.color : item.cookedColor;
+          if (item.cookLevel >= 3) fillCol = '#1c1917';
+          ctx.fillStyle = fillCol;
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2.5;
+
+          ctx.beginPath();
+          if (item.kind === 'rolled') {
+            ctx.roundRect(cx - 44, cy - 18, 88, 36, 16);
+          } else if (item.kind === 'stuffed') {
+            ctx.ellipse(cx, cy, 48, 24, 0, 0, Math.PI * 2);
+          } else {
+            ctx.arc(cx, cy, item.cutState === 'minced' ? 16 : 22, 0, Math.PI * 2);
+          }
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.font = '20px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(item.emoji, cx, cy - 2);
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 10px Inter, sans-serif';
+          ctx.fillText(item.name.slice(0, 16), cx, cy + 26);
+          ctx.restore();
+        });
+      }
+
+      if (state.stationActionFlash > 0) {
+        state.stationActionFlash--;
+        ctx.save();
+        for (let i = 0; i < 10; i++) {
+          const px = W / 2 + (Math.random() - 0.5) * 160;
+          const py = H / 2 + (Math.random() - 0.5) * 90;
+          ctx.fillStyle = state.stationActionType === 'spice' ? '#fde047' : '#fb923c';
+          ctx.beginPath();
+          ctx.arc(px, py, 3 + Math.random() * 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    }
+
+    function drawCharacterCanvas() {
+      const canvas = document.getElementById('character-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width;
+      const H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      const char = CHARACTERS.find(c => c.id === state.activeCharacterId) || CHARACTERS[0];
+      if (state.charAnimTimer > 0) {
+        state.charAnimTimer--;
+      } else if (state.charAnimState !== 'idle') {
+        state.charAnimState = 'idle';
+      }
+
+      const bounce = Math.sin(state.animTick * 0.08) * 3;
+      const cx = W / 2;
+      const cy = H / 2 + 6 + bounce;
+
+      ctx.save();
+      let auraColor = 'rgba(251, 191, 36, 0.2)';
+      if (state.charAnimState === 'love') auraColor = 'rgba(16, 185, 129, 0.35)';
+      else if (state.charAnimState === 'spicy') auraColor = 'rgba(239, 68, 68, 0.45)';
+      else if (state.charAnimState === 'sour') auraColor = 'rgba(132, 204, 22, 0.4)';
+      else if (state.charAnimState === 'yuck') auraColor = 'rgba(120, 113, 108, 0.45)';
+
+      ctx.fillStyle = auraColor;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 62, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = state.charAnimState === 'spicy'
+        ? '#ef4444'
+        : state.charAnimState === 'yuck'
+        ? '#84cc16'
+        : char.color;
+      ctx.strokeStyle = '#1c1917';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 46, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(cx - 16, cy - 10, 9, 0, Math.PI * 2);
+      ctx.arc(cx + 16, cy - 10, 9, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#1c1917';
+      if (state.charAnimState === 'sour') {
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(cx - 22, cy - 15);
+        ctx.lineTo(cx - 12, cy - 10);
+        ctx.lineTo(cx - 22, cy - 5);
+        ctx.moveTo(cx + 22, cy - 15);
+        ctx.lineTo(cx + 12, cy - 10);
+        ctx.lineTo(cx + 22, cy - 5);
+        ctx.stroke();
+      } else {
+        ctx.beginPath();
+        ctx.arc(cx - 16, cy - 10, 4.5, 0, Math.PI * 2);
+        ctx.arc(cx + 16, cy - 10, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.strokeStyle = '#1c1917';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      const hasFoodWaiting = state.plateItems.length > 0;
+      if (state.charAnimState === 'love' || state.charAnimState === 'good') {
+        ctx.fillStyle = '#991b1b';
+        ctx.arc(cx, cy + 12, 16, 0, Math.PI);
+        ctx.fill();
+        ctx.stroke();
+      } else if (state.charAnimState === 'spicy') {
+        ctx.fillStyle = '#f97316';
+        ctx.arc(cx, cy + 16, 14, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.font = '22px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🔥', cx, cy + 36);
+      } else if (state.charAnimState === 'sour') {
+        ctx.moveTo(cx - 8, cy + 15);
+        ctx.lineTo(cx + 8, cy + 15);
+        ctx.stroke();
+      } else if (state.charAnimState === 'yuck' || state.charAnimState === 'salty') {
+        ctx.arc(cx, cy + 24, 14, Math.PI, 0);
+        ctx.stroke();
+      } else if (hasFoodWaiting) {
+        ctx.fillStyle = '#7f1d1d';
+        ctx.ellipse(cx, cy + 15, 15, 12 + Math.sin(state.animTick * 0.15) * 3, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        ctx.arc(cx, cy + 10, 12, 0.15 * Math.PI, 0.85 * Math.PI);
+        ctx.stroke();
+      }
+
+      ctx.font = '24px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(char.emoji, cx, cy - 42);
+      ctx.restore();
+    }
+
+    function startAnimationLoop() {
+      function frame() {
+        state.animTick++;
+        drawWorkbenchCanvas();
+        drawCharacterCanvas();
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    }
+
+    /*************************************************************************
+     * 9. SỰ KIỆN NÚT BẤM & PHÍM TẮT TOÀN CỤC CHO NVDA
+     *************************************************************************/
+    function bindEvents() {
+      const btnDestStation = document.getElementById('btn-dest-station');
+      const btnDestPlate = document.getElementById('btn-dest-plate');
+
+      btnDestStation.addEventListener('click', () => {
+        state.ingredientDestination = 'station';
+        btnDestStation.setAttribute('aria-pressed', 'true');
+        btnDestPlate.setAttribute('aria-pressed', 'false');
+        btnDestStation.className = 'py-1.5 px-2 rounded-lg text-xs font-bold bg-orange-600 text-white shadow-sm transition';
+        btnDestPlate.className = 'py-1.5 px-2 rounded-lg text-xs font-bold bg-transparent text-stone-700 hover:bg-white/60 transition';
+        announceNVDA('Đã chọn chế độ: Bỏ nguyên liệu từ tủ vào Dụng Cụ Đang Chọn.', 'polite');
+      });
+
+      btnDestPlate.addEventListener('click', () => {
+        state.ingredientDestination = 'plate';
+        btnDestPlate.setAttribute('aria-pressed', 'true');
+        btnDestStation.setAttribute('aria-pressed', 'false');
+        btnDestPlate.className = 'py-1.5 px-2 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow-sm transition';
+        btnDestStation.className = 'py-1.5 px-2 rounded-lg text-xs font-bold bg-transparent text-stone-700 hover:bg-white/60 transition';
+        announceNVDA('Đã chọn chế độ: Bỏ nguyên liệu từ tủ thẳng lên Đĩa Ăn.', 'polite');
+      });
+
+      const btnSpiceStation = document.getElementById('btn-spice-target-station');
+      const btnSpicePlate = document.getElementById('btn-spice-target-plate');
+
+      btnSpiceStation.addEventListener('click', () => {
+        state.spiceTarget = 'station';
+        btnSpiceStation.setAttribute('aria-pressed', 'true');
+        btnSpicePlate.setAttribute('aria-pressed', 'false');
+        btnSpiceStation.className = 'px-2 py-1 rounded text-[11px] font-bold bg-amber-600 text-white';
+        btnSpicePlate.className = 'px-2 py-1 rounded text-[11px] font-bold text-stone-700 hover:bg-white';
+        announceNVDA('Đã chọn nêm gia vị vào Dụng Cụ Chế Biến.', 'polite');
+      });
+
+      btnSpicePlate.addEventListener('click', () => {
+        state.spiceTarget = 'plate';
+        btnSpicePlate.setAttribute('aria-pressed', 'true');
+        btnSpiceStation.setAttribute('aria-pressed', 'false');
+        btnSpicePlate.className = 'px-2 py-1 rounded text-[11px] font-bold bg-amber-600 text-white';
+        btnSpiceStation.className = 'px-2 py-1 rounded text-[11px] font-bold text-stone-700 hover:bg-white';
+        announceNVDA('Đã chọn nêm gia vị trực tiếp lên Đĩa Ăn.', 'polite');
+      });
+
+      const searchInput = document.getElementById('input-search-ingredient');
+      searchInput.addEventListener('input', (e) => {
+        state.searchQuery = e.target.value || '';
+        renderPantry();
+      });
+
+      document.getElementById('btn-move-station-to-plate').addEventListener('click', moveStationToPlate);
+      document.getElementById('btn-clear-station').addEventListener('click', () => {
+        if (state.stationItems.length === 0) {
+          announceNVDA('Dụng cụ đã trống sẵn rồi.', 'polite');
+          return;
+        }
+        state.stationItems = [];
+        announceNVDA('Đã dọn sạch nguyên liệu trong dụng cụ hiện tại.', 'polite');
+        renderAll();
+      });
+
+      document.getElementById('btn-feed-character').addEventListener('click', feedCharacter);
+      document.getElementById('btn-plate-to-station').addEventListener('click', movePlateBackToStation);
+      document.getElementById('btn-clear-plate').addEventListener('click', () => {
+        if (state.plateItems.length === 0) {
+          announceNVDA('Đĩa ăn đã trống sẵn rồi.', 'polite');
+          return;
+        }
+        state.plateItems = [];
+        announceNVDA('Đã đổ sạch đĩa thức ăn để làm món mới.', 'polite');
+        renderAll();
+      });
+
+      // Drink water button for character
+      document.getElementById('btn-drink-water').addEventListener('click', () => {
+        const char = CHARACTERS.find(c => c.id === state.activeCharacterId) || CHARACTERS[0];
+        playSoundEffect('drink');
+        state.charAnimState = 'good';
+        state.charAnimTimer = 50;
+        const msg = `${char.name} vừa uống một ly nước lọc mát lạnh: "Ực ực... Khà! Đã khát quá, lưỡi hết cay và hết mặn rồi, sẵn sàng thưởng thức món tiếp theo của đầu bếp!"`;
+        document.getElementById('char-mood-tag').textContent = 'Sảng khoái 💧😋';
+        document.getElementById('char-reaction-speech').textContent = msg;
+        announceNVDA(msg, 'polite');
+      });
+
+      // Craving hint button (optional inspiration)
+      document.getElementById('btn-craving-hint').addEventListener('click', () => {
+        const char = CHARACTERS.find(c => c.id === state.activeCharacterId) || CHARACTERS[0];
+        const hint = char.cravings[state.cravingIndex % char.cravings.length];
+        state.cravingIndex++;
+        playSoundEffect('pick');
+        document.getElementById('char-reaction-speech').textContent = `"${hint}"`;
+        announceNVDA(`Gợi ý món ${char.name} đang thèm (tùy chọn): ${hint}`, 'polite');
+      });
+
+      document.getElementById('btn-read-dish-summary').addEventListener('click', readCurrentDishAndFlavorReport);
+
+      const btnSfx = document.getElementById('btn-toggle-sfx');
+      btnSfx.addEventListener('click', () => {
+        state.sfxEnabled = !state.sfxEnabled;
+        btnSfx.setAttribute('aria-pressed', state.sfxEnabled ? 'true' : 'false');
+        document.getElementById('icon-sfx').textContent = state.sfxEnabled ? '🔊' : '🔇';
+        document.getElementById('label-sfx').textContent = `Âm thanh Bếp: ${state.sfxEnabled ? 'BẬT' : 'TẮT'}`;
+        if (state.sfxEnabled) playSoundEffect('pick');
+        announceNVDA(`Đã ${state.sfxEnabled ? 'bật' : 'tắt'} hiệu ứng âm thanh nhà bếp.`, 'polite');
+      });
+
+      const btnTts = document.getElementById('btn-toggle-tts');
+      btnTts.addEventListener('click', () => {
+        state.ttsEnabled = !state.ttsEnabled;
+        btnTts.setAttribute('aria-pressed', state.ttsEnabled ? 'true' : 'false');
+        document.getElementById('label-tts').textContent = state.ttsEnabled
+          ? 'Giọng đọc Web: BẬT'
+          : 'Giọng đọc Web: TẮT (Dùng NVDA)';
+        announceNVDA(
+          state.ttsEnabled
+            ? 'Đã bật giọng đọc trình duyệt tự động.'
+            : 'Đã tắt giọng đọc trình duyệt để ưu tiên trình đọc màn hình NVDA của bạn.',
+          'polite'
+        );
+      });
+
+      document.getElementById('btn-clear-log').addEventListener('click', () => {
+        document.getElementById('nvda-history-log').innerHTML = '';
+        announceNVDA('Đã xóa nhật ký hoạt động.', 'polite');
+      });
+
+      const modalHelp = document.getElementById('modal-help');
+      const btnOpenHelp = document.getElementById('btn-open-help');
+      const btnCloseHelp = document.getElementById('btn-close-help');
+
+      btnOpenHelp.addEventListener('click', () => {
+        modalHelp.classList.remove('hidden');
+        modalHelp.classList.add('flex');
+        btnCloseHelp.focus();
+      });
+
+      btnCloseHelp.addEventListener('click', () => {
+        modalHelp.classList.add('hidden');
+        modalHelp.classList.remove('flex');
+        btnOpenHelp.focus();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+        const isTyping = tag === 'input' || tag === 'textarea';
+
+        if (e.key === 'Escape' && !modalHelp.classList.contains('hidden')) {
+          modalHelp.classList.add('hidden');
+          modalHelp.classList.remove('flex');
+          btnOpenHelp.focus();
+          return;
+        }
+
+        if (e.altKey && !e.ctrlKey && !e.shiftKey) {
+          const regionMap = {
+            '1': { id: 'region-characters', name: 'Khu vực 1: Chọn Thực Khách' },
+            '2': { id: 'region-pantry', name: 'Khu vực 2: Tủ Nguyên Liệu' },
+            '3': { id: 'region-workbench', name: 'Khu vực 3: Bàn Chế Biến & 9 Dụng Cụ' },
+            '4': { id: 'region-spices', name: 'Khu vực 4: Khay Gia Vị Mở Rộng' },
+            '5': { id: 'region-plate', name: 'Khu vực 5: Đĩa Thức Ăn & Hòa Vị' },
+            '6': { id: 'btn-feed-character', name: 'Nút Đút Cho Nhân Vật Ăn' }
+          };
+          if (regionMap[e.key]) {
+            e.preventDefault();
+            const el = document.getElementById(regionMap[e.key].id);
+            if (el) {
+              el.focus();
+              announceNVDA(`Đã nhảy tới ${regionMap[e.key].name}.`, 'polite');
+            }
+            return;
+          }
+        }
+
+        if (isTyping) return;
+
+        const keyLower = e.key.toLowerCase();
+        if (keyLower === 'i') {
+          e.preventDefault();
+          readCurrentDishAndFlavorReport();
+        } else if (keyLower === 'p') {
+          e.preventDefault();
+          moveStationToPlate();
+        } else if (keyLower === 'f') {
+          e.preventDefault();
+          feedCharacter();
+        } else if (keyLower === 'r') {
+          e.preventDefault();
+          const st = STATIONS.find(s => s.id === state.activeStationId);
+          if (st && st.isWrapperStation) {
+            performStationAction('roll_tight');
+          } else if (st && st.isStuffingStation) {
+            performStationAction('stuff_pack');
+          } else {
+            announceNVDA('Phím R dùng khi bạn đang ở Bàn Cuốn Đa Năng hoặc Trạm Kẹp & Nhồi Bánh Mì. Hãy chọn dụng cụ số 2 hoặc số 3 để cuốn hoặc nhồi!', 'polite');
+          }
+        } else if (keyLower === 'c') {
+          e.preventDefault();
+          const st = STATIONS.find(s => s.id === state.activeStationId);
+          if (st && st.actions.length > 0) {
+            performStationAction(st.actions[0].id);
+          }
+        } else if (keyLower === 'h') {
+          e.preventDefault();
+          modalHelp.classList.remove('hidden');
+          modalHelp.classList.add('flex');
+          btnCloseHelp.focus();
+        }
+      });
+    }
+
+    window.addEventListener('load', () => {
+      bindEvents();
+      renderAll();
+      startAnimationLoop();
+    });
+  </script>
+</body>
+</html>
