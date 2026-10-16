@@ -2046,40 +2046,34 @@
         blended.sour *= 0.82;
         blended.sweet *= 0.88;
         blended.aroma += 1.2;
-        synergies.push('🍋🍬 Hòa vị Chua Ngọt Thanh Mát (Dịu độ gắt tự nhiên)');
+        synergies.push('🍋🍬 Hòa Vị Chua Ngọt (Dịu độ gắt, cân bằng tự nhiên)');
       }
-      // 2. Salt unlocks Umami
+      // 2. Salt unlocks Umami (Pure sensory, no meat/sauce assumption)
       if (blended.salty >= 1.0 && blended.salty <= 4.8 && blended.umami >= 1.5) {
         blended.umami *= 1.22;
         blended.sweet += 0.4;
-        synergies.push('🧂🥩 Muối/Mắm Tôn Vị Ngọt Đạm (Kích hoạt vị Umami)');
+        synergies.push('🧂✨ Muối Hài Hòa Tôn Vị Umami (Kích hoạt chiều sâu đượm đà)');
       }
-      // 3. Acid/Pickles cut Fat
+      // 3. Acid/Pickles cut Fat (Pure sensory)
       if (blended.fatty >= 2.5 && (blended.sour >= 1.2 || hasFreshBalancer)) {
         blended.fatty *= 0.68;
         blended.aroma += 1.0;
-        synergies.push('🥒🍋 Rau Tươi & Vị Chua Cắt Độ Ngấy Béo');
+        synergies.push('✨ Cân Bằng Độ Béo (Vị chua hoặc vị thanh giúp giảm độ ngấy béo)');
       } else if (blended.fatty >= 4.5 && blended.sour < 0.8 && !hasFreshBalancer) {
-        warnings.push('⚠️ Món ăn đang khá ngấy mỡ (Gợi ý: vắt Chanh hoặc thêm Dưa leo, Đồ chua)');
+        warnings.push('⚠️ Món ăn có độ béo khá cao (Gợi ý: điều chỉnh giảm độ béo hoặc bổ sung vị thanh để cân bằng)');
       }
       // 4. Fat tames Spice
       if (blended.spicy >= 3.2 && blended.fatty >= 2.0) {
         blended.spicy *= 0.78;
         synergies.push('🧈🌶️ Vị Béo Làm Dịu Độ Cay Gắt');
       }
-      // 5. Rich Sweet + Fat Harmony (Dynamic Sensation)
+      // 5. Rich Sweet + Fat Harmony (Pure sensory)
       if (blended.sweet >= 2.6 && blended.fatty >= 2.0 && blended.aroma >= 1.8) {
-        if (hasSweets) {
-          synergies.push('🍫🥛 Hòa Quyện Đồ Ngọt Béo Thơm (Vị ngọt béo ngào ngạt của đồ ngọt)');
-        } else if (hasMeatOrSavory || hasHoneyOrButter) {
-          synergies.push('🍯🧈 Áo Sốt Béo Ngọt Ngào Ngạt (Hòa quyện béo ngậy caramel hóa quyến rũ)');
-        } else {
-          synergies.push('✨ Hòa Vị Béo Ngọt Dịu Thơm (Cân bằng béo ngậy ngọt ngào êm ái)');
-        }
+        synergies.push('✨ Hòa Vị Béo Ngọt (Cân bằng độ béo ngậy và vị ngọt êm dịu)');
       }
       // 6. Cheese & Umami richness
       if (hasCheese && (hasMeatOrSavory || blended.umami >= 2.0)) {
-        synergies.push('🧀🥩 Phô Mai & Đạm Béo (Ngậy thơm tan chảy quyện vị Umami)');
+        synergies.push('🧀✨ Phô Mai Béo Ngậy Quyện Cùng Vị Umami');
       }
       // 7. Marination aroma
       if (marinationCount > 0) {
@@ -2142,10 +2136,10 @@
 
       let suffix = '';
       if (norm.sour >= 1.5 && norm.sweet >= 1.5 && norm.spicy >= 1.2) suffix = ' Chua Cay Mặn Ngọt';
-      else if (norm.sour >= 1.5 && norm.sweet >= 1.5) suffix = ' Chua Ngọt Thanh Mát';
+      else if (norm.sour >= 1.5 && norm.sweet >= 1.5) suffix = ' Chua Ngọt Hài Hòa';
       else if (norm.spicy >= 2.0) suffix = ' Cay Nồng Đậm Đà';
-      else if (norm.sweet >= 3.5 && norm.fatty >= 2.0) suffix = ' Béo Ngọt Thơm Ngào Ngạt';
-      else if (norm.umami >= 2.5) suffix = ' Đậm Vị Ngọt Thịt';
+      else if (norm.sweet >= 3.5 && norm.fatty >= 2.0) suffix = ' Béo Ngọt Đậm Đà';
+      else if (norm.umami >= 2.5) suffix = ' Đậm Vị Umami';
 
       const single = items[0];
       if (items.length === 1) {
@@ -2463,7 +2457,9 @@
         };
 
         state.stationItems = [blendedItem];
-        announceNVDA(`Máy xay đã xay nhuyễn tất cả thành món "${blendedItem.name}" sánh mịn mát lạnh!`, 'polite');
+        const hasIceInBlender = blendedItem.subItems.some(i => i.id === 'ice_cubes' || i.baseId === 'ice_cubes');
+        const coldBlendedPhrase = hasIceInBlender ? 'mát lạnh' : 'thơm ngon';
+        announceNVDA(`Máy xay đã xay nhuyễn tất cả thành món "${blendedItem.name}" sánh mịn ${coldBlendedPhrase}!`, 'polite');
         renderAll();
         return;
       }
@@ -2632,6 +2628,72 @@
       if (feedBtn) feedBtn.focus();
     }
 
+    // PURE SENSORY TASTE LEXICON (VIETNAMESE SENSORY EVALUATION - NO HARDCODED INGREDIENTS/TEMPERATURES)
+    function describePureFlavorDescriptor(tasteKey, score, seed = 0) {
+      if (!score || score <= 0) return null;
+      const pick = (arr) => arr[Math.abs(seed) % arr.length];
+
+      switch (tasteKey) {
+        case 'sweet':
+          if (score >= 8.6) return pick(['vị ngọt lịm sắc sảo', 'vị ngọt sắc đậm lịm', 'vị ngọt gắt khé cổ']);
+          if (score >= 7.1) return pick(['vị ngọt đậm đà', 'vị ngọt đượm sâu lắng', 'vị ngọt lịm rõ nét']);
+          if (score >= 4.6) return pick(['vị ngọt đằm', 'vị ngọt ngào êm dịu', 'vị ngọt đượm dịu dàng']);
+          if (score >= 2.1) return pick(['vị ngọt thanh', 'vị ngọt dịu dàng', 'vị ngọt thanh thoát']);
+          if (score >= 0.8) return pick(['vị ngọt dịu nhẹ', 'chút vị ngọt thoang thoảng']);
+          return null;
+
+        case 'umami':
+          if (score >= 7.1) return pick(['vị Umami cực kỳ đậm đà và sâu lắng', 'chiều sâu vị giác tròn đầy mạnh mẽ']);
+          if (score >= 4.6) return pick(['vị đượm đà sâu lắng', 'chiều sâu tròn vị đậm nét']);
+          if (score >= 2.6) return pick(['chiều sâu đượm đà thanh tao', 'vị đượm êm dịu']);
+          if (score >= 1.2) return pick(['vị đượm nhẹ nhàng', 'chút vị đượm thoang thoảng']);
+          return null;
+
+        case 'fatty':
+          if (score >= 7.1) return pick(['độ béo ngậy cực kỳ nồng đậm', 'lớp béo ngậy đậm đặc (khá ngấy)']);
+          if (score >= 4.6) return pick(['lớp béo ngậy đậm đà', 'độ béo ngậy rõ nét']);
+          if (score >= 2.6) return pick(['vị béo bùi vừa vặn', 'độ ngậy mượt mà']);
+          if (score >= 1.2) return pick(['chút béo bùi thoang thoảng', 'độ béo êm dịu']);
+          return null;
+
+        case 'salty':
+          if (score >= 5.6) return pick(['vị mặn chát gắt', 'vị mặn khé lưỡi']);
+          if (score >= 3.9) return pick(['vị mặn đậm đà', 'vị mặn mòi rõ rệt']);
+          if (score >= 2.1) return pick(['vị mặn mà vừa vặn', 'vị mặn mòi hài hòa']);
+          if (score >= 0.8) return pick(['chút vị mặn nhẹ điểm xuyết', 'vị mặn dịu']);
+          return null;
+
+        case 'sour':
+          if (score >= 6.6) return pick(['vị chua gắt xộc đầu lưỡi', 'vị chua lòe nhăn mặt']);
+          if (score >= 4.1) return pick(['vị chua đậm nét rõ rệt', 'vị chua sắc sảo']);
+          if (score >= 2.1) return pick(['vị chua thanh dịu', 'vị chua dịu vừa miệng']);
+          if (score >= 0.8) return pick(['chút vị chua rôn rốt', 'chút vị chua dịu nhẹ']);
+          return null;
+
+        case 'spicy':
+          if (score >= 6.1) return pick(['vị cay xé lưỡi bùng nổ', 'vị cay xộc cực mạnh']);
+          if (score >= 3.6) return pick(['vị cay nồng đậm đà', 'vị cay bốc mạnh mẽ']);
+          if (score >= 1.9) return pick(['vị cay tê kích thích vừa độ', 'vị cay đượm']);
+          if (score >= 0.6) return pick(['chút the cay nhẹ', 'vị cay cay lăn tăn']);
+          return null;
+
+        case 'bitter':
+          if (score >= 4.6) return pick(['vị đắng ngắt rõ rệt', 'vị đắng gắt khó chịu']);
+          if (score >= 2.6) return pick(['vị đắng thanh sâu lắng', 'chút đắng đót tinh tế']);
+          if (score >= 1.0) return pick(['chút vị đắng dịu nhẹ', 'vị đắng nhẹ thoang thoảng']);
+          return null;
+
+        case 'aroma':
+          if (score >= 6.6) return pick(['hương thơm lừng cực kỳ quyến rũ', 'hương thơm nức mũi ngào ngạt']);
+          if (score >= 3.6) return pick(['hương thơm nức ngào ngạt', 'hương thơm quyến rũ rõ nét']);
+          if (score >= 1.5) return pick(['hương thơm thoang thoảng dịu nhẹ', 'chút hương thơm nhẹ nhàng']);
+          return null;
+
+        default:
+          return null;
+      }
+    }
+
     // DYNAMIC SENSORY TASTING REVIEW (TOCA KITCHEN STYLE - NO HARDCODED RECIPES)
     function generateSensoryTastingReview(items, analysis, character) {
       if (!items || items.length === 0) {
@@ -2766,7 +2828,9 @@
         structureDesc = `${vessel} ${vesselCook} bên ngoài, được nhồi đầy đặn nhân ${inners} bên trong`;
       } else if (blendedItem) {
         const ingNames = items.map(i => i.name).join(' cùng ');
-        structureDesc = `Món ăn được xay sánh mịn mát lạnh từ ${ingNames}`;
+        const hasIce = items.some(i => i.id === 'ice_cubes' || (i.subItems && i.subItems.some(s => s.id === 'ice_cubes')));
+        const coldPhrase = hasIce ? 'mát lạnh ' : '';
+        structureDesc = `Món ăn được xay nhuyễn sánh mịn ${coldPhrase}từ ${ingNames}`;
       } else {
         const ingNames = items.slice(0, 3).map(i => i.name).join(' cùng ');
         const first = items[0];
@@ -2774,44 +2838,23 @@
         structureDesc = `${ingNames} được ${cook}`;
       }
 
-      // B. Taste Sensations (Dynamic conversion of chemistry numbers)
-      const tastePhrases = [];
-      if (f.umami >= 3.0) {
-        tastePhrases.push('vị ngọt đượm đà tự nhiên của nước thịt');
-      } else if (f.umami >= 1.5) {
-        tastePhrases.push('vị ngọt thanh nhẹ');
-      }
+      // B. Taste Sensations (Dynamic Pure Sensory Lexicon - Ranked by Dominant Intensity)
+      const candidates = [];
+      const seed = items.length;
+      ['sweet', 'fatty', 'umami', 'salty', 'sour', 'spicy', 'bitter', 'aroma'].forEach((k, idx) => {
+        const val = f[k] || 0;
+        const desc = describePureFlavorDescriptor(k, val, seed + idx);
+        if (desc) {
+          candidates.push({ key: k, score: val, desc });
+        }
+      });
 
-      if (f.salty >= 3.5) {
-        tastePhrases.push('vị mặn mòi đậm đà');
-      } else if (f.salty >= 1.0) {
-        tastePhrases.push('chút vị mặn vừa vặn');
-      }
+      // Sort by intensity score descending so top dominant flavors are announced first
+      candidates.sort((a, b) => b.score - a.score);
 
-      if (f.fatty >= 3.5) {
-        tastePhrases.push('lớp béo ngậy thơm lừng tan chảy');
-      } else if (f.fatty >= 1.5) {
-        tastePhrases.push('chút béo bùi êm dịu');
-      }
-
-      if (f.sweet >= 3.5) {
-        tastePhrases.push('vị ngọt ngào quyến rũ');
-      } else if (f.sweet >= 1.2) {
-        tastePhrases.push('chút ngọt hậu thanh mát');
-      }
-
-      if (f.sour >= 2.0) {
-        tastePhrases.push('chút vị chua thanh giúp giải ngấy');
-      }
-
-      if (f.spicy >= 2.5) {
-        tastePhrases.push('vị cay nồng kích thích đầu lưỡi');
-      } else if (f.spicy >= 0.7) {
-        tastePhrases.push('chút the cay ấm áp');
-      }
-
-      const tasteStr = tastePhrases.length > 0
-        ? `có ${tastePhrases.slice(0, 3).join(', ')}`
+      const topTastes = candidates.slice(0, 3).map(c => c.desc);
+      const tasteStr = topTastes.length > 0
+        ? `có ${topTastes.join(', ')}`
         : 'hương vị thanh đạm mộc mạc';
 
       // C. Spices Applied

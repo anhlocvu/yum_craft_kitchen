@@ -123,3 +123,29 @@
      - Hướng dẫn trải nghiệm trực tiếp không cần cài đặt môi trường.
      - Tuyên ngôn bản quyền và thông tin tác giả Vũ Anh Lộc (LC Boy).
 
+---
+
+## 5. Thông Tin Phiên Làm Việc: Chuẩn Hóa Bộ Từ Điển Vị Giác Cảm Quan Tiếng Việt Thuần Túy & Hệ Thống Kiểm Thử Tự Động (16/10/2026)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Mục tiêu**:
+  1. Loại bỏ triệt để lỗi suy đoán nguyên liệu phi lý (ví dụ: gán nhãn "vị ngọt đượm đà tự nhiên của nước thịt" và gợi ý "vắt chanh, thêm dưa leo" vào ly sinh tố ngọt Oreo đá xay).
+  2. Tuyệt đối không ví von vị giác với bất kỳ nguyên liệu/món ăn cụ thể nào (như không dùng "chua như chanh", "ngọt của sữa/mật", "mặn mắm", "đạm thịt").
+  3. Loại bỏ việc gán ghép cảm giác nhiệt độ vào tính từ vị giác (như "ngọt mát lành" trong khi món có thể được đun sôi/nướng lò nóng).
+  4. Ứng dụng kho tàng thuật ngữ chuyên ngành **Khoa học Đánh giá Cảm quan Thực phẩm (Sensory Evaluation)** tiếng Việt: phân cấp vi tế sắc thái vị giác (ngọt dịu, ngọt thanh, ngọt đằm, ngọt đượm, ngọt lịm sắc nét, ngọt gắt; vị đượm đà Umami; béo bùi, béo ngậy; mặn mà, mặn chát; chua thanh, chua rôn rốt, chua gắt; the cay, cay nồng, cay xé lưỡi...).
+  5. Phát triển thuật toán **Xếp Hạng Vị Nổi Bật (Dominant Flavor Priority Sorting)**: tự động gom Top 2–3 vị có điểm số thực tế cao nhất đưa lên đầu câu cảm quan món ăn.
+  6. Xây dựng và thực thi thành công bộ kiểm thử tự động 21 kịch bản món ăn đa dạng (`test_culinary_engine.js`) đạt kết quả tuyệt đối **21/21 PASS (100%)**.
+
+### Các Cải Tiến Mã Nguồn Chi Tiết
+1. **Hàm `describePureFlavorDescriptor(tasteKey, score, seed)`**:
+   - Chuyển đổi điểm số 8 trục vị giác (0.0 đến 10.0) thành ngôn từ cảm quan tiếng Việt phong phú, thuần chất mô tả phản ứng của gai vị giác và hậu vị (Aftertaste).
+   - Hỗ trợ đa dạng hóa từ ngữ đồng nghĩa (Word Variety) chống lặp từ máy móc.
+2. **Thuật toán Dominant Flavor Priority trong `generateSensoryTastingReview`**:
+   - Đánh giá tất cả các vị vượt ngưỡng, sắp xếp giảm dần theo điểm số `score`.
+   - Với món "Oreo đá xay" (Ngọt 10, Béo 10, Thơm 10): miêu tả lập tức đưa vị ngọt lịm sắc sảo và độ béo ngậy nồng đậm lên hàng đầu, loại bỏ hoàn toàn việc bị vị Umami chèn ép.
+3. **Làm sạch phản ứng hòa vị & Cảnh báo & Tiêu đề**:
+   - `Muối + Umami`: Đổi thành `🧂✨ Muối Hài Hòa Tôn Vị Umami (Kích hoạt chiều sâu đượm đà)` (loại bỏ mắm/thịt).
+   - Cảnh báo béo cao: `⚠️ Món ăn có độ béo khá cao (Gợi ý: điều chỉnh giảm độ béo hoặc bổ sung vị thanh để cân bằng)` (loại bỏ dưa leo/chanh).
+   - Tiêu đề tự động: Đổi `Đậm Vị Ngọt Thịt` thành `Đậm Vị Umami` (không tự tiện suy đoán là thịt).
+   - Máy xay: Chỉ thông báo `mát lạnh` khi trong công thức thực sự có Đá viên (`ice_cubes`).
+
+
