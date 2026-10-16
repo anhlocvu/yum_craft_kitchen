@@ -1,3 +1,14 @@
+# NGUYÊN TẮC THIẾT KẾ CỐT LÕI — YUMCRAFT KITCHEN
+
+> [!IMPORTANT]
+> **TRIẾT LÝ NẤU BẾP TỰ DO (TOCA KITCHEN SANDBOX PHILOSOPHY)**
+> 1. **Hoàn Toàn Không Có Công Thức Cố Định (Zero Hardcoded Recipes)**: YumCraft Kitchen là trò chơi nấu ăn mô phỏng tự do theo phong cách Toca Kitchen. Người chơi là bếp trưởng sáng tạo tuyệt đối, được quyền kết hợp bất kỳ nguyên liệu, dụng cụ và gia vị nào với nhau mà không bị trói buộc bởi bất kỳ công thức sách giáo khoa cứng nhắc nào.
+> 2. **Hóa Học Vị Giác Cảm Quan Động (Dynamic Sensory Chemistry)**: Hệ thống đánh giá dựa trên các định luật vật lý và hóa học vị giác thực tế (Umami, Mặn, Ngọt, Chua, Cay, Béo, Đắng, Thơm, Giòn), phản ánh trung thực những gì người chơi vừa thực sự chế biến và nêm nếm. Tuyệt đối không gán ghép các nhãn hương vị tĩnh hoặc tự ý suy đoán nguyên liệu không có trong món ăn.
+> 3. **Nhận Xét Của Thực Khách Sinh Động & Chân Thực (Living Character Critique)**: Khi thưởng thức, nhân vật sẽ miêu tả chi tiết cảm giác vị giác, kết cấu món ăn (nướng, luộc, chiên, cuộn, nhồi...) và mùi vị của các loại gia vị người chơi đã nêm, phản ánh đúng gu thưởng thức và biểu cảm của từng thực khách.
+> 4. **Trợ Năng Toàn Diện Chuẩn Quốc Tế (WCAG AA/AAA & NVDA First)**: Mọi tương tác, cảm giác vị giác và diễn biến nấu nướng đều phải được truyền tải hoàn hảo, tự nhiên và liền mạch đến người chơi khiếm thị thông qua NVDA và bàn phím.
+
+---
+
 # NHẬT KÝ DỰ ÁN — YUMCRAFT KITCHEN
 
 ## 1. Thông Tin Phiên Làm Việc Mới Nhất
@@ -67,6 +78,26 @@
     3. Giao diện **tự động chuyển sang Tab 5: "🍽️ Bàn Tiệc & Thưởng Thức"**.
     4. Trình duyệt **tự động đặt tiêu điểm (focus) vào nút `🥄 ĐÚT CHO THỰC KHÁCH ĂN! (Phím F)`**.
     5. NVDA đọc thông báo món ăn đã hoàn thành và sẵn sàng cho thực khách ăn.
+
+### H. Tối Ưu Triệt Để Khối Skip Links & Xây Dựng Bộ Máy Đánh Giá Cảm Quan Ẩm Thực Tự Do
+- **Xóa bỏ hoàn toàn khối Skip Links dư thừa ở đầu trang nhà bếp**:
+  - Loại bỏ khối `<nav aria-label="Liên kết nhảy nhanh nhà bếp cho NVDA">` chứa 6 liên kết anchor trỏ vào panel tab bị ẩn.
+  - Khắc phục lỗi bấm vào link không nhảy (do các panel tab khác đang ở trạng thái `hidden`).
+  - Tối ưu hóa tuyệt đối cho người dùng NVDA: Người chơi khiếm thị chỉ cần ấn `D` (duyệt landmark) hoặc `Alt + 1..5` để chuyển tab tức thì, không bị chặn bởi các liên kết rườm rà ở đầu trang.
+- **Xóa bỏ hoàn toàn nhãn cứng "Sô-cô-la & Sữa" khỏi các món mặn**:
+  - Chuyển phản ứng hòa vị béo ngọt thơm (`blended.sweet >= 2.6 && blended.fatty >= 2.0 && blended.aroma >= 1.8`) sang cơ chế động:
+    - Nếu có nguyên liệu đồ ngọt thực sự (`sweets` như `chocolate`, `milk`, `oreo`): kích hoạt `🍫🥛 Hòa Quyện Đồ Ngọt Béo Thơm`.
+    - Nếu là món thịt/mặn có bơ/mật ong: kích hoạt `🍯🧈 Áo Sốt Béo Ngọt Ngào Ngạt (Hòa quyện béo ngậy caramel hóa quyến rũ)`.
+    - Bổ sung phản ứng phô mai tan chảy & đạm béo: `🧀🥩 Phô Mai & Đạm Béo (Ngậy thơm tan chảy quyện vị Umami)`.
+- **Xây dựng Bộ Máy Đánh Giá Cảm Quan Ẩm Thực Động (`generateSensoryTastingReview`)**:
+  - Dựa trên 100% tinh thần tự do Toca Kitchen: không áp đặt bất kỳ công thức cứng nào.
+  - Mô tả sống động 4 tầng cảm quan:
+    1. *Cấu trúc & Kỹ thuật*: Phân tích chi tiết vỏ ngoài (nướng than hoa, áp chảo, chiên giòn, xém cạnh...) và lớp nhân cuộn/nhồi bên trong.
+    2. *Vị giác chân thực*: Chuyển đổi các con số hóa học thành ngôn từ miêu tả vị đượm đà nước thịt, vị mặn vừa vặn, vị ngọt thanh, lớp béo ngậy tan chảy, the cay ấm nồng...
+    3. *Gia vị thực tế*: Nhắc tên chính xác các loại gia vị người chơi vừa nêm nếm.
+    4. *Cá tính nhân vật*: Gấu Bự, Mèo Miu, Rồng Lửa, Cú Thông Thái có biểu cảm trầm trồ, khen ngợi hoặc phản ứng hài hước (nếu nấu sống, cháy khét hay mặn chát).
+- **Nâng Cấp Báo Cáo Phím `I` (`readDishSummary`) Chuẩn NVDA**:
+  - Khi ấn phím `I`, NVDA đọc to câu cảm quan món ăn sống động, điểm hài hòa, chi tiết 8 vị, cảnh báo nguy cơ nếu có (`warnings`) và phản ứng hòa vị (`synergies`).
 
 ---
 

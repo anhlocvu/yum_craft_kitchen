@@ -246,16 +246,6 @@
   <!-- SCREEN 2: MÀN HÌNH NHÀ BẾP YUMCRAFT KITCHEN (KITCHEN PLAY SCREEN)         -->
   <!-- ========================================================================= -->
   <div id="screen-kitchen" class="hidden flex-col min-h-screen">
-    <!-- Skip Navigation Links for Kitchen Screen -->
-    <nav aria-label="Liên kết nhảy nhanh nhà bếp cho NVDA">
-      <a href="#panel-fridge" class="skip-link">Nhảy tới Tab 1: Tủ Lạnh &amp; Kho Đồ (Alt+1)</a>
-      <a href="#panel-workbench" class="skip-link">Nhảy tới Tab 2: Bàn Chế Biến &amp; 9 Dụng Cụ (Alt+2)</a>
-      <a href="#panel-staging" class="skip-link">Nhảy tới Tab 3: Khay Tạm Chờ Sơ Chế (Alt+3)</a>
-      <a href="#panel-spices" class="skip-link">Nhảy tới Tab 4: Khay Gia Vị (Alt+4)</a>
-      <a href="#panel-dining" class="skip-link">Nhảy tới Tab 5: Bàn Tiệc &amp; Thưởng Thức (Alt+5)</a>
-      <a href="#footer-btn-help" class="skip-link">Nhảy tới Hướng Dẫn &amp; Phím Tắt (Chân trang - Phím H)</a>
-    </nav>
-
     <!-- Top Kitchen Game Bar -->
     <header class="bg-gradient-to-r from-amber-700 via-orange-600 to-emerald-700 text-white shadow-lg px-3 py-2 sticky top-0 z-40">
       <div class="max-w-[1500px] mx-auto flex flex-wrap items-center justify-between gap-2">
@@ -1992,6 +1982,10 @@
       let hasFreshBalancer = false;
       let marinationCount = 0;
       let hasBoiledSoup = false;
+      let hasSweets = false;
+      let hasMeatOrSavory = false;
+      let hasCheese = false;
+      let hasHoneyOrButter = false;
       const allStructures = new Set();
 
       function walkItem(it, weight = 1.0) {
@@ -2005,18 +1999,33 @@
         if (it.cookLevel >= 3) hasBurnt = true;
         if (it.needsCooking && it.cookLevel === 0) hasRawMeat = true;
 
+        if (it.category === 'sweets' || it.id === 'chocolate' || it.id === 'milk' || it.id === 'oreo') hasSweets = true;
+        if (it.category === 'meat' || it.category === 'seafood' || it.id === 'egg' || it.id === 'pate') hasMeatOrSavory = true;
+        if (it.id === 'cheese_stick') hasCheese = true;
+
         Object.keys(totals).forEach(k => {
           totals[k] += (it.flavors[k] || 0) * weight;
         });
 
         it.spicesApplied.forEach(sp => {
           if (sp.cookedIn) marinationCount++;
+          if (sp.id === 'cheese_powder') hasCheese = true;
+          if (sp.id === 'honey' || sp.id === 'butter') hasHoneyOrButter = true;
         });
 
         if (it.subItems && it.subItems.length > 0) {
           it.subItems.forEach(sub => {
             if (sub.needsCooking && sub.cookLevel === 0 && it.cookLevel === 0) hasRawMeat = true;
             if (sub.isFreshBalancer) hasFreshBalancer = true;
+            if (sub.category === 'sweets' || sub.id === 'chocolate' || sub.id === 'milk' || sub.id === 'oreo') hasSweets = true;
+            if (sub.category === 'meat' || sub.category === 'seafood' || sub.id === 'egg' || sub.id === 'pate') hasMeatOrSavory = true;
+            if (sub.id === 'cheese_stick') hasCheese = true;
+            if (sub.spicesApplied) {
+              sub.spicesApplied.forEach(sp => {
+                if (sp.id === 'cheese_powder') hasCheese = true;
+                if (sp.id === 'honey' || sp.id === 'butter') hasHoneyOrButter = true;
+              });
+            }
           });
         }
       }
@@ -2058,16 +2067,26 @@
         blended.spicy *= 0.78;
         synergies.push('🧈🌶️ Vị Béo Làm Dịu Độ Cay Gắt');
       }
-      // 5. Sweet dessert harmony (Chocolate + Milk / Marshmallow / Oreo)
-      if (blended.sweet >= 3.0 && blended.fatty >= 2.0 && blended.aroma >= 2.0) {
-        synergies.push('🍫🥛 Hòa Quyện Đồ Ngọt Béo Thơm (Sô-cô-la & Sữa béo ngậy ngọt ngào)');
+      // 5. Rich Sweet + Fat Harmony (Dynamic Sensation)
+      if (blended.sweet >= 2.6 && blended.fatty >= 2.0 && blended.aroma >= 1.8) {
+        if (hasSweets) {
+          synergies.push('🍫🥛 Hòa Quyện Đồ Ngọt Béo Thơm (Vị ngọt béo ngào ngạt của đồ ngọt)');
+        } else if (hasMeatOrSavory || hasHoneyOrButter) {
+          synergies.push('🍯🧈 Áo Sốt Béo Ngọt Ngào Ngạt (Hòa quyện béo ngậy caramel hóa quyến rũ)');
+        } else {
+          synergies.push('✨ Hòa Vị Béo Ngọt Dịu Thơm (Cân bằng béo ngậy ngọt ngào êm ái)');
+        }
       }
-      // 6. Marination aroma
+      // 6. Cheese & Umami richness
+      if (hasCheese && (hasMeatOrSavory || blended.umami >= 2.0)) {
+        synergies.push('🧀🥩 Phô Mai & Đạm Béo (Ngậy thơm tan chảy quyện vị Umami)');
+      }
+      // 7. Marination aroma
       if (marinationCount > 0) {
         blended.aroma += Math.min(2.0, marinationCount * 0.5);
         synergies.push('🔥🧄 Gia Vị Ướp Thấm Sâu Khi Nấu');
       }
-      // 7. Structural synergies
+      // 8. Structural synergies
       if (allStructures.has('rolled')) {
         synergies.push('🌯 Kết Cấu Món Cuốn Đa Tầng (Lớp vỏ ôm trọn nhân)');
       }
@@ -2613,6 +2632,242 @@
       if (feedBtn) feedBtn.focus();
     }
 
+    // DYNAMIC SENSORY TASTING REVIEW (TOCA KITCHEN STYLE - NO HARDCODED RECIPES)
+    function generateSensoryTastingReview(items, analysis, character) {
+      if (!items || items.length === 0) {
+        return {
+          speech: "Ơ kìa? Dĩa thức ăn đang trống trơn, chưa có gì để ăn cả!",
+          moodTag: "Dĩa đang trống! 🍽️",
+          reactionType: "neutral",
+          score: 0,
+          sensorySentence: "Chưa có thức ăn trên dĩa."
+        };
+      }
+
+      const f = analysis.normalized;
+      const finalDishName = state.customDishName || analysis.autoTitle || 'Món Ăn Tự Chế';
+      let score = analysis.harmonyScore;
+      character.likes.forEach(k => { if (f[k] >= 2.0) score += 5; });
+      score = Math.max(0, Math.min(100, score));
+
+      // 1. Extreme & Gag Reactions (Toca Kitchen Humor)
+      if (analysis.hasRawMeat) {
+        let gagSpeech = '';
+        if (character.id === 'chef_bear') {
+          gagSpeech = `"Ối dồi ôi! Món '${finalDishName}' còn thịt sống tanh lòm chưa nấu chín kìa! Đầu bếp bận gì mà quên áp chảo hay nướng chín cho tôi thế này?!"`;
+        } else if (character.id === 'cat_miu') {
+          gagSpeech = `"Meo meo... Thịt còn sống tanh lòm thế này Miu không dám cắn đâu, sợ đau bụng lắm!"`;
+        } else if (character.id === 'dragon_long') {
+          gagSpeech = `"Gừừừ! Thịt còn sống nhăn răng! Đưa đây ta khè một búng lửa nướng chín lại ngay bây giờ!"`;
+        } else {
+          gagSpeech = `"Kỳ cục quá! Thịt chưa qua xử lý nhiệt chín tới, còn mùi tanh sống thế này thì vi khuẩn sinh sôi, không thể ăn được!"`;
+        }
+        playSoundEffect('react_bad');
+        return {
+          speech: gagSpeech,
+          moodTag: 'Thịt còn sống tanh! 🤢',
+          reactionType: 'bad',
+          score: Math.min(score, 20),
+          sensorySentence: 'Món ăn còn thịt sống tanh chưa qua chế biến nhiệt.'
+        };
+      }
+
+      if (analysis.hasBurnt) {
+        let burntSpeech = '';
+        if (character.id === 'chef_bear') {
+          burntSpeech = `"Khụ khụ... Món '${finalDishName}' bị nấu quá lửa cháy đen thui rồi đầu bếp ơi! Cắn vào đắng nghét cả họng thế này thì nuốt sao nổi!"`;
+        } else if (character.id === 'cat_miu') {
+          burntSpeech = `"Khụ... Đắng quá đi mất! Món bị cháy khét đắng ngắt cả lưỡi rồi Miu không thích đâu!"`;
+        } else if (character.id === 'dragon_long') {
+          burntSpeech = `"Ha ha! Khét lẹt như cục than vậy! Dù ta là rồng lửa nhưng ăn món cháy đen này cũng thấy nghẹn họng!"`;
+        } else {
+          burntSpeech = `"Đắng ngắt! Quá trình nhiệt phân quá đà làm cháy thành than carbon rồi, mất sạch dinh dưỡng và vị ngon!"`;
+        }
+        playSoundEffect('react_bad');
+        return {
+          speech: burntSpeech,
+          moodTag: 'Cháy khét đắng nghét! 炭',
+          reactionType: 'bad',
+          score: Math.min(score, 22),
+          sensorySentence: 'Món ăn bị quá lửa cháy khét đen đắng nghét.'
+        };
+      }
+
+      if (f.salty > 5.5) {
+        let saltySpeech = '';
+        if (character.id === 'chef_bear') {
+          saltySpeech = `"Úi chà chà! Tay ai nêm mà món '${finalDishName}' mặn chát cả lưỡi thế này! Cho tôi xin một xô nước lọc gấp kẻo quéo thận mất!"`;
+        } else if (character.id === 'cat_miu') {
+          saltySpeech = `"Eo ôi mặn quá! Lưỡi Miu tê rần rần rồi, mau cho Miu uống nước lọc với!"`;
+        } else if (character.id === 'dragon_long') {
+          saltySpeech = `"Mặn như nước biển sâu vậy! Đầu bếp tính ướp muối ta thành xác ướp luôn à?!"`;
+        } else {
+          saltySpeech = `"Nồng độ muối natri vượt ngưỡng báo động! Vị mặn lấn át toàn bộ hương vị khác, không hề có tính cân bằng!"`;
+        }
+        playSoundEffect('react_bad');
+        return {
+          speech: saltySpeech,
+          moodTag: 'Mặn chát khát nước! 🧂💦',
+          reactionType: 'bad',
+          score: Math.min(score, 35),
+          sensorySentence: 'Món ăn bị nêm quá tay mặn chát khát nước.'
+        };
+      }
+
+      if (f.spicy > character.maxSpiceTolerance) {
+        let spicySpeech = '';
+        if (character.id === 'cat_miu') {
+          spicySpeech = `"Hàààà! Cay xé họng luôn rồi! Miu bốc khói hai tai rồi nè, cay cấp độ ${f.spicy}/10 Miu không chịu nổi đâu hu hu!"`;
+        } else if (character.id === 'owl_prof') {
+          spicySpeech = `"Hắt xì... Nồng độ capsaicin cay cấp độ ${f.spicy}/10 vượt xa ngưỡng chịu đựng của tôi rồi, cay cháy cả họng!"`;
+        } else {
+          spicySpeech = `"Hàààà! Nóng bừng cả mặt! Món '${finalDishName}' cay cấp độ ${f.spicy}/10 xé lưỡi bốc khói, vượt quá giới hạn chịu đựng của tôi rồi!"`;
+        }
+        playSoundEffect('react_bad');
+        return {
+          speech: spicySpeech,
+          moodTag: 'Cay xè bốc khói! 🔥🌶️',
+          reactionType: 'bad',
+          score: Math.min(score, 45),
+          sensorySentence: `Món ăn cay bùng nổ cấp độ ${f.spicy}/10 vượt quá sức chịu đựng.`
+        };
+      }
+
+      // 2. Build Rich Sensory Tasting Critique (User's Intuitive Style)
+      // A. Structure Description
+      let structureDesc = '';
+      const rolledItem = items.find(it => it.kind === 'rolled');
+      const stuffedItem = items.find(it => it.kind === 'stuffed');
+      const blendedItem = items.find(it => it.kind === 'blended' || it.cookMethod === 'blended');
+
+      const methodToText = (m, level) => {
+        if (level === 2) return 'chiên giòn rụm';
+        if (m === 'grilled') return 'nướng than hoa thơm lừng';
+        if (m === 'fried') return 'áp chảo chín tới vàng ươm';
+        if (m === 'baked') return 'đút lò nướng thơm phức';
+        if (m === 'deep_fried') return 'chiên ngập dầu giòn tan';
+        if (m === 'boiled') return 'luộc chín mềm ngọt nước';
+        return 'chế biến thơm ngon';
+      };
+
+      if (rolledItem) {
+        const outer = rolledItem.outerItem ? rolledItem.outerItem.name : rolledItem.name;
+        const outerCook = methodToText(rolledItem.cookMethod, rolledItem.cookLevel);
+        const inners = (rolledItem.subItems && rolledItem.subItems.length > 0)
+          ? rolledItem.subItems.map(s => s.name).join(' và ')
+          : 'nhân béo bùi';
+        structureDesc = `${outer} được ${outerCook}, cuộn trọn với một lớp ${inners} ở bên trong`;
+      } else if (stuffedItem) {
+        const vessel = stuffedItem.outerItem ? stuffedItem.outerItem.name : stuffedItem.name;
+        const vesselCook = stuffedItem.cookLevel >= 1 ? 'nướng thơm giòn' : 'giòn xốp';
+        const inners = (stuffedItem.subItems && stuffedItem.subItems.length > 0)
+          ? stuffedItem.subItems.map(s => s.name).join(', ')
+          : 'nhân đậm đà';
+        structureDesc = `${vessel} ${vesselCook} bên ngoài, được nhồi đầy đặn nhân ${inners} bên trong`;
+      } else if (blendedItem) {
+        const ingNames = items.map(i => i.name).join(' cùng ');
+        structureDesc = `Món ăn được xay sánh mịn mát lạnh từ ${ingNames}`;
+      } else {
+        const ingNames = items.slice(0, 3).map(i => i.name).join(' cùng ');
+        const first = items[0];
+        const cook = first ? methodToText(first.cookMethod, first.cookLevel) : 'chế biến kỹ lưỡng';
+        structureDesc = `${ingNames} được ${cook}`;
+      }
+
+      // B. Taste Sensations (Dynamic conversion of chemistry numbers)
+      const tastePhrases = [];
+      if (f.umami >= 3.0) {
+        tastePhrases.push('vị ngọt đượm đà tự nhiên của nước thịt');
+      } else if (f.umami >= 1.5) {
+        tastePhrases.push('vị ngọt thanh nhẹ');
+      }
+
+      if (f.salty >= 3.5) {
+        tastePhrases.push('vị mặn mòi đậm đà');
+      } else if (f.salty >= 1.0) {
+        tastePhrases.push('chút vị mặn vừa vặn');
+      }
+
+      if (f.fatty >= 3.5) {
+        tastePhrases.push('lớp béo ngậy thơm lừng tan chảy');
+      } else if (f.fatty >= 1.5) {
+        tastePhrases.push('chút béo bùi êm dịu');
+      }
+
+      if (f.sweet >= 3.5) {
+        tastePhrases.push('vị ngọt ngào quyến rũ');
+      } else if (f.sweet >= 1.2) {
+        tastePhrases.push('chút ngọt hậu thanh mát');
+      }
+
+      if (f.sour >= 2.0) {
+        tastePhrases.push('chút vị chua thanh giúp giải ngấy');
+      }
+
+      if (f.spicy >= 2.5) {
+        tastePhrases.push('vị cay nồng kích thích đầu lưỡi');
+      } else if (f.spicy >= 0.7) {
+        tastePhrases.push('chút the cay ấm áp');
+      }
+
+      const tasteStr = tastePhrases.length > 0
+        ? `có ${tastePhrases.slice(0, 3).join(', ')}`
+        : 'hương vị thanh đạm mộc mạc';
+
+      // C. Spices Applied
+      const spiceNames = new Set();
+      items.forEach(it => {
+        it.spicesApplied.forEach(sp => spiceNames.add(sp.name));
+        if (it.subItems) {
+          it.subItems.forEach(sub => {
+            if (sub.spicesApplied) sub.spicesApplied.forEach(sp => spiceNames.add(sp.name));
+          });
+        }
+      });
+      const spiceArr = Array.from(spiceNames);
+      let spiceStr = '';
+      if (spiceArr.length > 0) {
+        const topSpices = spiceArr.slice(0, 4).join(', ');
+        const extraCount = spiceArr.length > 4 ? ` và ${spiceArr.length - 4} loại gia vị khác` : '';
+        spiceStr = `, nêm thêm ${topSpices}${extraCount}`;
+      }
+
+      // D. Combine Narrative
+      const sensorySentence = `${structureDesc}, ${tasteStr}${spiceStr}`;
+
+      // E. Character Tone & Verdict
+      let speech = '';
+      let moodTag = '';
+      let reactionType = 'good';
+
+      if (score >= 82) {
+        reactionType = 'love';
+        moodTag = 'Tuyệt phẩm 5 Sao! 🤩🌟';
+        if (character.id === 'chef_bear') {
+          speech = `"Nhoàm nhoàm... ÔI TUYỆT HẢO! ${sensorySentence}, tạo nên một hương vị cực kỳ tuyệt vời! Đúng là tay nghề của một bếp trưởng thực thụ, ăn vào đã cái bụng vô cùng!"`;
+        } else if (character.id === 'cat_miu') {
+          speech = `"Măm măm... ÔI THÍCH QUÁ! ${sensorySentence}, vị ngon hòa quyện tan ngay trong miệng làm Miu mê tít luôn!"`;
+        } else if (character.id === 'dragon_long') {
+          speech = `"Khà khà... ĐÃ MIỆNG THẬT! ${sensorySentence}, hương vị đậm đà bùng nổ đúng gu của ta rồi!"`;
+        } else {
+          speech = `"Chà... XUẤT SẮC! ${sensorySentence}, sự phối hợp ẩm thực này đạt độ hài hòa cân bằng đỉnh cao!"`;
+        }
+        playSoundEffect('react_love');
+      } else if (score >= 50) {
+        reactionType = 'good';
+        moodTag = 'Ngon miệng vừa vị! 😋👍';
+        speech = `"Măm măm! ${sensorySentence}, ăn rất ngon miệng và vừa vị (Hài hòa: ${score}/100 điểm)!"`;
+        playSoundEffect('react_good');
+      } else {
+        reactionType = 'good';
+        moodTag = 'Vị lạ độc đáo! 🤔';
+        speech = `"Hừm... ${sensorySentence}. Món ăn có hương vị khá độc lạ và mới mẻ, lần sau đầu bếp hãy thử nêm nếm thêm xem sao nhé!"`;
+        playSoundEffect('react_good');
+      }
+
+      return { speech, moodTag, reactionType, score, sensorySentence };
+    }
+
     // FEED CHARACTER
     function feedCharacter() {
       const char = CHARACTERS.find(c => c.id === state.activeCharacterId) || CHARACTERS[0];
@@ -2622,68 +2877,25 @@
       }
 
       const analysis = analyzeCulinaryChemistry(state.plateItems);
-      const f = analysis.normalized;
       const finalDishName = state.customDishName || analysis.autoTitle || 'Món Ăn Tự Chế';
 
-      let reactionType = 'good';
-      let speech = '';
-      let moodTag = '';
-      let score = analysis.harmonyScore;
+      const review = generateSensoryTastingReview(state.plateItems, analysis, char);
 
-      char.likes.forEach(k => { if (f[k] >= 2.0) score += 5; });
-      score = Math.max(0, Math.min(100, score));
-
-      if (analysis.hasRawMeat) {
-        reactionType = 'bad';
-        score = Math.min(score, 20);
-        moodTag = 'Thịt còn sống tanh! 🤢';
-        speech = `"Ối dồi ôi! Món '${finalDishName}' còn thịt sống tanh lòm chưa nấu chín kìa! Đầu bếp nhớ áp chảo hoặc nướng chín trước nhé!"`;
-        playSoundEffect('react_bad');
-      } else if (analysis.hasBurnt) {
-        reactionType = 'bad';
-        score = Math.min(score, 22);
-        moodTag = 'Cháy khét đắng nghét! 炭';
-        speech = `"Khụ khụ... Món '${finalDishName}' bị nấu quá lửa cháy đen thui rồi, đắng nghét cả họng!"`;
-        playSoundEffect('react_bad');
-      } else if (f.salty > 5.5) {
-        reactionType = 'bad';
-        score = Math.min(score, 35);
-        moodTag = 'Mặn chát khát nước! 🧂💦';
-        speech = `"Úi chà! Món '${finalDishName}' nêm mặn chát cả lưỡi, cho tôi xin ly nước lọc gấp!"`;
-        playSoundEffect('react_bad');
-      } else if (f.spicy > char.maxSpiceTolerance) {
-        reactionType = 'bad';
-        score = Math.min(score, 45);
-        moodTag = 'Cay xè bốc khói! 🔥🌶️';
-        speech = `"Hàààà! Cay xé họng luôn! Món '${finalDishName}' cay cấp độ ${f.spicy}/10 vượt quá sức chịu đựng của tôi rồi!"`;
-        playSoundEffect('react_bad');
-      } else if (score >= 82) {
-        reactionType = 'love';
-        moodTag = 'Tuyệt phẩm 5 Sao! 🤩🌟';
-        speech = `"Nhoàm nhoàm... ÔI TUYỆT VỜI! Món '${finalDishName}' ngon xuất sắc! Hương vị hòa quyện đỉnh cao, đúng là tay nghề bếp trưởng!"`;
-        playSoundEffect('react_love');
-      } else {
-        reactionType = 'good';
-        moodTag = 'Ngon miệng vừa vị! 😋👍';
-        speech = `"Măm măm! Món '${finalDishName}' ăn rất ngon miệng (Điểm hài hòa: ${score}/100). Đậm đà ${f.umami}/10, Ngọt ${f.sweet}/10, Béo ${f.fatty}/10!"`;
-        playSoundEffect('react_good');
-      }
-
-      state.charAnimState = reactionType;
+      state.charAnimState = review.reactionType;
       state.charAnimTimer = 90;
 
       const moodEl = document.getElementById('dining-mood-tag');
       const speechEl = document.getElementById('dining-speech-bubble');
       const scoreEl = document.getElementById('dining-last-score');
 
-      if (moodEl) moodEl.textContent = moodTag;
-      if (speechEl) speechEl.textContent = speech;
-      if (scoreEl) scoreEl.textContent = `${score} / 100 điểm (${moodTag})`;
+      if (moodEl) moodEl.textContent = review.moodTag;
+      if (speechEl) speechEl.textContent = review.speech;
+      if (scoreEl) scoreEl.textContent = `${review.score} / 100 điểm (${review.moodTag})`;
 
       state.plateItems = [];
       state.customDishName = '';
 
-      announceNVDA(`${char.name} vừa thưởng thức món "${finalDishName}". Nhận xét: ${speech}`, 'assertive');
+      announceNVDA(`${char.name} vừa thưởng thức món "${finalDishName}". Nhận xét: ${review.speech}`, 'assertive');
       renderAll();
     }
 
@@ -2700,9 +2912,13 @@
       const analysis = analyzeCulinaryChemistry(allItems);
       const f = analysis.normalized;
       const name = state.customDishName || analysis.autoTitle;
+      const char = CHARACTERS.find(c => c.id === state.activeCharacterId) || CHARACTERS[0];
+      const review = generateSensoryTastingReview(allItems, analysis, char);
+
+      const warnStr = analysis.warnings.length > 0 ? ` Cảnh báo: ${analysis.warnings.join('; ')}.` : '';
       const synStr = analysis.synergies.length > 0 ? ` Phản ứng hòa vị: ${analysis.synergies.join('; ')}.` : '';
 
-      const msg = `Báo cáo món ăn ${place}: Tên món "${name}". Thành phần: ${analysis.structureSummary}. Điểm hài hòa: ${analysis.harmonyScore}/100. Chi tiết: Đậm đà Umami ${f.umami}, Mặn ${f.salty}, Ngọt ${f.sweet}, Chua ${f.sour}, Cay ${f.spicy}, Béo ${f.fatty}, Thơm ${f.aroma}.${synStr}`;
+      const msg = `Báo cáo món ăn ${place}: Tên món "${name}". Cảm quan món ăn: ${review.sensorySentence}. Điểm hài hòa: ${analysis.harmonyScore}/100. Chi tiết 8 vị: Đậm đà Umami ${f.umami}, Mặn ${f.salty}, Ngọt ${f.sweet}, Béo ${f.fatty}, Thơm ${f.aroma}, Cay ${f.spicy}, Chua ${f.sour}, Đắng ${f.bitter}.${warnStr}${synStr}`;
       announceNVDA(msg, 'assertive');
     }
 
