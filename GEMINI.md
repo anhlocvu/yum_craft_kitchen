@@ -151,4 +151,22 @@
    - Loại bỏ hoàn toàn nhãn kỹ thuật `Ly Sinh Tố / Thức Uống` và các tiền tố gượng gạo.
    - Món ăn được xưng danh trực tiếp theo tên người chơi đặt (ví dụ: `Món 'oreo đá say' được xay nhuyễn sánh mịn mát lạnh từ Sữa tươi thanh trùng, Thanh Sô-cô-la Đen và Bánh quy Oreo kẹp kem...`), đảm bảo tôn trọng tuyệt đối quyền tự do sáng tạo và định danh món ăn của người chơi.
 
+---
+
+## 6. Thông Tin Phiên Làm Việc: Mở Rộng Kho Nguyên Liệu Lên 61 Món & Tinh Chỉnh Cảm Quan Trợ Năng (16/10/2026)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Mục tiêu**:
+  1. Phân loại và mở rộng kho nguyên liệu từ 46 lên **61 nguyên liệu (+15 nguyên liệu mới)** mang đậm hương vị nhiệt đới và bản sắc ẩm thực Việt Nam:
+     - Tách riêng **Xoài xanh giòn chua** (`green_mango`) cho các món gỏi/nộm và **Xoài chín vàng ngọt** (`ripe_mango`) cho các món tráng miệng/sinh tố.
+     - Chuẩn hóa **Khoai lang mật tươi nguyên củ** (`sweet_potato`) và **Khoai môn củ tươi** (`taro`) thành nguyên liệu thô (`needsCooking: true`), người chơi nướng than, hấp luộc hoặc chiên giòn để thưởng thức hương vị dẻo bùi ứa mật.
+     - Bổ sung **Đậu phộng rang bùi thơm** (`roasted_peanuts`) và **Mạch nha dẻo quánh** (`malt_syrup`) phục vụ làm kẹo lạc, kẹo cu đơ, rắc nộm gỏi hoặc kẹp bánh tráng nướng.
+     - Bổ sung **Cóc non giòn rụm** (`june_plum`), **Ổi giòn ngọt thanh** (`guava`), **Trái bơ sáp dẻo béo** (`avocado`), **Bắp ngô ngọt tươi** (`sweet_corn`), **Nấm kim châm tươi** (`enoki_mushroom`).
+     - Bổ sung đạm và phô mai: **Thịt nạc băm tươi** (`minced_meat`), **Đậu hũ non thanh mát** (`tofu`), **Phô mai khối Mozzarella** (`mozzarella`), **Bánh sừng bò Croissant bơ Pháp** (`croissant`, hỗ trợ `canBeVessel: true` để nhồi nhân).
+  2. Cập nhật nhãn số lượng ngăn tủ thành `Tất cả (61)` và cập nhật tự động huy hiệu `fridge-total-count-badge`.
+  3. Đảm bảo 100% tiêu chuẩn trợ năng **WCAG 2.2 AAA & NVDA First**:
+     - Tất cả 15 nguyên liệu mới đều có nhãn `aria-label` tự nhiên, rõ nghĩa kết hợp tên và câu miêu tả cảm quan.
+     - Biểu tượng emoji có `aria-hidden="true"`, các thao tác chọn nguyên liệu đều phản hồi tức thì qua Web Audio API và ARIA Live Region.
+  4. Thực thi kiểm thử tích hợp động cơ cảm quan ẩm thực thành công 100% với các món ăn kết hợp mới: Gỏi xoài xanh đậu phộng, Kẹo lạc mạch nha, Khoai lang mật nướng, Croissant kẹp phô mai thịt băm.
+
+
 

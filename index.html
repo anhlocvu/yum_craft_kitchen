@@ -336,7 +336,7 @@
               <p class="text-xs text-slate-500 font-medium">Mì, bột làm bánh, vỏ cuốn, bánh mì, đồ ăn vặt &amp; sô-cô-la</p>
             </div>
           </div>
-          <span id="fridge-total-count-badge" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-200 text-slate-700">45 món</span>
+          <span id="fridge-total-count-badge" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-200 text-slate-700">61 món</span>
         </div>
 
         <!-- Target Destination Selector: CHỈ BỎ VÀO BẾP HOẶC KHAY TẠM (BỎ NÚT RA DĨA) -->
@@ -871,7 +871,7 @@
     ];
 
     const FRIDGE_CATEGORIES = [
-      { id: 'all', name: 'Tất cả (45)' },
+      { id: 'all', name: 'Tất cả (61)' },
       { id: 'noodles_flour', name: '🍜 Mì & Bột Làm Bánh' },
       { id: 'wrappers', name: '🥖 Vỏ Bánh & Đồ Cuốn' },
       { id: 'sweets', name: '🍫 Sữa, Bánh & Đồ Ngọt' },
@@ -881,7 +881,7 @@
       { id: 'starch', name: '🍚 Tinh Bột & Phô Mai' }
     ];
 
-    // EXPANDED 45 INGREDIENTS INCLUDING NOODLES, FLOURS, WRAPPERS, BREADS, SNACKS & DRINKS
+    // EXPANDED 61 INGREDIENTS INCLUDING NOODLES, FLOURS, WRAPPERS, BREADS, SNACKS, FRUITS & DRINKS
     const INGREDIENTS = [
       // 1. VỎ BÁNH & ĐỒ CUỐN (WRAPPERS & VESSELS) - NOW IN THE PANTRY!
       {
@@ -1004,6 +1004,18 @@
         canBeVessel: true,
         flavors: { umami: 0.7, salty: 0.4, sweet: 2.2, sour: 0.0, spicy: 0.0, fatty: 0.8, bitter: 0.0, aroma: 2.1, crunch: 0.1 }
       },
+      {
+        id: 'croissant',
+        name: 'Bánh Sừng Bò Croissant Bơ Pháp',
+        category: 'wrappers',
+        emoji: '🥐',
+        color: '#f59e0b',
+        cookedColor: '#b45309',
+        needsCooking: false,
+        canBeVessel: true,
+        flavorDesc: 'Vỏ ngàn lớp giòn tan thơm nức bơ Pháp, xẻ đôi nhồi phô mai, thịt nguội hoặc sô-cô-la chuối ngọt ngào',
+        flavors: { umami: 1.1, salty: 0.8, sweet: 1.8, sour: 0.0, spicy: 0.0, fatty: 3.8, bitter: 0.0, aroma: 4.0, crunch: 4.2 }
+      },
 
       // 2. ĐỒ ĂN VẶT, SỮA, BÁNH & ĐỒ UỐNG (NEWLY REQUESTED!)
       {
@@ -1084,6 +1096,17 @@
         flavorDesc: 'Mát lạnh tê lưỡi, xay nhuyễn thành đá tuyết giải khát cực đã',
         flavors: { umami: 0.0, salty: 0.0, sweet: 0.0, sour: 0.0, spicy: 0.0, fatty: 0.0, bitter: 0.0, aroma: 1.0, crunch: 3.0 }
       },
+      {
+        id: 'malt_syrup',
+        name: 'Mạch nha dẻo quánh',
+        category: 'sweets',
+        emoji: '🍯',
+        color: '#f59e0b',
+        cookedColor: '#b45309',
+        needsCooking: false,
+        flavorDesc: 'Dẻo quánh óng ánh hổ phách, vị ngọt thanh mát dịu, chuyên ngào kẹo đậu phộng, quết bánh tráng giòn hoặc quét da nướng quay bóng bẩy',
+        flavors: { umami: 0.5, salty: 0.1, sweet: 4.8, sour: 0.0, spicy: 0.0, fatty: 0.2, bitter: 0.0, aroma: 3.5, crunch: 0.1 }
+      },
 
       // 3. THỊT, XÚC XÍCH & PATE (PROTEINS)
       {
@@ -1154,6 +1177,17 @@
         needsCooking: false,
         flavorDesc: 'Giòn dai thơm mùi nước mắm và lá chuối',
         flavors: { umami: 2.9, salty: 1.6, sweet: 0.9, sour: 0.0, spicy: 0.2, fatty: 1.4, bitter: 0.0, aroma: 2.2, crunch: 1.2 }
+      },
+      {
+        id: 'minced_meat',
+        name: 'Thịt Nạc Băm Tươi',
+        category: 'meat',
+        emoji: '🥩',
+        color: '#f87171',
+        cookedColor: '#78350f',
+        needsCooking: true,
+        flavorDesc: 'Thịt băm tươi nhuyễn đậm vị ngọt Umami, chuyên làm nhân nhồi bánh bao, cuộn nem chả giò, nấu sốt mì Ý hoặc xào rau củ',
+        flavors: { umami: 4.2, salty: 0.6, sweet: 0.8, sour: 0.0, spicy: 0.0, fatty: 2.6, bitter: 0.0, aroma: 2.6, crunch: 0.2 }
       },
 
       // 4. HẢI SẢN & TRỨNG
@@ -1299,6 +1333,88 @@
         flavorDesc: 'Chua dịu ngọt thanh, tuyệt vời khi xay với sữa và sô-cô-la',
         flavors: { umami: 0.1, salty: 0.0, sweet: 3.0, sour: 2.2, spicy: 0.0, fatty: 0.0, bitter: 0.0, aroma: 3.2, crunch: 1.0 }
       },
+      {
+        id: 'green_mango',
+        name: 'Xoài Xanh Giòn Chua',
+        category: 'veg',
+        emoji: '🥭',
+        color: '#84cc16',
+        cookedColor: '#65a30d',
+        needsCooking: false,
+        isFreshBalancer: true,
+        flavorDesc: 'Giòn tan rôm rốp, chua thanh rôn rốt kích thích vị giác, chuyên bào sợi bóp gỏi, làm nộm tôm thịt hoặc lắc muối ớt cay',
+        flavors: { umami: 0.4, salty: 0.1, sweet: 1.0, sour: 4.8, spicy: 0.0, fatty: 0.0, bitter: 0.2, aroma: 2.8, crunch: 4.5 }
+      },
+      {
+        id: 'ripe_mango',
+        name: 'Xoài Chín Vàng Ngọt',
+        category: 'veg',
+        emoji: '🥭',
+        color: '#facc15',
+        cookedColor: '#eab308',
+        needsCooking: false,
+        isFreshBalancer: true,
+        flavorDesc: 'Thịt vàng mềm mướt, ngọt lịm thơm nồng nàn, chuyên ăn tráng miệng, dầm đá xay sinh tố mát lạnh hoặc làm sốt hoa quả',
+        flavors: { umami: 0.6, salty: 0.1, sweet: 5.0, sour: 1.0, spicy: 0.0, fatty: 0.2, bitter: 0.0, aroma: 4.5, crunch: 0.3 }
+      },
+      {
+        id: 'june_plum',
+        name: 'Cóc Non Giòn Rụm',
+        category: 'veg',
+        emoji: '🍏',
+        color: '#4ade80',
+        cookedColor: '#22c55e',
+        needsCooking: false,
+        isFreshBalancer: true,
+        flavorDesc: 'Giòn tan sần sật, vị chua thanh đậm đà, chuyên bổ đôi lắc muối ớt cay xè hoặc ngâm chua ngọt',
+        flavors: { umami: 0.3, salty: 0.1, sweet: 1.1, sour: 4.6, spicy: 0.0, fatty: 0.0, bitter: 0.3, aroma: 2.2, crunch: 4.8 }
+      },
+      {
+        id: 'guava',
+        name: 'Ổi Giòn Ngọt Thanh',
+        category: 'veg',
+        emoji: '🍈',
+        color: '#a3e635',
+        cookedColor: '#84cc16',
+        needsCooking: false,
+        isFreshBalancer: true,
+        flavorDesc: 'Cơm dày giòn rụm sần sật, ngọt thanh dịu mát, chấm muối tôm ăn tươi hoặc ép nước giải khát',
+        flavors: { umami: 0.3, salty: 0.1, sweet: 2.6, sour: 0.8, spicy: 0.0, fatty: 0.0, bitter: 0.1, aroma: 3.2, crunch: 4.6 }
+      },
+      {
+        id: 'avocado',
+        name: 'Trái Bơ Sáp Dẻo Béo',
+        category: 'veg',
+        emoji: '🥑',
+        color: '#84cc16',
+        cookedColor: '#65a30d',
+        needsCooking: false,
+        isFreshBalancer: true,
+        flavorDesc: 'Thịt quả dẻo quánh béo ngậy thanh mát, dầm đá sữa ngọt lịm, kẹp bánh mì sandwich hoặc cuộn sushi',
+        flavors: { umami: 1.6, salty: 0.1, sweet: 1.2, sour: 0.0, spicy: 0.0, fatty: 4.2, bitter: 0.0, aroma: 2.2, crunch: 0.3 }
+      },
+      {
+        id: 'sweet_corn',
+        name: 'Bắp Ngô Ngọt Tươi',
+        category: 'veg',
+        emoji: '🌽',
+        color: '#facc15',
+        cookedColor: '#eab308',
+        needsCooking: false,
+        flavorDesc: 'Hạt vàng căng mọng giòn ngọt tự nhiên, nướng mỡ hành, xào bơ béo ngậy hoặc hầm súp ngọt nước',
+        flavors: { umami: 1.6, salty: 0.2, sweet: 3.8, sour: 0.0, spicy: 0.0, fatty: 0.5, bitter: 0.0, aroma: 2.8, crunch: 3.6 }
+      },
+      {
+        id: 'enoki_mushroom',
+        name: 'Nấm Kim Châm Tươi',
+        category: 'veg',
+        emoji: '🍄',
+        color: '#fef3c7',
+        cookedColor: '#fde68a',
+        needsCooking: true,
+        flavorDesc: 'Từng chùm sợi mảnh giòn sần sật ngọt nước, chuyên cuộn thịt ba chỉ nướng than, nhúng lẩu hoặc chiên tempura',
+        flavors: { umami: 3.2, salty: 0.2, sweet: 1.0, sour: 0.0, spicy: 0.0, fatty: 0.1, bitter: 0.0, aroma: 2.5, crunch: 3.8 }
+      },
 
       // 6. TINH BỘT & PHÔ MAI
       {
@@ -1344,6 +1460,61 @@
         needsCooking: true,
         flavorDesc: 'Bùi béo, chiên ngập dầu giòn rụm chấm tương ớt',
         flavors: { umami: 0.9, salty: 0.2, sweet: 1.4, sour: 0.0, spicy: 0.0, fatty: 0.5, bitter: 0.0, aroma: 1.1, crunch: 1.5 }
+      },
+      {
+        id: 'sweet_potato',
+        name: 'Khoai Lang Mật Tươi Nguyên Củ',
+        category: 'starch',
+        emoji: '🍠',
+        color: '#f97316',
+        cookedColor: '#ea580c',
+        needsCooking: true,
+        flavorDesc: 'Củ tươi ruột vàng ươm, khi nướng than hoa sẽ ứa mật dẻo ngọt ngào, hấp chín mềm hoặc chiên giòn tan',
+        flavors: { umami: 1.5, salty: 0.2, sweet: 4.0, sour: 0.0, spicy: 0.0, fatty: 0.8, bitter: 0.0, aroma: 3.6, crunch: 0.5 }
+      },
+      {
+        id: 'taro',
+        name: 'Khoai Môn Củ Tươi',
+        category: 'starch',
+        emoji: '🥔',
+        color: '#e2e8f0',
+        cookedColor: '#cbd5e1',
+        needsCooking: true,
+        flavorDesc: 'Củ thô bở bùi béo dẻo, thơm hương nếp dịu, nấu canh sườn hầm ngọt nước, hấp tán nhuyễn làm nhân hoặc chiên giòn',
+        flavors: { umami: 1.8, salty: 0.2, sweet: 2.2, sour: 0.0, spicy: 0.0, fatty: 1.2, bitter: 0.0, aroma: 3.2, crunch: 0.3 }
+      },
+      {
+        id: 'roasted_peanuts',
+        name: 'Đậu Phộng Rang Bùi Thơm',
+        category: 'starch',
+        emoji: '🥜',
+        color: '#d97706',
+        cookedColor: '#b45309',
+        needsCooking: false,
+        flavorDesc: 'Giòn tan rụm rụm, béo bùi thơm lừng, rắc lên nộm gỏi, làm kẹo lạc mạch nha, kẹp bánh tráng nướng hoặc giã muối đậu',
+        flavors: { umami: 2.2, salty: 0.4, sweet: 1.4, sour: 0.0, spicy: 0.0, fatty: 4.5, bitter: 0.0, aroma: 4.2, crunch: 4.8 }
+      },
+      {
+        id: 'tofu',
+        name: 'Đậu Hũ Non Thanh Mát',
+        category: 'starch',
+        emoji: '🧈',
+        color: '#ffffff',
+        cookedColor: '#fef08a',
+        needsCooking: false,
+        flavorDesc: 'Miếng đậu trắng ngần mềm mướt bùi vị đậu nành, nấu canh súp thanh đạm hoặc tẩm bột chiên lướt ván giòn rụm',
+        flavors: { umami: 2.2, salty: 0.2, sweet: 1.0, sour: 0.0, spicy: 0.0, fatty: 1.5, bitter: 0.0, aroma: 2.0, crunch: 0.2 }
+      },
+      {
+        id: 'mozzarella',
+        name: 'Phô Mai Khối Mozzarella',
+        category: 'starch',
+        emoji: '🧀',
+        color: '#fef3c7',
+        cookedColor: '#fde68a',
+        needsCooking: false,
+        flavorDesc: 'Dẻo mềm béo ngậy mùi sữa, kéo sợi dài miên man khi nướng lò hoặc chiên giòn chảy quyện vị Umami',
+        flavors: { umami: 3.2, salty: 1.4, sweet: 1.5, sour: 0.2, spicy: 0.0, fatty: 4.6, bitter: 0.0, aroma: 3.8, crunch: 0.2 }
       },
 
       // 7. CÁC LOẠI MÌ & BỘT LÀM BÁNH (NOODLES & BAKING FLOURS - NEW!)
@@ -3052,6 +3223,9 @@
 
     // RENDER FRIDGE COMPARTMENTS & INGREDIENTS
     function renderFridge() {
+      const badgeEl = document.getElementById('fridge-total-count-badge');
+      if (badgeEl) badgeEl.textContent = `${INGREDIENTS.length} món`;
+
       const tabsEl = document.getElementById('fridge-category-tabs');
       if (tabsEl) {
         tabsEl.innerHTML = '';
