@@ -147,5 +147,8 @@
    - Cảnh báo béo cao: `⚠️ Món ăn có độ béo khá cao (Gợi ý: điều chỉnh giảm độ béo hoặc bổ sung vị thanh để cân bằng)` (loại bỏ dưa leo/chanh).
    - Tiêu đề tự động: Đổi `Đậm Vị Ngọt Thịt` thành `Đậm Vị Umami` (không tự tiện suy đoán là thịt).
    - Máy xay: Chỉ thông báo `mát lạnh` khi trong công thức thực sự có Đá viên (`ice_cubes`).
+4. **Tôn vinh tên món tùy chỉnh & Bóc tách nguyên liệu tự nhiên (Custom Dish Name Priority)**:
+   - Loại bỏ hoàn toàn nhãn kỹ thuật `Ly Sinh Tố / Thức Uống` và các tiền tố gượng gạo.
+   - Món ăn được xưng danh trực tiếp theo tên người chơi đặt (ví dụ: `Món 'oreo đá say' được xay nhuyễn sánh mịn mát lạnh từ Sữa tươi thanh trùng, Thanh Sô-cô-la Đen và Bánh quy Oreo kẹp kem...`), đảm bảo tôn trọng tuyệt đối quyền tự do sáng tạo và định danh món ăn của người chơi.
 
 

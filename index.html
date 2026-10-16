@@ -2434,13 +2434,13 @@
         });
 
         const isSweetDrink = state.stationItems.every(i => i.category === 'sweets' || i.category === 'veg' || i.baseId === 'milk' || i.baseId === 'chocolate' || i.baseId === 'oreo');
-        const titlePrefix = isSweetDrink ? 'Ly Sinh Tố / Thức Uống' : 'Hỗn Hợp Xay Sánh Mịn';
+        const defaultBlendName = `${names.slice(0, 3).join(' & ')} (xay nhuyễn)`;
 
         const blendedItem = {
           uid: state.nextItemUid++,
           kind: 'blended',
           baseId: 'blended_mix',
-          name: `${titlePrefix} (${names.slice(0, 3).join(', ')})`,
+          name: defaultBlendName,
           emoji: isSweetDrink ? '🥤' : '🥣',
           category: 'sweets',
           color: state.stationItems[0].color,
@@ -2812,30 +2812,35 @@
         return 'chế biến thơm ngon';
       };
 
+      const subject = state.customDishName ? `Món '${state.customDishName}'` : 'Món ăn';
+
       if (rolledItem) {
         const outer = rolledItem.outerItem ? rolledItem.outerItem.name : rolledItem.name;
         const outerCook = methodToText(rolledItem.cookMethod, rolledItem.cookLevel);
         const inners = (rolledItem.subItems && rolledItem.subItems.length > 0)
           ? rolledItem.subItems.map(s => s.name).join(' và ')
           : 'nhân béo bùi';
-        structureDesc = `${outer} được ${outerCook}, cuộn trọn với một lớp ${inners} ở bên trong`;
+        structureDesc = `${subject} với ${outer} được ${outerCook}, cuộn trọn lớp ${inners} ở bên trong`;
       } else if (stuffedItem) {
         const vessel = stuffedItem.outerItem ? stuffedItem.outerItem.name : stuffedItem.name;
         const vesselCook = stuffedItem.cookLevel >= 1 ? 'nướng thơm giòn' : 'giòn xốp';
         const inners = (stuffedItem.subItems && stuffedItem.subItems.length > 0)
           ? stuffedItem.subItems.map(s => s.name).join(', ')
           : 'nhân đậm đà';
-        structureDesc = `${vessel} ${vesselCook} bên ngoài, được nhồi đầy đặn nhân ${inners} bên trong`;
+        structureDesc = `${subject} với lớp vỏ ${vessel} ${vesselCook} bên ngoài, được nhồi đầy đặn nhân ${inners} bên trong`;
       } else if (blendedItem) {
-        const ingNames = items.map(i => i.name).join(' cùng ');
-        const hasIce = items.some(i => i.id === 'ice_cubes' || (i.subItems && i.subItems.some(s => s.id === 'ice_cubes')));
+        const subList = (blendedItem.subItems && blendedItem.subItems.length > 0)
+          ? blendedItem.subItems.filter(i => i.id !== 'ice_cubes')
+          : items.filter(i => i.id !== 'ice_cubes');
+        const ingNames = subList.map(i => i.name).join(', ').replace(/, ([^,]*)$/, ' và $1');
+        const hasIce = (blendedItem.subItems || items).some(i => i.id === 'ice_cubes' || i.baseId === 'ice_cubes');
         const coldPhrase = hasIce ? 'mát lạnh ' : '';
-        structureDesc = `Món ăn được xay nhuyễn sánh mịn ${coldPhrase}từ ${ingNames}`;
+        structureDesc = `${subject} được xay nhuyễn sánh mịn ${coldPhrase}từ ${ingNames || 'các nguyên liệu'}`;
       } else {
         const ingNames = items.slice(0, 3).map(i => i.name).join(' cùng ');
         const first = items[0];
         const cook = first ? methodToText(first.cookMethod, first.cookLevel) : 'chế biến kỹ lưỡng';
-        structureDesc = `${ingNames} được ${cook}`;
+        structureDesc = state.customDishName ? `Món '${state.customDishName}' (${ingNames}) được ${cook}` : `${ingNames} được ${cook}`;
       }
 
       // B. Taste Sensations (Dynamic Pure Sensory Lexicon - Ranked by Dominant Intensity)
