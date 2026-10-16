@@ -104,4 +104,22 @@
 ## 3. Cấu Trúc Tệp Tin Dự Án
 - `index.html`: Toàn bộ mã nguồn ứng dụng game hoàn chỉnh (HTML5, Tailwind CSS, Web Audio API, Canvas 2D, Vanilla JS).
 - `index.html.bak2`: Bản sao lưu trước đợt nâng cấp YumCraft Kitchen.
+- `README.md`: Tài liệu hướng dẫn, giới thiệu kiến trúc & cẩm nang phím tắt chuẩn GitHub.
+- `LICENSE`: Giấy phép mã nguồn mở GNU General Public License v2.0 (GPL-2.0).
 - `GEMINI.md`: Nhật ký phát triển và tài liệu dự án.
+
+---
+
+## 4. Thông Tin Phiên Làm Việc: Phân Tích Mã Nguồn & Xây Dựng README.md Chuẩn GitHub (16/10/2026)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Mục tiêu**:
+  1. Phân tích sâu kiến trúc mã nguồn hơn 4.000 dòng của `index.html`: logic hóa học vị giác 8 trục, hệ thống 9 trạm nấu, 45 nguyên liệu, 18 gia vị, hệ thống trợ năng 5 Tab WCAG 2.2 AAA cho NVDA, bộ tổng hợp âm thanh foley Web Audio API thời gian thực, và bộ đánh giá cảm quan 4 tầng của 4 thực khách.
+  2. Xác minh giấy phép từ file `LICENSE`: GNU General Public License v2.0 (GPL-2.0).
+  3. Soạn thảo toàn diện tài liệu `README.md` chuẩn GitHub repository đẳng cấp quốc tế:
+     - Hệ thống huy hiệu (Badges): License GPL v2, WCAG 2.2 AAA, NVDA Tested, Zero Dependencies, Vanilla JS.
+     - Triết lý nấu bếp tự do Toca Kitchen (Zero Hardcoded Recipes).
+     - Hướng dẫn chi tiết 9 trạm nấu và sơ đồ quy trình chế biến Mermaid.
+     - Cẩm nang phím tắt toàn năng phục vụ người chơi khiếm thị sử dụng bàn phím và NVDA.
+     - Hướng dẫn trải nghiệm trực tiếp không cần cài đặt môi trường.
+     - Tuyên ngôn bản quyền và thông tin tác giả Vũ Anh Lộc (LC Boy).
+
