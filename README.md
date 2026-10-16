@@ -103,16 +103,23 @@ Mỗi thực khách có khẩu vị, sở thích và giới hạn chịu cay ri�
 3. *Gia vị thực tế*: Nhắc tên chính xác từng loại gia vị đã được nêm nếm.
 4. *Biểu cảm thực khách*: Khen ngợi 5 sao, trầm trồ, hoặc phản ứng hài hước nếu món bị nấu sống tanh, cháy khét đen hay nêm mặn chát.
 
-### 2.5. Bộ Tổng Hợp Âm Thanh Foley (Web Audio API Synthesizer)
-Tất cả âm thanh trong trò chơi được **tổng hợp toán học 100% bằng Web Audio API thời gian thực** (Zero Audio Files):
-- Tiếng mở cửa tủ lạnh cách nhiệt (`triangle ramp`).
-- Tiếng dao thớt lách cách 3 nhịp dứt khoát (`chop`).
-- Tiếng cuộn và nhồi nhân sột soạt kèm hợp âm vui tai (`bandpass filtered noise + chord arpeggio`).
-- Tiếng xèo xèo áp chảo, chiên ngập dầu và nướng than hoa sống động (`procedural pink/white noise modulation`).
-- Tiếng nước sôi ùng ục trong nồi luộc (`multi-oscillator bubble pops`).
-- Tiếng mô-tơ máy xay sinh tố tăng tốc (`sawtooth swept lowpass filter`).
-- Tiếng rắc hạt gia vị sột soạt (`highpass noise burst`).
-- Hợp âm khen ngợi 5 sao, tiếng nhạc hân hoan hoặc âm điệu hài hước khi món bị lỗi.
+### 2.5. Hệ Thống Âm Thanh Ngoài Chân Thực (Foley Audio), Cơ Chế Play Wait & Động Cơ Thưởng Thức Đa Tầng
+Bên cạnh các hiệu ứng sóng tổng hợp Web Audio API (mở cửa tủ lạnh, cuộn, nhồi, rắc gia vị, hợp âm 5 sao), trò chơi trang bị **hệ thống âm thanh ngoài Foley chân thực đặt tại thư mục `sounds/` với cơ chế Play Wait đỉnh cao**:
+- **Âm thanh dụng cụ bếp sống động (Play Wait)**:
+  - 🔪 `food_cut.ogg`: Tiếng dao sắc bén thái lát, xắt hạt lựu, băm nhuyễn nguyên liệu trên thớt gỗ (phát tức thì).
+  - 🍳 `frying_pan.ogg`: Tiếng xào nấu, áp chảo xèo xèo dậy mùi thơm Maillard (Play Wait).
+  - 🍟 `deep_frying_pan.ogg`: Tiếng dầu sôi reo giòn tan ngập chảo (Play Wait).
+  - 🍲 `pot_of_boiling_water.ogg`: Tiếng nước sôi ùng ục hầm nhừ ngọt nước trong nồi hầm (Play Wait).
+  - ♨️ `oven.ogg`: Tiếng lò nướng đối lưu nhiệt ran và tiếng chuông báo chín ting vàng (Play Wait).
+  - 🔥 `grill rack.ogg`: Tiếng quạt than hồng và mỡ nướng xèo xèo trên vỉ than BBQ (Play Wait).
+  - 🌪️ `blender.ogg`: Tiếng động cơ máy xay sinh tố quay tít nghiền nhuyễn sánh mịn (Play Wait).
+- **Động cơ âm thanh thưởng thức đa tầng (Sequential Multi-Course Tasting Engine)**:
+  - Khi đút cho thực khách ăn (Phím `F`), hệ thống tự động phân loại kết cấu từng món trên dĩa (`crispy`, `soft`, `liquid`, `drink`) và lập Playlist thưởng thức thông minh:
+    - 🥢 `eat_crispy_food.ogg`: Tiếng cắn giòn rụm (món chiên ngập dầu, nướng chín giòn, mì gói sống, ổi, cóc...).
+    - 🥩 `eat_soft_food.ogg`: Tiếng nhai mềm mọng nước (bò bít tết áp chảo, đậu hũ, phô mai tan chảy, bánh tráng cuộn dẻo...).
+    - 🥣 `eat_liquid_food.ogg`: Tiếng húp súp nóng hổi sùm sụp (canh hầm, mì nước chan nước dùng...).
+    - 🥤 `drink.ogg` & `drink_with_ice.ogg`: Tiếng uống ừng ực sảng khoái (sinh tố trái cây, sữa đá xay lách cách tiếng đá tuyết).
+  - **Khử trùng lặp âm thanh & sắp xếp logic**: Đĩa có nhiều món giòn được gom gọn, thực khách thưởng thức món ăn rắn trước rồi uống ngụm nước mát lành sau, kèm hiệu ứng khóa nút `aria-busy="true"` chuẩn trợ năng trước khi NVDA công bố lời nhận xét!
 
 ---
 

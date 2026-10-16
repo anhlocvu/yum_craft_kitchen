@@ -1783,6 +1783,11 @@
       liveToggleBuffer: false,
       cravingIndex: 0,
 
+      // External Audio & Action Busy Locks
+      isCookingBusy: false,
+      isFeedingBusy: false,
+      eatingStatusText: '',
+
       // Animations & Render Loops
       animTick: 0,
       stationActionFlash: 0,
@@ -1833,7 +1838,7 @@
     }
 
     /*************************************************************************
-     * 4. BỘ TỔNG HỢP ÂM THANH BẾP YUMCRAFT FOLEY (WEB AUDIO API)
+     * 4. BỘ PHÁT ÂM THANH NGOÀI & TỔNG HỢP SÓNG YUMCRAFT (FOLEY & WEB AUDIO)
      *************************************************************************/
     let audioCtx = null;
     function ensureAudioContext() {
@@ -1846,6 +1851,58 @@
         audioCtx.resume();
       }
       return audioCtx;
+    }
+
+    // Play external audio file from sounds/ with optional Play Wait Promise
+    function playExternalAudio(filename, wait = false) {
+      if (!state.sfxEnabled) return Promise.resolve();
+      return new Promise((resolve) => {
+        try {
+          const encodedName = encodeURI(filename);
+          const audio = new Audio(`sounds/${encodedName}`);
+          audio.volume = 0.9;
+
+          if (!wait) {
+            audio.play().catch(e => {
+              console.warn('Audio play error (no-wait):', e);
+            });
+            resolve();
+            return;
+          }
+
+          let isResolved = false;
+          const complete = () => {
+            if (!isResolved) {
+              isResolved = true;
+              audio.removeEventListener('ended', complete);
+              audio.removeEventListener('error', onError);
+              resolve();
+            }
+          };
+
+          const onError = (e) => {
+            console.warn(`Lỗi tải âm thanh sounds/${filename}:`, e);
+            complete();
+          };
+
+          audio.addEventListener('ended', complete);
+          audio.addEventListener('error', onError);
+
+          // Timeout dự phòng an toàn 12s nếu trình duyệt chặn autoplay hoặc file lỗi
+          const safetyTimer = setTimeout(() => {
+            complete();
+          }, 12000);
+
+          audio.play().catch(err => {
+            console.warn(`Lỗi phát âm thanh sounds/${filename}:`, err);
+            clearTimeout(safetyTimer);
+            complete();
+          });
+        } catch (err) {
+          console.warn('playExternalAudio exception:', err);
+          resolve();
+        }
+      });
     }
 
     function playSoundEffect(type) {
@@ -2067,7 +2124,17 @@
     /*************************************************************************
      * 5. MÔ HÌNH DỮ LIỆU MÓN ĂN & HÒA VỊ THỰC TẾ (CULINARY CHEMISTRY)
      *************************************************************************/
+    function determineDefaultTexture(ing) {
+      if (ing.id === 'milk' || ing.id === 'ice_cubes') return 'drink';
+      const crispyIds = ['instant_ramen', 'roasted_peanuts', 'taco_shell', 'banh_mi_vn', 'croissant', 'oreo', 'cucumber', 'guava', 'june_plum'];
+      if (crispyIds.includes(ing.id) || (ing.flavors && ing.flavors.crunch >= 2.5)) {
+        return 'crispy';
+      }
+      return 'soft';
+    }
+
     function createFoodItem(ing) {
+      const defTex = determineDefaultTexture(ing);
       return {
         uid: state.nextItemUid++,
         kind: 'single', // 'single' | 'rolled' | 'stuffed' | 'blended'
@@ -2082,6 +2149,9 @@
         cutState: 'whole', // 'whole' | 'sliced' | 'diced' | 'minced'
         cookLevel: 0, // 0 = raw/fresh, 1 = cooked, 2 = crispy brown, >=3 = burnt
         cookMethod: 'none',
+        texture: defTex, // 'soft' | 'crispy' | 'liquid' | 'drink'
+        hasIce: ing.id === 'ice_cubes',
+        outerTexture: null, // used for rolled and stuffed items
         spicesApplied: [],
         subItems: [],
         outerItem: null,
@@ -2428,8 +2498,10 @@
       renderAll();
     }
 
-    // STATION COOKING / CHOPPING / BLENDING
-    function performStationAction(actionId) {
+    // STATION COOKING / CHOPPING / BLENDING (ASYNC WITH PLAY WAIT)
+    async function performStationAction(actionId) {
+      if (state.isCookingBusy) return;
+
       const station = STATIONS.find(s => s.id === state.activeStationId);
       if (!station) return;
 
@@ -2441,9 +2513,9 @@
       state.stationActionFlash = 24;
       state.stationActionType = actionId;
 
-      // 1. Dao thớt (Slice, Dice, Mince)
+      // 1. Dao thớt (Slice, Dice, Mince) - PHÁT TỨC THÌ BẰNG food_cut.ogg, KHÔNG CẦN PLAY WAIT
       if (actionId === 'slice' || actionId === 'dice' || actionId === 'mince') {
-        playSoundEffect('chop');
+        playExternalAudio('food_cut.ogg', false);
         const cutMap = { slice: 'sliced', dice: 'diced', mince: 'minced' };
         const labelMap = { slice: 'thái lát mỏng', dice: 'thái hạt lựu', mince: 'băm nhuyễn' };
         state.stationItems.forEach(item => {
@@ -2467,7 +2539,6 @@
         // Identify which item is outer wrapper
         let wrapperIdx = state.stationItems.findIndex(i => i.uid === state.selectedWrapperUid);
         if (wrapperIdx === -1) {
-          // Default to first item that can be wrapper, or simply first item
           const preferred = state.stationItems.findIndex(i => i.baseId === 'rice_paper' || i.baseId === 'nori_seaweed' || i.baseId === 'betel_leaf' || i.baseId === 'pho_sheet' || i.baseId === 'tortilla_wrap' || i.baseId === 'beef' || i.baseId === 'pork_belly');
           wrapperIdx = preferred !== -1 ? preferred : 0;
         }
@@ -2496,6 +2567,8 @@
         const fillingNames = innerFillings.map(i => i.name).join(' & ');
         const rolledName = `${outerWrapper.name} cuộn [${fillingNames}]`;
 
+        const outerTexture = outerWrapper.texture === 'crispy' ? 'crispy' : 'soft';
+
         const rolledItem = {
           uid: state.nextItemUid++,
           kind: 'rolled',
@@ -2510,6 +2583,9 @@
           cutState: 'whole',
           cookLevel: anyNeedsCooking ? 0 : Math.max(1, maxCookLevel),
           cookMethod: outerWrapper.cookMethod !== 'none' ? outerWrapper.cookMethod : 'none',
+          texture: outerTexture,
+          outerTexture: outerTexture,
+          hasIce: outerWrapper.hasIce || innerFillings.some(i => i.hasIce),
           spicesApplied: combinedSpices,
           subItems: [outerWrapper, ...innerFillings],
           outerItem: outerWrapper,
@@ -2531,7 +2607,6 @@
           return;
         }
 
-        // Identify vessel
         let vesselIdx = state.stationItems.findIndex(i => i.uid === state.selectedVesselUid);
         if (vesselIdx === -1) {
           const preferred = state.stationItems.findIndex(i => i.baseId === 'banh_mi_vn' || i.baseId === 'sausage' || i.baseId === 'burger_bun' || i.baseId === 'taco_shell' || i.baseId === 'bell_pepper' || i.baseId === 'squid' || i.baseId === 'oreo');
@@ -2560,6 +2635,8 @@
         const stuffingNames = innerStuffings.map(i => i.name).join(' & ');
         const stuffedName = `${outerVessel.name} nhồi [${stuffingNames}]`;
 
+        const outerTexture = outerVessel.texture === 'crispy' ? 'crispy' : 'soft';
+
         const stuffedItem = {
           uid: state.nextItemUid++,
           kind: 'stuffed',
@@ -2574,6 +2651,9 @@
           cutState: 'whole',
           cookLevel: anyNeedsCooking ? 0 : 1,
           cookMethod: outerVessel.cookMethod !== 'none' ? outerVessel.cookMethod : 'none',
+          texture: outerTexture,
+          outerTexture: outerTexture,
+          hasIce: outerVessel.hasIce || innerStuffings.some(i => i.hasIce),
           spicesApplied: combinedSpices,
           subItems: [outerVessel, ...innerStuffings],
           outerItem: outerVessel,
@@ -2588,11 +2668,17 @@
         return;
       }
 
-      // 4. Máy Xay Sinh Tố (Blender)
+      // 4. Máy Xay Sinh Tố (Blender) - PLAY WAIT VỚI blender.ogg
       if (actionId === 'blend_smooth') {
-        playSoundEffect('blend');
+        state.isCookingBusy = true;
+        state.stationActionFlash = 45;
+        state.stationActionType = 'blend_smooth';
+        renderWorkbench();
+
+        await playExternalAudio('blender.ogg', true);
+
         const names = state.stationItems.map(i => i.name);
-        const combinedFlavors = { umami: 0, salty: 0, sweet: 0, sour: 0, spicy: 0, fatty: 0, bitter: 0, aroma: 1.0 };
+        const combinedFlavors = { umami: 0, salty: 0, sweet: 0, sour: 0, spicy: 0, fatty: 0, bitter: 0, aroma: 1.0, crunch: 0.0 };
         const combinedSpices = [];
         let anyRaw = false;
 
@@ -2606,6 +2692,8 @@
 
         const isSweetDrink = state.stationItems.every(i => i.category === 'sweets' || i.category === 'veg' || i.baseId === 'milk' || i.baseId === 'chocolate' || i.baseId === 'oreo');
         const defaultBlendName = `${names.slice(0, 3).join(' & ')} (xay nhuyễn)`;
+
+        const hasIceInBlender = state.stationItems.some(i => i.id === 'ice_cubes' || i.baseId === 'ice_cubes');
 
         const blendedItem = {
           uid: state.nextItemUid++,
@@ -2621,6 +2709,9 @@
           cutState: 'minced',
           cookLevel: anyRaw ? 0 : 1,
           cookMethod: 'blended',
+          texture: 'drink',
+          hasIce: hasIceInBlender,
+          outerTexture: null,
           spicesApplied: combinedSpices,
           subItems: [...state.stationItems],
           outerItem: null,
@@ -2628,25 +2719,31 @@
         };
 
         state.stationItems = [blendedItem];
-        const hasIceInBlender = blendedItem.subItems.some(i => i.id === 'ice_cubes' || i.baseId === 'ice_cubes');
+        state.isCookingBusy = false;
         const coldBlendedPhrase = hasIceInBlender ? 'mát lạnh' : 'thơm ngon';
         announceNVDA(`Máy xay đã xay nhuyễn tất cả thành món "${blendedItem.name}" sánh mịn ${coldBlendedPhrase}!`, 'polite');
         renderAll();
         return;
       }
 
-      // 5. Heat-based cooking (Fry, Boil, Deep Fry, Bake, Grill)
+      // 5. Heat-based cooking (Fry, Boil, Deep Fry, Bake, Grill) - PLAY WAIT VỚI TỪNG ÂM THANH BẾP RIÊNG BIỆT
       const heatMethods = {
-        fry_step: { method: 'fried', sound: 'sizzle', verb: 'Áp chảo / Xào' },
-        boil_step: { method: 'boiled', sound: 'boil', verb: 'Luộc / Hầm' },
-        deep_fry_step: { method: 'deep_fried', sound: 'deep_fry', verb: 'Chiên ngập dầu' },
-        bake_step: { method: 'baked', sound: 'oven', verb: 'Nướng lò' },
-        grill_step: { method: 'grilled', sound: 'grill', verb: 'Nướng vỉ than hoa' }
+        fry_step: { method: 'fried', soundFile: 'frying_pan.ogg', verb: 'Áp chảo / Xào' },
+        boil_step: { method: 'boiled', soundFile: 'pot_of_boiling_water.ogg', verb: 'Luộc / Hầm' },
+        deep_fry_step: { method: 'deep_fried', soundFile: 'deep_frying_pan.ogg', verb: 'Chiên ngập dầu' },
+        bake_step: { method: 'baked', soundFile: 'oven.ogg', verb: 'Nướng lò' },
+        grill_step: { method: 'grilled', soundFile: 'grill rack.ogg', verb: 'Nướng vỉ than hoa' }
       };
 
       const heat = heatMethods[actionId];
       if (heat) {
-        playSoundEffect(heat.sound);
+        state.isCookingBusy = true;
+        state.stationActionFlash = 50;
+        state.stationActionType = actionId;
+        renderWorkbench();
+
+        await playExternalAudio(heat.soundFile, true);
+
         const descriptions = [];
 
         state.stationItems.forEach(item => {
@@ -2660,6 +2757,24 @@
               sub.cookMethod = heat.method;
               sub.spicesApplied.forEach(sp => { sp.cookedIn = true; });
             });
+          }
+
+          // Cập nhật thuộc tính texture cảm quan động theo phương pháp nấu nhiệt
+          if (heat.method === 'deep_fried') {
+            item.texture = 'crispy';
+            if (item.kind === 'rolled' || item.kind === 'stuffed') item.outerTexture = 'crispy';
+          } else if (heat.method === 'boiled') {
+            item.texture = 'liquid';
+            if (item.kind === 'rolled' || item.kind === 'stuffed') item.outerTexture = 'soft';
+          } else if (heat.method === 'fried') {
+            item.texture = item.cookLevel >= 2 ? 'crispy' : 'soft';
+          } else if (heat.method === 'baked' || heat.method === 'grilled') {
+            if (item.cookLevel >= 2) {
+              item.texture = 'crispy';
+              if (item.kind === 'rolled' || item.kind === 'stuffed') item.outerTexture = 'crispy';
+            } else {
+              item.texture = 'soft';
+            }
           }
 
           if (item.cookLevel === 1) {
@@ -2680,6 +2795,7 @@
           }
         });
 
+        state.isCookingBusy = false;
         announceNVDA(`${heat.verb}: ${descriptions.join('; ')}.`, 'polite');
         renderAll();
       }
@@ -3071,37 +3187,116 @@
         } else {
           speech = `"Chà... XUẤT SẮC! ${sensorySentence}, sự phối hợp ẩm thực này đạt độ hài hòa cân bằng đỉnh cao!"`;
         }
-        playSoundEffect('react_love');
       } else if (score >= 50) {
         reactionType = 'good';
         moodTag = 'Ngon miệng vừa vị! 😋👍';
         speech = `"Măm măm! ${sensorySentence}, ăn rất ngon miệng và vừa vị (Hài hòa: ${score}/100 điểm)!"`;
-        playSoundEffect('react_good');
       } else {
         reactionType = 'good';
         moodTag = 'Vị lạ độc đáo! 🤔';
         speech = `"Hừm... ${sensorySentence}. Món ăn có hương vị khá độc lạ và mới mẻ, lần sau đầu bếp hãy thử nêm nếm thêm xem sao nhé!"`;
-        playSoundEffect('react_good');
       }
 
       return { speech, moodTag, reactionType, score, sensorySentence };
     }
 
-    // FEED CHARACTER
-    function feedCharacter() {
+    // 6. BỘ XÁC ĐỊNH ÂM THANH ĂN UỐNG & PLAYLIST THƯỞNG THỨC ĐA MÓN (SENSORY EATING PLAYLIST)
+    function getEatingSoundForItem(item) {
+      if (item.texture === 'drink') {
+        return item.hasIce ? 'drink_with_ice.ogg' : 'drink.ogg';
+      }
+      if (item.texture === 'liquid') {
+        return 'eat_liquid_food.ogg';
+      }
+      if (item.texture === 'crispy') {
+        return 'eat_crispy_food.ogg';
+      }
+      return 'eat_soft_food.ogg';
+    }
+
+    function buildEatingAudioPlaylist(items) {
+      if (!items || items.length === 0) return ['eat_soft_food.ogg'];
+
+      // Thu thập toàn bộ âm thanh của từng món trên dĩa
+      const rawSounds = items.map(item => getEatingSoundForItem(item));
+
+      // Gom nhóm và khử trùng lặp các âm thanh giống nhau liên tiếp (ngừa Audio Fatigue)
+      const uniqueSounds = [];
+      rawSounds.forEach(snd => {
+        if (!uniqueSounds.includes(snd)) {
+          uniqueSounds.push(snd);
+        }
+      });
+
+      // Sắp xếp tự nhiên: Đồ ăn rắn/súp ăn trước, Đồ uống (drink) uống sau
+      uniqueSounds.sort((a, b) => {
+        const isDrinkA = a.startsWith('drink');
+        const isDrinkB = b.startsWith('drink');
+        if (isDrinkA && !isDrinkB) return 1;
+        if (!isDrinkA && isDrinkB) return -1;
+        return 0;
+      });
+
+      return uniqueSounds;
+    }
+
+    // FEED CHARACTER (ASYNC WITH SEQUENTIAL PLAY WAIT AUDIO & ARIA BUSY)
+    async function feedCharacter() {
+      if (state.isFeedingBusy) return;
+
       const char = CHARACTERS.find(c => c.id === state.activeCharacterId) || CHARACTERS[0];
       if (state.plateItems.length === 0) {
         announceNVDA(`Dĩa thức ăn đang trống! Hãy chế biến đồ ăn trong bếp (Alt+2), bấm nút Hoàn Thành Món (Phím P) để bày ra dĩa rồi mới đút cho ${char.name} ăn nhé.`, 'assertive');
         return;
       }
 
+      state.isFeedingBusy = true;
+
+      // Cập nhật nút đút ăn trên giao diện sang trạng thái bận
+      const feedBtn = document.getElementById('btn-master-feed');
+      const feedLbl = document.getElementById('master-feed-label');
+      if (feedBtn) {
+        feedBtn.disabled = true;
+        feedBtn.setAttribute('aria-busy', 'true');
+        feedBtn.classList.add('opacity-70', 'cursor-not-allowed');
+      }
+
+      // Kích hoạt animation đang nhai/uống
+      state.charAnimState = 'eating';
+      state.charAnimTimer = 240;
+
+      // Phân tích kết cấu và lập playlist âm thanh ăn uống
+      const playlist = buildEatingAudioPlaylist(state.plateItems);
+
+      // Chạy tuần tự từng âm thanh ăn uống theo kiểu Play Wait
+      for (let i = 0; i < playlist.length; i++) {
+        const soundFile = playlist[i];
+        if (feedLbl) {
+          if (soundFile === 'eat_crispy_food.ogg') feedLbl.textContent = 'ĐANG CẮN MIẾNG GIÒN RỤM... 🥢✨';
+          else if (soundFile === 'eat_liquid_food.ogg') feedLbl.textContent = 'ĐANG HÚP SÚP NÓNG HỔI... 🍲🥄';
+          else if (soundFile === 'drink_with_ice.ogg') feedLbl.textContent = 'ĐANG UỐNG ĐÁ TUYẾT MÁT LẠNH... ❄️🥤';
+          else if (soundFile === 'drink.ogg') feedLbl.textContent = 'ĐANG UỐNG NƯỚC THƯỞNG THỨC... 🥤';
+          else feedLbl.textContent = 'ĐANG THƯỞNG THỨC MÓN ĂN... 😋';
+        }
+        await playExternalAudio(soundFile, true);
+      }
+
+      // Sau khi âm thanh ăn uống kết thúc: Phân tích đánh giá và phản hồi
       const analysis = analyzeCulinaryChemistry(state.plateItems);
       const finalDishName = state.customDishName || analysis.autoTitle || 'Món Ăn Tự Chế';
-
       const review = generateSensoryTastingReview(state.plateItems, analysis, char);
 
+      // Phát âm thanh sóng cảm xúc tương ứng
+      if (review.reactionType === 'love') {
+        playSoundEffect('react_love');
+      } else if (review.score >= 50) {
+        playSoundEffect('react_good');
+      } else {
+        playSoundEffect('react_bad');
+      }
+
       state.charAnimState = review.reactionType;
-      state.charAnimTimer = 90;
+      state.charAnimTimer = 120;
 
       const moodEl = document.getElementById('dining-mood-tag');
       const speechEl = document.getElementById('dining-speech-bubble');
@@ -3111,9 +3306,22 @@
       if (speechEl) speechEl.textContent = review.speech;
       if (scoreEl) scoreEl.textContent = `${review.score} / 100 điểm (${review.moodTag})`;
 
+      // Dọn sạch dĩa thức ăn
       state.plateItems = [];
       state.customDishName = '';
+      state.isFeedingBusy = false;
 
+      // Khôi phục trạng thái nút đút ăn
+      if (feedBtn) {
+        feedBtn.disabled = false;
+        feedBtn.removeAttribute('aria-busy');
+        feedBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+      }
+      if (feedLbl) {
+        feedLbl.textContent = 'ĐÚT CHO THỰC KHÁCH ĂN! (F)';
+      }
+
+      // NVDA công bố toàn bộ lời nhận xét của thực khách
       announceNVDA(`${char.name} vừa thưởng thức món "${finalDishName}". Nhận xét: ${review.speech}`, 'assertive');
       renderAll();
     }
@@ -3401,11 +3609,15 @@
           btn.type = 'button';
           btn.setAttribute('aria-label', `${act.label}. ${act.desc}`);
           btn.className = 'game-btn btn-3d-orange py-2.5 px-3 rounded-2xl text-xs sm:text-sm font-extrabold font-game flex items-center justify-center gap-1.5 col-span-full sm:col-span-1 shadow-md';
-          if (activeSt.actions.length === 1) {
-            btn.className = 'game-btn btn-3d-orange py-3 px-4 rounded-2xl text-xs sm:text-base font-extrabold font-game flex items-center justify-center gap-2 col-span-full shadow-md';
+          if (state.isCookingBusy) {
+            btn.disabled = true;
+            btn.setAttribute('aria-busy', 'true');
+            btn.className += ' opacity-60 cursor-not-allowed';
+            btn.textContent = '⏳ Đang nấu...';
+          } else {
+            btn.textContent = act.label;
+            btn.addEventListener('click', () => performStationAction(act.id));
           }
-          btn.textContent = act.label;
-          btn.addEventListener('click', () => performStationAction(act.id));
           actionsEl.appendChild(btn);
         });
       }

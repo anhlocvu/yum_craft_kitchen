@@ -168,5 +168,31 @@
      - Biểu tượng emoji có `aria-hidden="true"`, các thao tác chọn nguyên liệu đều phản hồi tức thì qua Web Audio API và ARIA Live Region.
   4. Thực thi kiểm thử tích hợp động cơ cảm quan ẩm thực thành công 100% với các món ăn kết hợp mới: Gỏi xoài xanh đậu phộng, Kẹo lạc mạch nha, Khoai lang mật nướng, Croissant kẹp phô mai thịt băm.
 
+---
 
-
+## 7. Thông Tin Phiên Làm Việc: Tích Hợp Hệ Thống Âm Thanh Ngoài (Foley Audio), Cơ Chế Play Wait & Động Cơ Âm Thanh Ăn Uống Đa Tầng (17/10/2026)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Mục tiêu**:
+  1. Thay thế hoàn toàn âm thanh sóng tổng hợp của các dụng cụ bếp bằng 7 tệp âm thanh ngoài chất lượng cao đặt tại thư mục `sounds/`:
+     - Thớt cắt: `food_cut.ogg` (phát tức thì khi thái lát, thái hạt lựu, băm nhuyễn).
+     - Chảo chiên xào: `frying_pan.ogg` (Play Wait).
+     - Chảo chiên ngập dầu: `deep_frying_pan.ogg` (Play Wait).
+     - Nồi luộc, hầm: `pot_of_boiling_water.ogg` (Play Wait).
+     - Lò nướng đa năng: `oven.ogg` (Play Wait).
+     - Vỉ nướng than hoa: `grill rack.ogg` (Play Wait).
+     - Máy xay sinh tố: `blender.ogg` (Play Wait).
+  2. Xây dựng hàm `playExternalAudio(filename, wait)` bất đồng bộ (Promise-based) hỗ trợ cả 2 chế độ phát tức thì và Play Wait, tích hợp cơ chế timeout an toàn dự phòng (12s) chống treo Promise và tôn trọng cài đặt `state.sfxEnabled`.
+  3. Bổ sung các thuộc tính vật lý và kết cấu cảm quan (`texture`, `hasIce`, `outerTexture`) trực tiếp vào mô hình dữ liệu món ăn (`createFoodItem`), tự động chuyển hóa kết cấu khi qua các trạm chế biến (chiên ngập dầu $\rightarrow$ giòn; luộc hầm $\rightarrow$ nước súp; xay nhuyễn $\rightarrow$ đồ uống; nướng chín giòn $\rightarrow$ giòn; cuộn/nhồi $\rightarrow$ kế thừa theo vỏ ngoài).
+  4. Giải quyết triệt để các nghịch lý ẩm thực tự do sandbox (học hỏi từ Toca Kitchen & khoa học cảm quan ẩm thực):
+     - *Bánh tráng cuộn khoai tây chiên*: Lớp vỏ bánh tráng tươi dẻo mềm cắn chạm đầu tiên quyết định cảm quan $\rightarrow$ phát âm thanh ăn mềm `eat_soft_food.ogg`. Chỉ khi đem chiên ngập dầu hoặc nướng giòn mới phát `eat_crispy_food.ogg`.
+     - *Thịt xay nhồi bột mì nướng lò*: Phương pháp nướng nhiệt sau cùng biến món ăn thành bánh nướng, không còn là đồ uống lỏng $\rightarrow$ phát `eat_crispy_food.ogg` hoặc `eat_soft_food.ogg`.
+     - *Đồ uống lỏng / Đá xay*: Xay mịn không qua nhiệt khô, nếu có đá viên (`ice_cubes`) $\rightarrow$ phát `drink_with_ice.ogg`; nếu không có đá $\rightarrow$ phát `drink.ogg`.
+     - *Món nước hầm*: Nấu trong nồi nước sôi/hầm $\rightarrow$ phát tiếng húp súp `eat_liquid_food.ogg`.
+  5. Xây dựng **Động Cơ Âm Thanh Ăn Uống Đa Tầng (Sequential Multi-Course Tasting Engine)**:
+     - Khi trên dĩa có nhiều món tách rời (ví dụ: Bít tết áp chảo + Khoai tây chiên giòn + Nước đá xay): Hàm `buildEatingAudioPlaylist` tự động lọc bỏ các âm thanh trùng lặp liên tiếp và sắp xếp logic: món ăn rắn trước, đồ uống sau.
+     - Hàm `feedCharacter()` chạy tuần tự từng âm thanh (Play Wait), hiển thị trực quan trạng thái cắn/uống trên nút và kích hoạt hoạt họa nhai của nhân vật.
+     - Sau khi chuỗi âm thanh kết thúc: Phát âm thanh sóng cảm xúc (`react_love`, `react_good`, `react_bad`), dọn dĩa và NVDA cất giọng đọc to lời nhận xét của thực khách.
+  6. Đảm bảo 100% tiêu chuẩn trợ năng **WCAG 2.2 AAA & NVDA First**:
+     - Khóa nút tránh spam click bằng cờ `isCookingBusy` và `isFeedingBusy` cùng thuộc tính `aria-busy="true"`.
+     - NVDA không bị đọc đè trong lúc âm thanh nấu/ăn đang phát, chỉ công bố khi sự kiện hoàn thành.
+  7. Xây dựng bộ kiểm thử tự động `test_audio_engine.js` đạt kết quả tuyệt đối **7/7 PASS (100%)** và xác minh cú pháp JavaScript của `index.html` hợp lệ 100%.
