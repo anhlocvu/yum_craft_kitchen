@@ -1771,6 +1771,7 @@
 
       // Serving Plate & Custom Dish Name
       plateItems: [],
+      servedDishes: [], // Danh sách các món ăn hoàn chỉnh đã bày lên dĩa [{ id, name, garnish, items, analysis }]
       customDishName: '',
       selectedGarnishId: 'rustic',
 
@@ -2833,21 +2834,20 @@
 
     // OPEN FINISH DISH & CUSTOM NAME MODAL
     function openFinishDishModal() {
-      const availableCount = state.stationItems.length + state.stagingItems.length;
-      if (availableCount === 0) {
+      const finishingItems = [...state.stagingItems, ...state.stationItems];
+      if (finishingItems.length === 0) {
         announceNVDA('Chưa có bất kỳ thức ăn nào trong bếp hay khay tạm để hoàn thành! Hãy chọn nguyên liệu từ Tủ Lạnh (Alt+1) trước.', 'assertive');
         return;
       }
 
-      const allServingCandidates = [...state.plateItems, ...state.stagingItems, ...state.stationItems];
-      const analysis = analyzeCulinaryChemistry(allServingCandidates);
+      const analysis = analyzeCulinaryChemistry(finishingItems);
 
       const modal = document.getElementById('modal-finish-dish');
       const ingredientsSummaryEl = document.getElementById('finish-modal-ingredients-summary');
       const nameInput = document.getElementById('input-custom-dish-name');
 
       ingredientsSummaryEl.textContent = analysis.structureSummary || 'Các món đã chế biến trong bếp';
-      nameInput.value = state.customDishName || analysis.autoTitle || 'Món Ăn Thượng Hạng Của Bếp';
+      nameInput.value = analysis.autoTitle || 'Món Ăn Thượng Hạng Của Bếp';
 
       renderFinishModalGarnishes();
 
@@ -2884,23 +2884,46 @@
 
     function confirmPlatingDish() {
       const nameInput = document.getElementById('input-custom-dish-name');
-      const customName = nameInput.value.trim() || 'Món Ăn Sáng Tạo Đặc Biệt';
-      state.customDishName = customName;
+      const finishingItems = [...state.stationItems, ...state.stagingItems];
+      if (finishingItems.length === 0) return;
 
-      // Transfer all items from station & staging to plate
-      if (state.stationItems.length > 0) {
-        state.plateItems.push(...state.stationItems);
-        state.stationItems = [];
-      }
-      if (state.stagingItems.length > 0) {
-        state.plateItems.push(...state.stagingItems);
-        state.stagingItems = [];
+      const analysis = analyzeCulinaryChemistry(finishingItems);
+      const customName = nameInput.value.trim() || analysis.autoTitle || 'Món Ăn Sáng Tạo Đặc Biệt';
+      const garnish = GARNISH_OPTIONS.find(g => g.id === state.selectedGarnishId) || GARNISH_OPTIONS[0];
+
+      // Gắn định danh món ăn và tên món vào từng nguyên liệu để quản lý nguồn gốc
+      const dishId = `dish_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+      finishingItems.forEach(it => {
+        it.dishId = dishId;
+        it.dishName = customName;
+      });
+
+      const newDish = {
+        id: dishId,
+        name: customName,
+        garnish: garnish,
+        items: [...finishingItems],
+        analysis: analysis
+      };
+
+      if (!state.servedDishes) state.servedDishes = [];
+      state.servedDishes.push(newDish);
+
+      // Chuyển toàn bộ nguyên liệu vào dĩa ăn
+      state.plateItems.push(...finishingItems);
+      state.stationItems = [];
+      state.stagingItems = [];
+
+      // Cập nhật tên món dĩa ăn
+      if (state.servedDishes.length === 1) {
+        state.customDishName = newDish.name;
+      } else {
+        state.customDishName = state.servedDishes.map(d => d.name).join(' kèm ');
       }
 
       const modal = document.getElementById('modal-finish-dish');
       modal.close();
 
-      const garnish = GARNISH_OPTIONS.find(g => g.id === state.selectedGarnishId) || GARNISH_OPTIONS[0];
       const char = CHARACTERS.find(c => c.id === state.activeCharacterId) || CHARACTERS[0];
 
       playSoundEffect('react_good');
@@ -2909,7 +2932,9 @@
       switchKitchenTab('dining', false);
       renderAll();
 
-      announceNVDA(`Món "${customName}" đã được hoàn thành và bày biện đẹp mắt lên dĩa với phong cách ${garnish.name}! Đã tự động chuyển sang tab Bàn Tiệc & Thưởng Thức. Giờ đây bạn có thể bấm Phím F để đút cho ${char.name} thưởng thức!`, 'assertive');
+      const totalDishes = state.servedDishes.length;
+      const countMsg = totalDishes > 1 ? ` (Hiện có ${totalDishes} món trên dĩa ăn)` : '';
+      announceNVDA(`Món "${customName}" đã được hoàn thành và bày biện đẹp mắt lên dĩa với phong cách ${garnish.name}!${countMsg} Đã tự động chuyển sang tab Bàn Tiệc & Thưởng Thức. Giờ đây bạn có thể bấm Phím F để đút cho ${char.name} thưởng thức!`, 'assertive');
 
       const feedBtn = document.getElementById('btn-master-feed');
       if (feedBtn) feedBtn.focus();
@@ -2982,7 +3007,7 @@
     }
 
     // DYNAMIC SENSORY TASTING REVIEW (TOCA KITCHEN STYLE - NO HARDCODED RECIPES)
-    function generateSensoryTastingReview(items, analysis, character) {
+    function generateSensoryTastingReview(items, analysis, character, dishNameOverride = null) {
       if (!items || items.length === 0) {
         return {
           speech: "Ơ kìa? Dĩa thức ăn đang trống trơn, chưa có gì để ăn cả!",
@@ -2994,7 +3019,7 @@
       }
 
       const f = analysis.normalized;
-      const finalDishName = state.customDishName || analysis.autoTitle || 'Món Ăn Tự Chế';
+      const finalDishName = dishNameOverride || state.customDishName || analysis.autoTitle || 'Món Ăn Tự Chế';
       let score = analysis.harmonyScore;
       character.likes.forEach(k => { if (f[k] >= 2.0) score += 5; });
       score = Math.max(0, Math.min(100, score));
@@ -3017,7 +3042,7 @@
           moodTag: 'Thịt còn sống tanh! 🤢',
           reactionType: 'bad',
           score: Math.min(score, 20),
-          sensorySentence: 'Món ăn còn thịt sống tanh chưa qua chế biến nhiệt.'
+          sensorySentence: `Món '${finalDishName}' còn thịt sống tanh chưa qua chế biến nhiệt.`
         };
       }
 
@@ -3038,7 +3063,7 @@
           moodTag: 'Cháy khét đắng nghét! 炭',
           reactionType: 'bad',
           score: Math.min(score, 22),
-          sensorySentence: 'Món ăn bị quá lửa cháy khét đen đắng nghét.'
+          sensorySentence: `Món '${finalDishName}' bị quá lửa cháy khét đen đắng nghét.`
         };
       }
 
@@ -3059,7 +3084,7 @@
           moodTag: 'Mặn chát khát nước! 🧂💦',
           reactionType: 'bad',
           score: Math.min(score, 35),
-          sensorySentence: 'Món ăn bị nêm quá tay mặn chát khát nước.'
+          sensorySentence: `Món '${finalDishName}' bị nêm quá tay mặn chát khát nước.`
         };
       }
 
@@ -3078,7 +3103,7 @@
           moodTag: 'Cay xè bốc khói! 🔥🌶️',
           reactionType: 'bad',
           score: Math.min(score, 45),
-          sensorySentence: `Món ăn cay bùng nổ cấp độ ${f.spicy}/10 vượt quá sức chịu đựng.`
+          sensorySentence: `Món '${finalDishName}' cay bùng nổ cấp độ ${f.spicy}/10 vượt quá sức chịu đựng.`
         };
       }
 
@@ -3099,7 +3124,7 @@
         return 'chế biến thơm ngon';
       };
 
-      const subject = state.customDishName ? `Món '${state.customDishName}'` : 'Món ăn';
+      const subject = finalDishName ? `Món '${finalDishName}'` : 'Món ăn';
 
       if (rolledItem) {
         const outer = rolledItem.outerItem ? rolledItem.outerItem.name : rolledItem.name;
@@ -3127,7 +3152,7 @@
         const ingNames = items.slice(0, 3).map(i => i.name).join(' cùng ');
         const first = items[0];
         const cook = first ? methodToText(first.cookMethod, first.cookLevel) : 'chế biến kỹ lưỡng';
-        structureDesc = state.customDishName ? `Món '${state.customDishName}' (${ingNames}) được ${cook}` : `${ingNames} được ${cook}`;
+        structureDesc = finalDishName ? `Món '${finalDishName}' (${ingNames}) được ${cook}` : `${ingNames} được ${cook}`;
       }
 
       // B. Taste Sensations (Dynamic Pure Sensory Lexicon - Ranked by Dominant Intensity)
@@ -3198,6 +3223,214 @@
       }
 
       return { speech, moodTag, reactionType, score, sensorySentence };
+    }
+
+    // MULTI-DISH SENSORY TASTING CRITIQUE (COMBO & BANQUET SYSTEM FOR 2, 3, 4, 5, 6+ DISHES)
+    function generateMultiDishTastingReview(dishes, character) {
+      if (!dishes || dishes.length === 0) {
+        return {
+          speech: "Ơ kìa? Dĩa thức ăn đang trống trơn, chưa có gì để ăn cả!",
+          moodTag: "Dĩa đang trống! 🍽️",
+          reactionType: "neutral",
+          score: 0,
+          sensorySentence: "Chưa có thức ăn trên dĩa.",
+          dishReviews: []
+        };
+      }
+
+      if (dishes.length === 1) {
+        const d = dishes[0];
+        const singleRev = generateSensoryTastingReview(d.items, d.analysis, character, d.name);
+        return {
+          ...singleRev,
+          dishReviews: [{ dish: d, review: singleRev }]
+        };
+      }
+
+      // 1. Phân tích chi tiết từng món với đầy đủ 4 tầng cảm quan độc lập
+      const dishReviews = dishes.map(d => {
+        const rev = generateSensoryTastingReview(d.items, d.analysis, character, d.name);
+        return {
+          dish: d,
+          review: rev
+        };
+      });
+
+      // 2. Kiểm tra phản ứng hài hước & cảnh báo nghiêm trọng (Toca Kitchen Gag)
+      const rawDishes = dishReviews.filter(dr => dr.dish.analysis.hasRawMeat);
+      const burntDishes = dishReviews.filter(dr => dr.dish.analysis.hasBurnt);
+      const superSaltyDishes = dishReviews.filter(dr => dr.dish.analysis.normalized.salty > 5.5);
+      const superSpicyDishes = dishReviews.filter(dr => dr.dish.analysis.normalized.spicy > character.maxSpiceTolerance);
+
+      // Có món còn thịt sống tanh
+      if (rawDishes.length > 0) {
+        const badNames = rawDishes.map(dr => `'${dr.dish.name}'`).join(', ');
+        const goodNames = dishReviews.filter(dr => !dr.dish.analysis.hasRawMeat).map(dr => `'${dr.dish.name}'`).join(', ');
+        let gagSpeech = '';
+        if (character.id === 'chef_bear') {
+          gagSpeech = `"Ối dồi ôi! Món ${badNames} còn thịt sống tanh lòm chưa nấu chín kìa! ${goodNames ? `Mấy món như ${goodNames} trông thì rất ngon lành nhưng ` : ''}tôi không dám cắn miếng thịt này đâu, đau bụng chết mất!"`;
+        } else if (character.id === 'cat_miu') {
+          gagSpeech = `"Meo meo... Món ${badNames} thịt còn sống tanh lòm Miu sợ lắm! ${goodNames ? `Cho Miu ăn ${goodNames} thôi được không?` : ''}"`;
+        } else if (character.id === 'dragon_long') {
+          gagSpeech = `"Gừừừ! Món ${badNames} thịt sống nhăn răng! Đưa đây ta khè một búng lửa nướng chín lại ngay!"`;
+        } else {
+          gagSpeech = `"Báo động an toàn thực phẩm! Món ${badNames} chưa qua xử lý nhiệt chín tới, vi khuẩn sinh sôi không thể ăn được!"`;
+        }
+        playSoundEffect('react_bad');
+        return {
+          speech: gagSpeech,
+          moodTag: 'Có món sống tanh! 🤢',
+          reactionType: 'bad',
+          score: 20,
+          sensorySentence: `Bàn tiệc có món (${badNames}) còn thịt sống tanh chưa qua chế biến nhiệt.`,
+          dishReviews
+        };
+      }
+
+      // Có món bị nấu cháy khét
+      if (burntDishes.length > 0) {
+        const badNames = burntDishes.map(dr => `'${dr.dish.name}'`).join(', ');
+        let burntSpeech = '';
+        if (character.id === 'chef_bear') {
+          burntSpeech = `"Khụ khụ... Món ${badNames} bị quá lửa cháy đen thui rồi đầu bếp ơi! Cắn vào đắng nghét cả họng thì sao thưởng thức được các món khác nữa!"`;
+        } else if (character.id === 'cat_miu') {
+          burntSpeech = `"Khụ... Đắng ngắt! Món ${badNames} cháy khét lẹt rồi Miu không thích đâu!"`;
+        } else if (character.id === 'dragon_long') {
+          burntSpeech = `"Ha ha! Khét như cục than vậy! Món ${badNames} cháy đen rồi, dù là rồng ta ăn cũng nghẹn họng!"`;
+        } else {
+          burntSpeech = `"Món ${badNames} đã bị than hóa nghiêm trọng, nồng độ hợp chất đắng quá cao làm hỏng cả bàn ăn!"`;
+        }
+        playSoundEffect('react_bad');
+        return {
+          speech: burntSpeech,
+          moodTag: 'Có món cháy khét! 炭',
+          reactionType: 'bad',
+          score: 22,
+          sensorySentence: `Bàn tiệc có món (${badNames}) bị nấu quá lửa cháy đen đắng nghét.`,
+          dishReviews
+        };
+      }
+
+      // Có món bị nêm mặn chát
+      if (superSaltyDishes.length > 0) {
+        const badNames = superSaltyDishes.map(dr => `'${dr.dish.name}'`).join(', ');
+        const speech = `"Úi chà chà! Món ${badNames} nêm mặn chát cả lưỡi rồi! Mau cho tôi xin xô nước lọc gấp kẻo quéo thận mất!"`;
+        playSoundEffect('react_bad');
+        return {
+          speech,
+          moodTag: 'Có món mặn chát! 🧂💦',
+          reactionType: 'bad',
+          score: 35,
+          sensorySentence: `Bàn tiệc có món (${badNames}) bị nêm quá tay mặn chát khát nước.`,
+          dishReviews
+        };
+      }
+
+      // Có món cay xè vượt quá sức chịu đựng
+      if (superSpicyDishes.length > 0) {
+        const badNames = superSpicyDishes.map(dr => `'${dr.dish.name}'`).join(', ');
+        const speech = `"Hàààà! Món ${badNames} cay cấp độ xé lưỡi bốc khói hai tai rồi, cay cháy cả họng!"`;
+        playSoundEffect('react_bad');
+        return {
+          speech,
+          moodTag: 'Có món cay xè! 🔥🌶️',
+          reactionType: 'bad',
+          score: 42,
+          sensorySentence: `Bàn tiệc có món (${badNames}) cay xé lưỡi vượt quá sức chịu đựng.`,
+          dishReviews
+        };
+      }
+
+      // 3. Tính điểm trung bình và cộng điểm thưởng phối hợp Thực Đơn Combo
+      let totalScore = 0;
+      dishReviews.forEach(dr => totalScore += dr.review.score);
+      let avgScore = Math.round(totalScore / dishes.length);
+
+      // Thưởng điểm hòa vị khi thực đơn có cả món ăn mặn/chính và đồ uống/tráng miệng ngọt mát
+      const hasSavory = dishes.some(d => d.items.some(i => i.category === 'meat' || i.category === 'seafood' || i.category === 'vegetables' || i.category === 'noodles_flour'));
+      const hasDrinkOrSweet = dishes.some(d => d.items.some(i => i.texture === 'drink' || i.category === 'sweets' || i.category === 'fruits' || i.id === 'oreo' || i.id === 'milk'));
+      if (hasSavory && hasDrinkOrSweet) {
+        avgScore = Math.min(100, avgScore + 5);
+      }
+      if (dishes.length >= 3) {
+        avgScore = Math.min(100, avgScore + 3);
+      }
+
+      // 4. Trích xuất mô tả cảm quan từng món để tổng hòa thành lời thoại tự nhiên
+      const dishDetails = dishReviews.map(dr => {
+        let sent = dr.review.sensorySentence;
+        sent = sent.replace(/^Món\s+'[^']+'\s+(?:\([^)]+\)\s+)?/, '');
+        return {
+          name: dr.dish.name,
+          desc: sent,
+          score: dr.review.score
+        };
+      });
+
+      let sensorySentence = '';
+      let speech = '';
+      let moodTag = '';
+      let reactionType = avgScore >= 80 ? 'love' : 'good';
+
+      if (dishes.length === 2) {
+        const d1 = dishDetails[0];
+        const d2 = dishDetails[1];
+        sensorySentence = `Món '${d1.name}' (${d1.desc}), dùng kèm món '${d2.name}' (${d2.desc})`;
+        moodTag = avgScore >= 80 ? 'Combo 2 Món Đỉnh Cao! 🤩🍽️' : 'Combo 2 Món Vừa Vị! 😋👍';
+
+        if (avgScore >= 80) {
+          if (character.id === 'chef_bear') {
+            speech = `"Nhoàm nhoàm... ÔI BỮA ĂN THỊNH SOẠN TUYỆT HẢO! Về món '${d1.name}': ${d1.desc}. Kèm thêm món '${d2.name}': ${d2.desc}! Hai món kết hợp với nhau tạo nên một bữa ăn vừa đậm đà vừa đã miệng, đúng là tay nghề bếp trưởng cự phách, ăn vào đã cái bụng vô cùng!"`;
+          } else if (character.id === 'cat_miu') {
+            speech = `"Măm măm... ÔI THÍCH QUÁ ĐI! Món '${d1.name}' thì ${d1.desc}, lại có thêm '${d2.name}' ${d2.desc}! Vị ngon hòa quyện tan ngay trong miệng làm Miu mê tít luôn!"`;
+          } else if (character.id === 'dragon_long') {
+            speech = `"Khà khà... ĐÃ MIỆNG VÀ ĐÃ KHÁT THẬT! Món '${d1.name}' ${d1.desc}, rồi lại được nhấp '${d2.name}' ${d2.desc}! Hương vị bùng nổ đúng gu của ta rồi!"`;
+          } else {
+            speech = `"Chà... XUẤT SẮC! Sự phối hợp giữa món '${d1.name}' (${d1.desc}) và món '${d2.name}' (${d2.desc}) đạt độ cân bằng ẩm thực đỉnh cao!"`;
+          }
+        } else if (avgScore >= 50) {
+          speech = `"Măm măm! Bữa ăn kết hợp giữa món '${d1.name}' (${d1.desc}) và món '${d2.name}' (${d2.desc}) ăn rất ngon miệng và vừa vị (Hài hòa: ${avgScore}/100 điểm)!"`;
+        } else {
+          speech = `"Hừm... Sự kết hợp giữa '${d1.name}' và '${d2.name}' có hương vị khá độc lạ và mới mẻ. Lần sau đầu bếp thử nêm nếm thêm xem sao nhé!"`;
+        }
+      } else {
+        // Thực đơn đại tiệc từ 3 đến 6+ món
+        const itemsSummary = dishDetails.map((d, i) => `Món ${i + 1} '${d.name}': ${d.desc}`).join('; ');
+        sensorySentence = `Thực đơn ${dishes.length} món gồm: ${itemsSummary}`;
+
+        if (dishes.length <= 4) {
+          moodTag = avgScore >= 80 ? `Đại Tiệc ${dishes.length} Món Thịnh Soạn! 👑🎉` : `Tiệc ${dishes.length} Món Vừa Vị! 😋👍`;
+        } else {
+          moodTag = avgScore >= 80 ? `Mâm Cỗ Hoàng Gia ${dishes.length} Món! 🏆✨` : `Mâm Cỗ ${dishes.length} Món Đa Sắc! 🍲🌟`;
+        }
+
+        const dishListNames = dishDetails.map(d => `'${d.name}'`).join(', ');
+
+        if (avgScore >= 80) {
+          if (character.id === 'chef_bear') {
+            speech = `"Nhoàm nhoàm... TRỜI ƠI MỘT MÂM CỖ ĐẠI TIỆC HOÀNG GIA! Tận ${dishes.length} món được chuẩn bị công phu: ${dishDetails.map(d => `'${d.name}' (${d.desc})`).join(', và ')}! Ăn một bữa thịnh soạn no nê ngập tràn hương vị thế này thì sướng nhất trần đời, điểm tuyệt đối cho đầu bếp!"`;
+          } else if (character.id === 'cat_miu') {
+            speech = `"Măm măm... ÔI MÂM CỖ NHIỀU MÓN QUÁ! Có tận ${dishes.length} món thơm lừng bày đầy trên bàn: ${dishListNames}! Món nào cũng ngon tuyệt làm Miu no căng bụng luôn nè!"`;
+          } else if (character.id === 'dragon_long') {
+            speech = `"Khà khà... ĐẠI TIỆC VUA CHÚA! ${dishes.length} món phong phú từ ${dishListNames}, ăn uống ngập tràn thế này mới xứng tầm rồng lửa ta chứ!"`;
+          } else {
+            speech = `"Kinh ngạc thực sự! Một thực đơn ${dishes.length} món được xây dựng công phu và đa dạng: ${dishDetails.map(d => `'${d.name}' (${d.desc})`).join(', ')}! Sự phối hợp ẩm thực này đạt cấp độ đỉnh cao!"`;
+          }
+        } else if (avgScore >= 50) {
+          speech = `"Măm măm! Bàn tiệc ${dishes.length} món (${dishListNames}) ăn rất phong phú và ngon miệng (Hài hòa tổng thể: ${avgScore}/100 điểm)!"`;
+        } else {
+          speech = `"Hừm... Mâm cỗ ${dishes.length} món này có nhiều hương vị kết hợp khá độc lạ (${dishListNames}). Lần sau đầu bếp chú ý cân bằng hơn nhé!"`;
+        }
+      }
+
+      return {
+        speech,
+        moodTag,
+        reactionType,
+        score: avgScore,
+        sensorySentence,
+        dishReviews
+      };
     }
 
     // 6. BỘ XÁC ĐỊNH ÂM THANH ĂN UỐNG & PLAYLIST THƯỞNG THỨC ĐA MÓN (SENSORY EATING PLAYLIST)
@@ -3282,9 +3515,22 @@
       }
 
       // Sau khi âm thanh ăn uống kết thúc: Phân tích đánh giá và phản hồi
-      const analysis = analyzeCulinaryChemistry(state.plateItems);
-      const finalDishName = state.customDishName || analysis.autoTitle || 'Món Ăn Tự Chế';
-      const review = generateSensoryTastingReview(state.plateItems, analysis, char);
+      const dishes = (state.servedDishes && state.servedDishes.length > 0)
+        ? state.servedDishes
+        : [{
+            id: 'legacy',
+            name: state.customDishName || 'Món Ăn Tự Chế',
+            items: state.plateItems,
+            analysis: analyzeCulinaryChemistry(state.plateItems)
+          }];
+
+      const review = (dishes.length > 1)
+        ? generateMultiDishTastingReview(dishes, char)
+        : generateSensoryTastingReview(dishes[0].items, dishes[0].analysis, char, dishes[0].name);
+
+      const finalDishTitle = (dishes.length > 1)
+        ? `thực đơn ${dishes.length} món (${dishes.map(d => d.name).join(', ')})`
+        : `món "${dishes[0].name}"`;
 
       // Phát âm thanh sóng cảm xúc tương ứng
       if (review.reactionType === 'love') {
@@ -3308,6 +3554,7 @@
 
       // Dọn sạch dĩa thức ăn
       state.plateItems = [];
+      state.servedDishes = [];
       state.customDishName = '';
       state.isFeedingBusy = false;
 
@@ -3322,12 +3569,28 @@
       }
 
       // NVDA công bố toàn bộ lời nhận xét của thực khách
-      announceNVDA(`${char.name} vừa thưởng thức món "${finalDishName}". Nhận xét: ${review.speech}`, 'assertive');
+      announceNVDA(`${char.name} vừa thưởng thức ${finalDishTitle}. Nhận xét: ${review.speech}`, 'assertive');
       renderAll();
     }
 
     // READ DISH & FLAVOR SUMMARY (KEY I)
     function readDishSummary() {
+      // 1. Khi đang ở dĩa ăn và có từ 2 món hoàn chỉnh trở lên
+      if (state.servedDishes && state.servedDishes.length > 1 && state.plateItems.length > 0) {
+        const char = CHARACTERS.find(c => c.id === state.activeCharacterId) || CHARACTERS[0];
+        const multiReview = generateMultiDishTastingReview(state.servedDishes, char);
+        let msg = `Báo cáo thực đơn trên Đĩa Ăn: Gồm ${state.servedDishes.length} món hoàn chỉnh. `;
+        state.servedDishes.forEach((d, idx) => {
+          const rev = generateSensoryTastingReview(d.items, d.analysis, char, d.name);
+          const f = d.analysis.normalized;
+          msg += `Món ${idx + 1}: "${d.name}" - ${rev.sensorySentence}. Điểm hài hòa: ${d.analysis.harmonyScore}/100 (Umami ${f.umami}, Mặn ${f.salty}, Ngọt ${f.sweet}, Béo ${f.fatty}, Thơm ${f.aroma}). `;
+        });
+        msg += `Tổng thể thực đơn: Điểm trung bình ${multiReview.score}/100 (${multiReview.moodTag}).`;
+        announceNVDA(msg, 'assertive');
+        return;
+      }
+
+      // 2. Món đơn trên dĩa hoặc thức ăn đang sơ chế trong Bếp / Khay Tạm
       const allItems = state.plateItems.length > 0 ? state.plateItems : (state.stationItems.length > 0 ? state.stationItems : state.stagingItems);
       const place = state.plateItems.length > 0 ? 'trên Đĩa Ăn' : (state.stationItems.length > 0 ? 'trong Bếp' : 'trên Khay Tạm');
 
@@ -3338,9 +3601,11 @@
 
       const analysis = analyzeCulinaryChemistry(allItems);
       const f = analysis.normalized;
-      const name = state.customDishName || analysis.autoTitle;
+      const name = (state.servedDishes && state.servedDishes.length === 1 && state.plateItems.length > 0)
+        ? state.servedDishes[0].name
+        : (state.customDishName || analysis.autoTitle);
       const char = CHARACTERS.find(c => c.id === state.activeCharacterId) || CHARACTERS[0];
-      const review = generateSensoryTastingReview(allItems, analysis, char);
+      const review = generateSensoryTastingReview(allItems, analysis, char, name);
 
       const warnStr = analysis.warnings.length > 0 ? ` Cảnh báo: ${analysis.warnings.join('; ')}.` : '';
       const synStr = analysis.synergies.length > 0 ? ` Phản ứng hòa vị: ${analysis.synergies.join('; ')}.` : '';
@@ -3354,6 +3619,7 @@
       state.stationItems = [];
       state.stagingItems = [];
       state.plateItems = [];
+      state.servedDishes = [];
       state.customDishName = '';
       state.selectedWrapperUid = null;
       state.selectedVesselUid = null;
@@ -3743,8 +4009,15 @@
 
     // RENDER SERVING PLATE & HARMONY RADAR
     function renderServingPlate() {
+      const isMultiDish = state.servedDishes && state.servedDishes.length > 1;
       const badge = document.getElementById('plate-items-count-badge');
-      if (badge) badge.textContent = `${state.plateItems.length} phần trên dĩa`;
+      if (badge) {
+        if (isMultiDish) {
+          badge.textContent = `${state.servedDishes.length} món (${state.plateItems.length} phần) trên dĩa`;
+        } else {
+          badge.textContent = `${state.plateItems.length} phần trên dĩa`;
+        }
+      }
 
       const allPlateItems = state.plateItems;
       const analysis = analyzeCulinaryChemistry(allPlateItems);
@@ -3754,17 +4027,34 @@
       const scoreEl = document.getElementById('plate-harmony-score');
       const garnishBadgeEl = document.getElementById('plate-garnish-badge');
 
-      const currentGarnish = GARNISH_OPTIONS.find(g => g.id === state.selectedGarnishId) || GARNISH_OPTIONS[0];
-      if (garnishBadgeEl) garnishBadgeEl.textContent = `${currentGarnish.emoji} ${currentGarnish.name}`;
+      if (isMultiDish) {
+        const dishNames = state.servedDishes.map(d => d.name).join(' kèm ');
+        if (dishTitleEl) dishTitleEl.textContent = `Thực Đơn ${state.servedDishes.length} Món: ${dishNames}`;
+        if (compSummaryEl) compSummaryEl.textContent = state.servedDishes.map((d, i) => `[Món ${i + 1}: ${d.name} (${d.analysis.structureSummary})]`).join(' • ');
+        const garnishes = Array.from(new Set(state.servedDishes.map(d => `${d.garnish.emoji} ${d.garnish.name}`)));
+        if (garnishBadgeEl) garnishBadgeEl.textContent = garnishes.join(' | ');
 
-      if (dishTitleEl) {
-        dishTitleEl.textContent = state.customDishName || (allPlateItems.length > 0 ? analysis.autoTitle : 'Dĩa đang trống');
-      }
-      if (compSummaryEl) {
-        compSummaryEl.textContent = analysis.structureSummary || 'Chưa có thức ăn trên dĩa.';
-      }
-      if (scoreEl) {
-        scoreEl.textContent = allPlateItems.length > 0 ? `Độ hài hòa: ${analysis.harmonyScore}/100` : 'Độ hài hòa: --';
+        let totalScore = 0;
+        state.servedDishes.forEach(d => totalScore += d.analysis.harmonyScore);
+        const avgScore = Math.round(totalScore / state.servedDishes.length);
+        if (scoreEl) scoreEl.textContent = `Độ hài hòa trung bình: ${avgScore}/100`;
+      } else {
+        const currentGarnish = (state.servedDishes && state.servedDishes[0])
+          ? state.servedDishes[0].garnish
+          : (GARNISH_OPTIONS.find(g => g.id === state.selectedGarnishId) || GARNISH_OPTIONS[0]);
+        if (garnishBadgeEl) garnishBadgeEl.textContent = `${currentGarnish.emoji} ${currentGarnish.name}`;
+
+        if (dishTitleEl) {
+          dishTitleEl.textContent = (state.servedDishes && state.servedDishes[0])
+            ? state.servedDishes[0].name
+            : (state.customDishName || (allPlateItems.length > 0 ? analysis.autoTitle : 'Dĩa đang trống'));
+        }
+        if (compSummaryEl) {
+          compSummaryEl.textContent = analysis.structureSummary || 'Chưa có thức ăn trên dĩa.';
+        }
+        if (scoreEl) {
+          scoreEl.textContent = allPlateItems.length > 0 ? `Độ hài hòa: ${analysis.harmonyScore}/100` : 'Độ hài hòa: --';
+        }
       }
 
       // Flavor Bars
@@ -3822,9 +4112,11 @@
             const row = document.createElement('div');
             row.setAttribute('role', 'listitem');
             row.className = 'p-1.5 rounded-xl bg-orange-50/70 border border-orange-200 flex items-center justify-between gap-1 text-xs';
+            const dishTag = it.dishName ? `<span class="px-1.5 py-0.5 rounded bg-amber-200 text-amber-900 font-bold text-[10px] shrink-0 truncate max-w-[110px]" title="Thuộc món ${it.dishName}">${it.dishName}</span>` : '';
             row.innerHTML = `
               <div class="flex items-center gap-1.5 min-w-0">
                 <span class="text-lg shrink-0" aria-hidden="true">${it.emoji}</span>
+                ${dishTag}
                 <span class="font-bold text-stone-900 truncate">${idx + 1}. ${it.name}</span>
               </div>
               <button type="button" data-del-plate="${idx}" class="px-2 py-0.5 rounded bg-stone-200 hover:bg-red-200 text-stone-700 hover:text-red-900 font-bold text-[10px]" aria-label="Bỏ ${it.name} khỏi dĩa">
@@ -3832,7 +4124,21 @@
               </button>
             `;
             row.querySelector(`[data-del-plate="${idx}"]`).addEventListener('click', () => {
-              state.plateItems.splice(idx, 1);
+              const [removed] = state.plateItems.splice(idx, 1);
+              if (state.servedDishes && removed) {
+                state.servedDishes.forEach(d => {
+                  const itemIdx = d.items.findIndex(i => i.uid === removed.uid);
+                  if (itemIdx !== -1) d.items.splice(itemIdx, 1);
+                });
+                state.servedDishes = state.servedDishes.filter(d => d.items.length > 0);
+                if (state.servedDishes.length === 0) {
+                  state.customDishName = '';
+                } else if (state.servedDishes.length === 1) {
+                  state.customDishName = state.servedDishes[0].name;
+                } else {
+                  state.customDishName = state.servedDishes.map(d => d.name).join(' kèm ');
+                }
+              }
               announceNVDA('Đã bỏ món khỏi dĩa ăn.', 'polite');
               renderAll();
             });
@@ -4297,6 +4603,7 @@
       // Clear plate items
       document.getElementById('btn-clear-plate-items').addEventListener('click', () => {
         state.plateItems = [];
+        state.servedDishes = [];
         state.customDishName = '';
         announceNVDA('Đã đổ sạch dĩa thức ăn để làm lại.', 'polite');
         renderAll();
@@ -4354,8 +4661,8 @@
       document.getElementById('btn-confirm-plate-dish').addEventListener('click', confirmPlatingDish);
 
       document.getElementById('btn-suggest-dish-name').addEventListener('click', () => {
-        const allItems = [...state.plateItems, ...state.stagingItems, ...state.stationItems];
-        const analysis = analyzeCulinaryChemistry(allItems);
+        const finishingItems = [...state.stagingItems, ...state.stationItems];
+        const analysis = analyzeCulinaryChemistry(finishingItems);
         const nameInput = document.getElementById('input-custom-dish-name');
         nameInput.value = analysis.autoTitle;
         playSoundEffect('pick');

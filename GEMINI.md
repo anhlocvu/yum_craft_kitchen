@@ -196,3 +196,28 @@
      - Khóa nút tránh spam click bằng cờ `isCookingBusy` và `isFeedingBusy` cùng thuộc tính `aria-busy="true"`.
      - NVDA không bị đọc đè trong lúc âm thanh nấu/ăn đang phát, chỉ công bố khi sự kiện hoàn thành.
   7. Xây dựng bộ kiểm thử tự động `test_audio_engine.js` đạt kết quả tuyệt đối **7/7 PASS (100%)** và xác minh cú pháp JavaScript của `index.html` hợp lệ 100%.
+
+---
+
+## 8. Thông Tin Phiên Làm Việc: Kiến Trúc Thực Đơn Đa Món (Multi-Course Combo & Banquet Sensory Engine), Đánh Giá Cảm Quan Từng Món & Trợ Năng Báo Cáo Phím I (17/10/2026)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Mục tiêu**:
+  1. **Khắc phục triệt để lỗi mất bản sắc món ăn khi làm nhiều món**:
+     - Trước đây: `state.customDishName` là chuỗi đơn duy nhất. Khi người chơi làm món 1 (Thịt bò nướng than hoa), sau đó tiếp tục làm món 2 (Oreo đá say), hàm hoàn thành món ghi đè tên thành "Oreo đá say", làm mất sạch tên và kỹ thuật nướng thịt bò.
+     - Hiện tại: Thiết lập cấu trúc `state.servedDishes = []` quản lý các món ăn độc lập (`ServedDish` gồm `id`, `name`, `garnish`, `items`, `analysis`). Mỗi nguyên liệu trên dĩa được gắn nhãn `dishId` và `dishName` đồng bộ.
+  2. **Tách biệt quy trình Hoàn Thành Món (`openFinishDishModal` & `confirmPlatingDish`)**:
+     - Khi mở modal hoàn thành món: Chỉ phân tích các nguyên liệu đang có trong bếp hoặc khay tạm (`stationItems` & `stagingItems`), không gom các món đã nằm trên dĩa vào để tính toán gợi ý tên.
+     - Khi xác nhận bày dĩa: Đóng gói mẻ nấu thành một `ServedDish` mới, đồng thời tự động cập nhật tiêu đề thực đơn (ví dụ: `Thực Đơn 2 Món: Thịt bò nướng than hoa kèm Oreo đá say`).
+  3. **Phát triển Động Cơ Đánh Giá Cảm Quan Thực Đơn Đa Món (`generateMultiDishTastingReview`)**:
+     - **Không bao giờ nhận xét qua loa**: Giữ nguyên 100% độ sâu sắc của bộ từ điển vị giác cảm quan thuần túy 4 tầng cho từng món một (cấu trúc kỹ thuật, vị giác nổi trội xếp hạng theo cường độ, gia vị thực tế).
+     - **Combo 2 Món (Món chính + Thức uống giải khát)**: Thực khách đánh giá chi tiết cả 2 món (ví dụ: Thịt bò nướng than hoa thơm lừng đượm vị Umami dùng kèm ly Oreo đá say sánh mịn béo ngọt mát lạnh).
+     - **Đại Tiệc & Mâm Cỗ Hoàng Gia (3, 4, 5, 6+ món)**: Thực khách (Gấu Bự, Mèo Miu, Rồng Lửa, Cú Thông Thái) phân tích tường tận từng món từ món 1 đến món 6, tính điểm thưởng phối hợp thực đơn phong phú (Combo Bonus + Banquet Bonus).
+     - **Phản ứng hài hước Toca Kitchen Gag**: Khi có món bị sống tanh hoặc cháy khét, thực khách chỉ đích danh món bị lỗi và khen ngợi các món ngon lành còn lại.
+  4. **Nâng Cấp Trợ Năng Báo Cáo Phím `I` (`readDishSummary`) Chuẩn NVDA First**:
+     - Khi trên dĩa có $\ge 2$ món: Trình đọc màn hình NVDA đọc rành mạch theo thứ tự từng món (Tên món, Cảm quan chi tiết, Điểm hài hòa, Chi tiết các vị Umami, Mặn, Ngọt, Béo, Thơm) và tổng kết điểm trung bình thực đơn.
+  5. **Đồng Bộ Giao Diện & Thao Tác Xóa Món (`renderServingPlate`)**:
+     - Thẻ huy hiệu hiển thị rõ số lượng món và số lượng phần (`N món (M phần) trên dĩa`).
+     - Từng nguyên liệu hiển thị nhãn tên món tương ứng (`[Thịt bò nướng than hoa]`, `[Oreo đá say]`).
+     - Khi xóa một nguyên liệu, hệ thống tự động đồng bộ lại `servedDishes`, cập nhật lại tiêu đề thực đơn và điểm số tức thì.
+  6. **Kiểm Thử Toàn Diện Tự Động (`test_multidish_engine.js`)**:
+     - Kiểm thử bao phủ toàn bộ 8 kịch bản (1 món, 2 món, 3 món, 4 món, 5 món, 6 món, phản ứng gag, phím I, xóa món, dọn dĩa) đạt kết quả tuyệt đối **41/41 PASS (100%)**.
