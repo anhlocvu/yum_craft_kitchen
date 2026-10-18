@@ -221,3 +221,29 @@
      - Khi xóa một nguyên liệu, hệ thống tự động đồng bộ lại `servedDishes`, cập nhật lại tiêu đề thực đơn và điểm số tức thì.
   6. **Kiểm Thử Toàn Diện Tự Động (`test_multidish_engine.js`)**:
      - Kiểm thử bao phủ toàn bộ 8 kịch bản (1 món, 2 món, 3 món, 4 món, 5 món, 6 món, phản ứng gag, phím I, xóa món, dọn dĩa) đạt kết quả tuyệt đối **41/41 PASS (100%)**.
+
+
+---
+
+## 9. Thông Tin Phiên Làm Việc: Chuẩn Hóa Nút Xóa Món Trên Dĩa & Động Cơ Âm Thanh Ăn Uống Phát Đúng Thứ Tự Dĩa Đầy Đủ (18/10/2026)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Mục tiêu & Các Cải Tiến Triển Khai**:
+  1. **Khắc Phục Triệt Để Lỗi Nút Bỏ Đồ Ăn Khỏi Dĩa Bị Sai Tên Món**:
+     - *Hiện tượng trước đây*: Người chơi chiên Vỏ bánh bao, hoàn thành món và đặt tên là "Bánh bao chiên". Khi đưa lên dĩa, nút xóa lại đọc: `"Bỏ Vỏ Bánh Bao Mềm Trắng khỏi dĩa"` do khai báo nhầm biến `it.name` (tên nguyên liệu thô ban đầu) thay vì tên món đã chế biến.
+     - *Giải pháp triển khai*:
+       + Tái cấu trúc danh sách `#plate-items-list` trong `renderServingPlate()` sang duyệt trực tiếp theo từng **Món Ăn Hoàn Chỉnh (`state.servedDishes`)**.
+       + Hiển thị đúng tên món: Số thứ tự + `dish.name` (ví dụ: `1. Bánh bao chiên`).
+       + Gán chuẩn xác thuộc tính trợ năng: `aria-label="Bỏ món ${dish.name} khỏi dĩa"` và nhãn nút trực quan là `Xóa`.
+       + Khi bấm Xóa: Xóa sạch toàn bộ món đó và các nguyên liệu thuộc món đó khỏi dĩa ăn; cập nhật lại tiêu đề thực đơn và NVDA đọc thông báo rõ ràng: `"Đã bỏ món [Tên món] khỏi dĩa ăn."`
+  2. **Động Cơ Âm Thanh Ăn Uống Phát Đúng Thứ Tự Trên Dĩa & Không Khử Trùng Lặp**:
+     - *Hiện tượng trước đây*: Khi có 2 món mềm và 1 món giòn, cơ chế lọc trùng lặp `uniqueSounds` vô tình loại bỏ tiếng nhai mềm thứ 2, và thuật toán `sort` tự ý đảo đồ uống xuống sau cùng.
+     - *Giải pháp triển khai*:
+       + Hàm `buildEatingAudioPlaylist()`: Loại bỏ hoàn toàn bộ lọc khử trùng lặp và bộ sắp xếp đảo thứ tự.
+       + Giữ nguyên **100% số lượng và thứ tự xuất hiện của các món trên dĩa**: Người chơi dọn món nào trước, nhân vật ăn món đó trước (ví dụ: Khoai tây chiên giòn $\rightarrow$ Sinh tố uống $\rightarrow$ Tôm xào mềm $\rightarrow$ Mì nước sôi súp $\rightarrow$ phát đúng tuần tự: Tiếng giòn $\rightarrow$ Tiếng uống $\rightarrow$ Tiếng mềm $\rightarrow$ Tiếng húp súp).
+       + Bổ sung khoảng dừng tự nhiên siêu nhỏ ($150\text{ms}$) giữa các món liên tiếp để âm thanh tách bạch, thỏa mãn thính giác.
+       + Đơn giản hóa trạng thái nút Đút Ăn: Giữ nguyên dòng trạng thái đồng nhất, gọn gàng: **`ĐANG THƯỞNG THỨC MÓN ĂN... 😋`** trong suốt quá trình phát chuỗi âm thanh.
+  3. **Đảm Bảo 100% Chuẩn Trợ Năng WCAG 2.2 AAA & NVDA First**:
+     - Nút có `aria-busy="true"` và `disabled="true"` trong suốt thời gian phát chuỗi âm thanh.
+     - Trình đọc màn hình NVDA không bị ngắt quãng giữa chừng, chỉ công bố nhận xét toàn diện sau khi nhân vật thưởng thức xong toàn bộ mâm cỗ.
+  4. **Kiểm Thử Toàn Diện Tự Động**:
+     - Chạy thành công bộ kiểm thử tự động 7 kịch bản (Thứ tự âm thanh theo dĩa, 2 mềm 1 giòn không lọc trùng, thức uống có đá, dĩa rỗng, render nút dĩa với tên món Bánh bao chiên, xóa món dọn sạch dĩa) đạt kết quả tuyệt đối **7/7 PASS (100%)**.

@@ -3450,27 +3450,8 @@
     function buildEatingAudioPlaylist(items) {
       if (!items || items.length === 0) return ['eat_soft_food.ogg'];
 
-      // Thu thập toàn bộ âm thanh của từng món trên dĩa
-      const rawSounds = items.map(item => getEatingSoundForItem(item));
-
-      // Gom nhóm và khử trùng lặp các âm thanh giống nhau liên tiếp (ngừa Audio Fatigue)
-      const uniqueSounds = [];
-      rawSounds.forEach(snd => {
-        if (!uniqueSounds.includes(snd)) {
-          uniqueSounds.push(snd);
-        }
-      });
-
-      // Sắp xếp tự nhiên: Đồ ăn rắn/súp ăn trước, Đồ uống (drink) uống sau
-      uniqueSounds.sort((a, b) => {
-        const isDrinkA = a.startsWith('drink');
-        const isDrinkB = b.startsWith('drink');
-        if (isDrinkA && !isDrinkB) return 1;
-        if (!isDrinkA && isDrinkB) return -1;
-        return 0;
-      });
-
-      return uniqueSounds;
+      // Thu thập toàn bộ âm thanh theo đúng thứ tự trên dĩa (không lọc trùng, không đảo thứ tự)
+      return items.map(item => getEatingSoundForItem(item));
     }
 
     // FEED CHARACTER (ASYNC WITH SEQUENTIAL PLAY WAIT AUDIO & ARIA BUSY)
@@ -3498,20 +3479,19 @@
       state.charAnimState = 'eating';
       state.charAnimTimer = 240;
 
-      // Phân tích kết cấu và lập playlist âm thanh ăn uống
+      // Phân tích kết cấu và lập playlist âm thanh ăn uống theo đúng thứ tự dĩa
       const playlist = buildEatingAudioPlaylist(state.plateItems);
 
       // Chạy tuần tự từng âm thanh ăn uống theo kiểu Play Wait
       for (let i = 0; i < playlist.length; i++) {
         const soundFile = playlist[i];
         if (feedLbl) {
-          if (soundFile === 'eat_crispy_food.ogg') feedLbl.textContent = 'ĐANG CẮN MIẾNG GIÒN RỤM... 🥢✨';
-          else if (soundFile === 'eat_liquid_food.ogg') feedLbl.textContent = 'ĐANG HÚP SÚP NÓNG HỔI... 🍲🥄';
-          else if (soundFile === 'drink_with_ice.ogg') feedLbl.textContent = 'ĐANG UỐNG ĐÁ TUYẾT MÁT LẠNH... ❄️🥤';
-          else if (soundFile === 'drink.ogg') feedLbl.textContent = 'ĐANG UỐNG NƯỚC THƯỞNG THỨC... 🥤';
-          else feedLbl.textContent = 'ĐANG THƯỞNG THỨC MÓN ĂN... 😋';
+          feedLbl.textContent = 'ĐANG THƯỞNG THỨC MÓN ĂN... 😋';
         }
         await playExternalAudio(soundFile, true);
+        if (i < playlist.length - 1) {
+          await new Promise(r => setTimeout(r, 150));
+        }
       }
 
       // Sau khi âm thanh ăn uống kết thúc: Phân tích đánh giá và phản hồi
@@ -4101,45 +4081,67 @@
         }
       }
 
-      // Plate Items list
+      // Plate Items list (Duyệt theo từng Món Ăn đã hoàn thành)
       const listEl = document.getElementById('plate-items-list');
       if (listEl) {
         listEl.innerHTML = '';
         if (state.plateItems.length === 0) {
           listEl.innerHTML = `<div class="p-2 rounded-xl bg-stone-50 border border-dashed border-stone-300 text-xs text-stone-500 text-center">Bấm nút ⭐ HOÀN THÀNH MÓN bên dưới để bày đồ ăn lên dĩa!</div>`;
+        } else if (state.servedDishes && state.servedDishes.length > 0) {
+          state.servedDishes.forEach((dish, idx) => {
+            const row = document.createElement('div');
+            row.setAttribute('role', 'listitem');
+            row.className = 'p-1.5 rounded-xl bg-orange-50/70 border border-orange-200 flex items-center justify-between gap-1 text-xs';
+            const iconEmoji = dish.garnish ? dish.garnish.emoji : (dish.items[0] ? dish.items[0].emoji : '🍽️');
+            const summaryText = dish.items && dish.items.length > 1
+              ? ` (${dish.items.map(i => i.name).join(', ')})`
+              : (dish.items[0] && dish.items[0].name !== dish.name ? ` (${dish.items[0].name})` : '');
+            row.innerHTML = `
+              <div class="flex items-center gap-1.5 min-w-0">
+                <span class="text-lg shrink-0" aria-hidden="true">${iconEmoji}</span>
+                <span class="font-bold text-stone-900 truncate" title="${dish.name}${summaryText}">${idx + 1}. ${dish.name}</span>
+                <span class="text-[10px] text-stone-500 truncate hidden sm:inline">${summaryText}</span>
+              </div>
+              <button type="button" data-del-dish="${dish.id}" class="px-2 py-0.5 rounded bg-stone-200 hover:bg-red-200 text-stone-700 hover:text-red-900 font-bold text-[10px]" aria-label="Bỏ món ${dish.name} khỏi dĩa">
+                Xóa
+              </button>
+            `;
+            row.querySelector(`[data-del-dish="${dish.id}"]`).addEventListener('click', () => {
+              const dishName = dish.name;
+              const itemUids = new Set(dish.items.map(i => i.uid));
+              state.plateItems = state.plateItems.filter(i => !itemUids.has(i.uid));
+              state.servedDishes = state.servedDishes.filter(d => d.id !== dish.id);
+              if (state.servedDishes.length === 0) {
+                state.customDishName = '';
+              } else if (state.servedDishes.length === 1) {
+                state.customDishName = state.servedDishes[0].name;
+              } else {
+                state.customDishName = state.servedDishes.map(d => d.name).join(' kèm ');
+              }
+              announceNVDA(`Đã bỏ món "${dishName}" khỏi dĩa ăn.`, 'polite');
+              renderAll();
+            });
+            listEl.appendChild(row);
+          });
         } else {
+          // Fallback nếu có plateItems nhưng không có servedDishes
           state.plateItems.forEach((it, idx) => {
             const row = document.createElement('div');
             row.setAttribute('role', 'listitem');
             row.className = 'p-1.5 rounded-xl bg-orange-50/70 border border-orange-200 flex items-center justify-between gap-1 text-xs';
-            const dishTag = it.dishName ? `<span class="px-1.5 py-0.5 rounded bg-amber-200 text-amber-900 font-bold text-[10px] shrink-0 truncate max-w-[110px]" title="Thuộc món ${it.dishName}">${it.dishName}</span>` : '';
+            const displayName = it.dishName || it.name;
             row.innerHTML = `
               <div class="flex items-center gap-1.5 min-w-0">
                 <span class="text-lg shrink-0" aria-hidden="true">${it.emoji}</span>
-                ${dishTag}
-                <span class="font-bold text-stone-900 truncate">${idx + 1}. ${it.name}</span>
+                <span class="font-bold text-stone-900 truncate">${idx + 1}. ${displayName}</span>
               </div>
-              <button type="button" data-del-plate="${idx}" class="px-2 py-0.5 rounded bg-stone-200 hover:bg-red-200 text-stone-700 hover:text-red-900 font-bold text-[10px]" aria-label="Bỏ ${it.name} khỏi dĩa">
+              <button type="button" data-del-plate="${idx}" class="px-2 py-0.5 rounded bg-stone-200 hover:bg-red-200 text-stone-700 hover:text-red-900 font-bold text-[10px]" aria-label="Bỏ món ${displayName} khỏi dĩa">
                 Xóa
               </button>
             `;
             row.querySelector(`[data-del-plate="${idx}"]`).addEventListener('click', () => {
               const [removed] = state.plateItems.splice(idx, 1);
-              if (state.servedDishes && removed) {
-                state.servedDishes.forEach(d => {
-                  const itemIdx = d.items.findIndex(i => i.uid === removed.uid);
-                  if (itemIdx !== -1) d.items.splice(itemIdx, 1);
-                });
-                state.servedDishes = state.servedDishes.filter(d => d.items.length > 0);
-                if (state.servedDishes.length === 0) {
-                  state.customDishName = '';
-                } else if (state.servedDishes.length === 1) {
-                  state.customDishName = state.servedDishes[0].name;
-                } else {
-                  state.customDishName = state.servedDishes.map(d => d.name).join(' kèm ');
-                }
-              }
-              announceNVDA('Đã bỏ món khỏi dĩa ăn.', 'polite');
+              announceNVDA(`Đã bỏ món "${displayName}" khỏi dĩa ăn.`, 'polite');
               renderAll();
             });
             listEl.appendChild(row);
