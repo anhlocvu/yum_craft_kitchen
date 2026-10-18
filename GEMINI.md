@@ -247,3 +247,29 @@
      - Trình đọc màn hình NVDA không bị ngắt quãng giữa chừng, chỉ công bố nhận xét toàn diện sau khi nhân vật thưởng thức xong toàn bộ mâm cỗ.
   4. **Kiểm Thử Toàn Diện Tự Động**:
      - Chạy thành công bộ kiểm thử tự động 7 kịch bản (Thứ tự âm thanh theo dĩa, 2 mềm 1 giòn không lọc trùng, thức uống có đá, dĩa rỗng, render nút dĩa với tên món Bánh bao chiên, xóa món dọn sạch dĩa) đạt kết quả tuyệt đối **7/7 PASS (100%)**.
+
+
+---
+
+## 10. Thông Tin Phiên Làm Việc: Tinh Chỉnh Trợ Năng Thông Báo Dĩa Ăn & Bảo Toàn Kiến Trúc Cảm Quan Món (19/10/2026)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Mục tiêu & Các Cải Tiến Triển Khai**:
+  1. **Bảo Toàn và Tối Ưu Hóa Cơ Chế Gom Món & Chuỗi Âm Thanh Ăn Uống Tuần Tự**:
+     - *Bối cảnh*: Người chơi thực hiện một phần ăn gồm nhiều nguyên liệu (mì ý, xúc xích, thịt bò, khoai tây chiên), nấu mì cay và chiên khoai tây để khay tạm, rồi bấm hoàn thành món "mỳ cay".
+     - *Phân tích chuyên sâu*:
+       + Hệ thống gom toàn bộ nguyên liệu thành 1 món hoàn chỉnh `mỳ cay` trên dĩa với đúng 1 nút xóa cấp món (`Bỏ món "mỳ cay" khỏi dĩa`), loại bỏ hoàn toàn việc xé lẻ gây loãng cây trợ năng NVDA.
+       + Chuỗi âm thanh ăn uống giữ nguyên bản sắc kết cấu từng nguyên liệu: phát đúng 3 tiếng nhai mềm (`eat_soft_food.ogg`) của mì, thịt bò, xúc xích và 1 tiếng cắn giòn rụm (`eat_crispy_food.ogg`) của khoai tây chiên.
+       + Khẳng định cơ chế này là chuẩn mực lý tưởng kết hợp giữa triết lý tự do Toca Kitchen và WCAG 2.2 AAA / NVDA First, tuyệt đối giữ nguyên.
+  2. **Khắc Phục Lỗi Thông Báo Khiến Người Chơi Hiểu Nhầm (NVDA Ambiguity Fix)**:
+     - *Hiện tượng*: Trước đây huy hiệu và thông báo đọc cộc lốc `"5 phần trên dĩa"`, khiến người chơi khiếm thị hoang mang tưởng dĩa bị xé lẻ ra 5 món rời rạc.
+     - *Giải pháp triển khai*:
+       + Cập nhật placeholder HTML ban đầu (`#plate-items-count-badge`): đổi thành `"0 món trên dĩa"`.
+       + Nâng cấp logic render huy hiệu trong `renderServingPlate()`:
+         - Khi có 1 món: `1 món "${singleDish.name}" (${singleDish.items.length} nguyên liệu) trên dĩa`.
+         - Khi có nhiều món: `${state.servedDishes.length} món (${state.plateItems.length} nguyên liệu) trên dĩa`.
+         - Khi dĩa trống: `0 món trên dĩa`.
+       + Nâng cấp thông báo hoàn thành món `confirmPlatingDish()` qua ARIA Live Region (`announceNVDA`):
+         - Đơn món: `"Món '${customName}' đã được hoàn thành và bày biện đẹp mắt lên dĩa với phong cách ${garnish.name}! (Món ăn kết hợp từ ${finishingItems.length} nguyên liệu). Đã tự động chuyển sang tab Bàn Tiệc & Thưởng Thức..."`
+         - Bàn tiệc: `"Món '${customName}' đã được hoàn thành... Bàn tiệc hiện có ${totalDishes} món hoàn chỉnh, tổng cộng ${state.plateItems.length} nguyên liệu trên dĩa..."`
+  3. **Kiểm Thử & Đảm Bảo 100% Chuẩn Trợ Năng**:
+     - Kiểm tra cú pháp JavaScript của `index.html` hợp lệ 100%, không phát sinh lỗi console hay lỗi DOM.

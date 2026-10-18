@@ -563,7 +563,7 @@
                 <span aria-hidden="true">🍽️</span>
                 <span>Dĩa Thức Ăn Đã Bày Biện</span>
               </div>
-              <span id="plate-items-count-badge" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-900">0 phần</span>
+              <span id="plate-items-count-badge" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-900">0 món trên dĩa</span>
             </div>
 
             <!-- Dish Title Display -->
@@ -2933,7 +2933,9 @@
       renderAll();
 
       const totalDishes = state.servedDishes.length;
-      const countMsg = totalDishes > 1 ? ` (Hiện có ${totalDishes} món trên dĩa ăn)` : '';
+      const countMsg = totalDishes > 1
+        ? ` Bàn tiệc hiện có ${totalDishes} món hoàn chỉnh, tổng cộng ${state.plateItems.length} nguyên liệu trên dĩa.`
+        : ` (Món ăn kết hợp từ ${finishingItems.length} nguyên liệu).`;
       announceNVDA(`Món "${customName}" đã được hoàn thành và bày biện đẹp mắt lên dĩa với phong cách ${garnish.name}!${countMsg} Đã tự động chuyển sang tab Bàn Tiệc & Thưởng Thức. Giờ đây bạn có thể bấm Phím F để đút cho ${char.name} thưởng thức!`, 'assertive');
 
       const feedBtn = document.getElementById('btn-master-feed');
@@ -3992,10 +3994,15 @@
       const isMultiDish = state.servedDishes && state.servedDishes.length > 1;
       const badge = document.getElementById('plate-items-count-badge');
       if (badge) {
-        if (isMultiDish) {
-          badge.textContent = `${state.servedDishes.length} món (${state.plateItems.length} phần) trên dĩa`;
+        if (state.servedDishes && state.servedDishes.length === 1) {
+          const singleDish = state.servedDishes[0];
+          badge.textContent = `1 món "${singleDish.name}" (${singleDish.items.length} nguyên liệu) trên dĩa`;
+        } else if (isMultiDish) {
+          badge.textContent = `${state.servedDishes.length} món (${state.plateItems.length} nguyên liệu) trên dĩa`;
+        } else if (state.plateItems.length > 0) {
+          badge.textContent = `${state.plateItems.length} nguyên liệu trên dĩa`;
         } else {
-          badge.textContent = `${state.plateItems.length} phần trên dĩa`;
+          badge.textContent = '0 món trên dĩa';
         }
       }
 
