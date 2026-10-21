@@ -14,7 +14,7 @@
 - [1. Triết Lý Thiết Kế Cốt Lõi (Sandbox Philosophy)](#-1-triết-lý-thiết-kế-cốt-lõi-sandbox-philosophy)
 - [2. Các Tính Năng Nổi Bật](#-2-các-tính-năng-nổi-bật)
   - [2.1. Bộ Máy Hóa Học Vị Giác Cảm Quan (Dynamic Sensory Chemistry)](#21-bộ-máy-hóa-học-vị-giác-cảm-quan-dynamic-sensory-chemistry)
-  - [2.2. Kho 45 Nguyên Liệu & 18 Gia Vị](#22-kho-45-nguyên-liệu--18-gia-vị)
+  - [2.2. Kho 69 Nguyên Liệu & 18 Gia Vị](#22-kho-69-nguyên-liệu--18-gia-vị)
   - [2.3. Hệ Thống 9 Trạm Chế Biến Toàn Năng](#23-hệ-thống-9-trạm-chế-biến-toàn-năng)
   - [2.4. 4 Thực Khách Cá Tính & Nhận Xét 4 Tầng Sống Động](#24-4-thực-khách-cá-tính--nhận-xét-4-tầng-sống-động)
   - [2.5. Bộ Tổng Hợp Âm Thanh Foley (Web Audio API Synthesizer)](#25-bộ-tổng-hợp-âm-thanh-foley-web-audio-api-synthesizer)
@@ -58,21 +58,29 @@ Mỗi nguyên liệu và gia vị trong YumCraft Kitchen đều chứa các ch�
 - 🔥🧄 **Gia Vị Ướp Thấm Sâu Khi Nấu**: Gia vị được nêm trước khi tác động nhiệt sẽ hòa quyện sâu vào từng thớ thịt.
 - ⚠️ **Hệ Thống Cảnh Báo Nguy Cơ**: Cảnh báo tức thì nếu món ăn còn **thịt sống tanh**, **cháy khét đen**, **mặn chát** hoặc **cay bốc khói**.
 
-### 2.2. Kho 45 Nguyên Liệu & 18 Gia Vị
+### 2.2. Kho 69 Nguyên Liệu & 18 Gia Vị
 Hệ thống nguyên liệu được phân loại trực quan trong Tủ Lạnh:
 - 🍜 **Mì & Bột Làm Bánh**: Mì trứng tươi, Mì Ý Spaghetti, Mì Udon sợi to, Mì gói tôm chua cay giòn rụm, Bột mì đa dụng, Bột gạo tẻ thơm mịn, Bột chiên giòn Tempura.
 - 🥖 **Vỏ Bánh & Đồ Cuốn**: Bánh tráng gạo mỏng, Lá rong biển Nori, Lá lốt tươi xanh, Bánh phở cuốn mềm, Vỏ bánh Burrito, Ổ Bánh Mì Việt Nam giòn, Vỏ Taco ngô giòn, Bánh mì kẹp Burger.
-- 🍫 **Sữa, Bánh & Đồ Ngọt**: Sô-cô-la đen đắng, Sữa tươi tiệt trùng, Bánh quy Oreo kem vani, Kẹo dẻo Marshmallow.
+- ☕🍫 **Cà Phê, Đường & Đồ Ngọt**:
+  - **4 Loại Đường Mật Tự Nhiên**: Đường cát trắng tinh luyện (làm kẹo hồ lô caramel giòn), Đường phèn kết tinh thanh mát (chưng yến, hầm lê, chè sen), Đường nâu mật mía tự nhiên (nấu sốt trân châu đường đen, bánh gừng), Đường thốt nốt thơm bùi An Giang (làm bánh bò, chè thốt nốt).
+  - **4 Loại Cà Phê Thượng Hạng**: Cà phê phin truyền thống nguyên chất (pha cà phê sữa đá, bạc xỉu, làm tiramisu), Bột cà phê rang xay thơm lừng (nhào cốt bánh nướng cà phê, áo kẹo), Cốt Cà phê Espresso đậm đặc (làm cà phê đá xay mát lạnh, Affogato), Cà phê hòa tan thơm béo (tiện lợi hòa tan sữa kem).
+  - **Sữa, Bánh & Đồ Ngọt Khác**: Sô-cô-la đen đắng, Sữa tươi tiệt trùng, Sữa đặc có đường, Bánh quy Oreo kem vani, Kẹo dẻo Marshmallow, Mạch nha dẻo quánh, Đá viên tuyết mát lạnh.
 - 🥩 **Thịt, Xúc Xích & Pate**: Thịt bò thăn tươi, Thịt ba chỉ heo mỡ màng, Ức gà tươi phi lê, Xúc xích xông khói, Pate gan heo béo bùi.
 - 🦐 **Hải Sản & Trứng**: Tôm sú tươi sống, Mực ống tươi giòn, Trứng gà tươi lòng đỏ vàng óng, Cá hồi Nauy tươi béo ngậy.
 - 🥬 **Rau Củ & Trái Cây**: Xà lách giòn mát, Dưa leo tươi mát, Cà chua mọng nước, Ớt chuông Đà Lạt, Nấm hương tươi, Chuối chín ngọt, Dâu tây đỏ mọng.
 - 🍚 **Tinh Bột & Phô Mai**: Cơm trắng dẻo, Bún tươi sợi trắng, Phô mai Cheddar lát, Khoai tây Đà Lạt.
 - 🧂 **18 Loại Gia Vị Phong Phú**: Muối biển, Tiêu đen, Chanh tươi, Đường mía, Ớt hiểm cay, Nước mắm nhĩ, Nước tương đậu nành, Tương ớt cay ngọt, Mật ong rừng, Tỏi băm phi thơm, Gừng tươi sợi, Sả băm nồng, Sốt Mayonnaise, Bơ lạt Pháp, Ngũ vị hương, Dầu hào đậm đặc, Giấm gạo lên men, Phô mai bột.
 
-### 2.3. Hệ Thống 9 Trạm Chế Biến Toàn Năng
+### 2.3. Hệ Thống Bàn Chế Biến 3 Khu Vực & 9 Trạm Nấu Toàn Năng
+Tại **Tab 2 (Bàn Chế Biến)**, không gian bếp được tái cấu trúc thành **3 Khu Vực Ngữ Nghĩa Độc Lập** với các thẻ Heading H3 chuẩn trợ năng quốc tế WCAG AA/AAA:
+- **Khu 1 (`1. Chọn Dụng Cụ Nấu`)**: Toolbar gồm 9 nút chọn công cụ bếp trực quan.
+- **Khu 2 (`2. Thao Tác Với [Tên Dụng Cụ]`)**: Tiêu đề tự động mang tên và emoji của công cụ đang chọn (ví dụ: *2. Thao Tác Với 🍳 Chảo Chiên Xào*, *2. Thao Tác Với 🌪️ Máy Xay Sinh Tố*...). Dưới heading này là các nút chế biến chính (áp chảo, đun sôi, bật lò, cuộn tròn, băm nhỏ...) và bộ chọn vỏ cuốn/nhồi.
+- **Khu 3 (`3. Nguyên Liệu Đang Có Trong Bếp`)**: Danh sách thực phẩm đang nấu trong dụng cụ, nhiệt độ, trạng thái chín và cặp nút thao tác nhanh *Cất ra Khay Tạm (T)* cùng *Dọn sạch bếp*.
+> **💡 Trợ năng NVDA**: Người chơi chỉ cần nhấn phím **`H`** hoặc phím số **`3`** để nhảy tức thì qua 3 khu vực; sau khi chọn công cụ ở Khu 1, ấn `H` một lần rồi ấn `Tab` là chạm ngay vào các nút chế biến!
 ```mermaid
 graph LR
-    Fridge["❄️ Tủ Lạnh (45 món)"] --> Prep["🔪 Thớt / 🌯 Bàn Cuốn / 🥖 Trạm Nhồi"]
+    Fridge["❄️ Tủ Lạnh (69 món)"] --> Prep["🔪 Thớt / 🌯 Bàn Cuốn / 🥖 Trạm Nhồi"]
     Prep --> Heat["🍳 Chảo Xào / 🍲 Nồi Luộc / 🍟 Chiên Giòn / ♨️ Lò Nướng / 🔥 Nướng Than / 🌪️ Máy Xay"]
     Heat --> Staging["📦 Khay Tạm Chờ Sơ Chế"]
     Heat --> Finish["⭐ Hoàn Thành Món (Phím P)"]

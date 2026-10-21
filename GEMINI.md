@@ -12,9 +12,9 @@
 # NHẬT KÝ DỰ ÁN — YUMCRAFT KITCHEN
 
 ## 1. Thông Tin Phiên Làm Việc Mới Nhất
-- **Ngày thực hiện**: 16/10/2026
+- **Ngày thực hiện**: 21/10/2026
 - **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
-- **Mục tiêu**: Đổi tên thương hiệu game thành **YumCraft Kitchen** (loại bỏ hoàn toàn xung đột bản quyền), bổ sung các loại mì và bột làm bánh, tái cấu trúc toàn diện không gian nhà bếp thành hệ thống 5 Tab chuẩn trợ năng quốc tế WCAG AA/AAA cho trình đọc màn hình **NVDA** và bàn phím, tinh gọn cấu trúc heading (khắc phục lỗi bấm phím H bị loạn), dọn dẹp các thông báo live region ở đầu trang, và hoàn thiện quy trình hoàn thành món động.
+- **Mục tiêu**: Khắc phục triệt để lỗi mô tả món nhồi/cuộn bị gán cứng "nướng thơm giòn", sửa lỗi vỏ ngoài lọt vào ruột nhân, nâng cấp động cơ ánh xạ phương pháp nấu `methodToText` theo 2 cấp độ nhiệt cho từng dụng cụ, và đồng bộ hóa trạng thái nhiệt cho vỏ và nhân khi qua lửa.
 
 ---
 
@@ -273,3 +273,68 @@
          - Bàn tiệc: `"Món '${customName}' đã được hoàn thành... Bàn tiệc hiện có ${totalDishes} món hoàn chỉnh, tổng cộng ${state.plateItems.length} nguyên liệu trên dĩa..."`
   3. **Kiểm Thử & Đảm Bảo 100% Chuẩn Trợ Năng**:
      - Kiểm tra cú pháp JavaScript của `index.html` hợp lệ 100%, không phát sinh lỗi console hay lỗi DOM.
+
+
+---
+
+## 9. Thông Tin Phiên Làm Việc: Tái Cấu Trúc Bàn Chế Biến 3 Khu Vực Chuẩn Semantic Heading & Mở Rộng 69 Nguyên Liệu (4 Đường & 4 Cà Phê) (21/10/2026)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Mục tiêu**:
+  1. Giải quyết triệt để sự bất tiện khi điều hướng trong Tab 2 (Bàn Chế Biến): Trước đây người chơi dùng NVDA phải bấm `B` hoặc mũi tên qua hàng chục nút công cụ rồi mới chạm tới các nút thao tác chế biến.
+  2. Tái cấu trúc Tab 2 thành **3 Khu Vực Ngữ Nghĩa Độc Lập**, mỗi khu có một thẻ Heading cấp 3 (`<h3>`) chuẩn WCAG AA/AAA:
+     - **Khu 1 (`<h3 id="heading-station-picker">`)**: `1. Chọn Dụng Cụ Nấu (9 Dụng Cụ)` — thanh toolbar 9 công cụ bếp.
+     - **Khu 2 (`<h3 id="heading-station-actions">`)**: `2. Thao Tác Với [Tên Dụng Cụ Đang Chọn]` — tiêu đề tự động mang tên và emoji của công cụ đang chọn (ví dụ: *"2. Thao Tác Với 🔪 Thớt & Dao Sắc"*, *"2. Thao Tác Với 🍳 Chảo Chiên Xào"*, *"2. Thao Tác Với 🌪️ Máy Xay Sinh Tố"...*). Dưới heading này là các nút chế biến chính (áp chảo, đun sôi, chiên giòn, bật lò, cuộn tròn, băm nhuyễn...).
+     - **Khu 3 (`<h3 id="heading-station-items">`)**: `3. Nguyên Liệu Đang Có Trong [Tên Dụng Cụ]` — danh sách nguyên liệu trên bếp, trạng thái chín, nhiệt độ và hai nút nhanh *"📦 Cất ra Khay Tạm (Phím T)"* cùng *"🧹 Dọn sạch bếp"*.
+     - **Đột phá trợ năng NVDA**: Người chơi chỉ cần nhấn phím `H` hoặc phím số `3` là nhảy tức thì giữa 3 khu vực; sau khi chọn công cụ ở Khu 1, ấn `H` một lần rồi ấn `Tab` là chạm ngay vào các nút chế biến, tiết kiệm hàng chục thao tác phím!
+  3. Mở rộng kho nguyên liệu tủ lạnh từ 61 lên **69 nguyên liệu (+8 món mới)**:
+     - **4 Loại Đường Mật Tự Nhiên**:
+       1. 🍬 **Đường cát trắng tinh luyện** (`white_sugar`): Ngọt sắc sảo, thắng caramel làm kẹo hồ lô (tanghulu), tráng vỏ kẹo giòn hoặc đánh bông kem đường (`canBeWrapper: true`).
+       2. 🧊 **Đường phèn kết tinh thanh mát** (`rock_sugar`): Pha lê đường trong veo, vị ngọt thanh tao êm dịu, chuyên chưng yến, hầm lê, nấu chè hạt sen thanh mát.
+       3. 🤎 **Đường nâu mật mía tự nhiên** (`brown_sugar`): Hạt đường ẩm mịn thơm nồng mật mía và hương caramel sâu lắng, nấu sốt trân châu đường đen, làm bánh gừng (`canBeWrapper: true`).
+       4. 🌴 **Đường thốt nốt thơm bùi An Giang** (`palm_sugar`): Tán đường dẻo mịn thơm ngát hương hoa thốt nốt Nam Bộ, vị ngọt bùi béo sâu sắc, làm bánh bò, chè thốt nốt, thắng sốt nướng (`canBeWrapper: true`).
+     - **4 Loại Cà Phê Thượng Hạng**:
+       5. ☕ **Cà phê phin truyền thống nguyên chất** (`brewed_coffee`): Cốt cà phê Robusta đen sánh đậm đà nhỏ giọt phin truyền thống, thơm nồng quyến rũ, pha cà phê sữa đá, bạc xỉu, làm Tiramisu (`texture: 'drink'`).
+       6. 🫘 **Bột cà phê rang xay thơm lừng** (`coffee_grounds`): Rang mộc xay mịn thơm nức mũi, nhào chung bột mì làm cốt bánh nướng cà phê, áo kẹo.
+       7. ⚡ **Cốt Cà phê Espresso đậm đặc** (`espresso`): Chiết xuất áp suất cao với lớp crema vàng óng ả, đắng sâu sắc sảo pha vị chua thanh tinh tế, làm đá xay mát lạnh (`texture: 'drink'`).
+       8. 🧋 **Cà phê hòa tan thơm béo** (`instant_coffee`): Bột cà phê tiện lợi, hòa tan tức thì vào sữa, kem béo hoặc bột bánh quy.
+  4. Cập nhật nhóm danh mục tủ lạnh:
+     - Nhãn tổng số món: `Tất cả (69 món)`.
+     - Nhóm đồ ngọt đổi tên thành: `☕🍫 Cà Phê, Đường & Đồ Ngọt`.
+  5. Loại Bỏ Triệt Để 100% Công Thức Cứng (Zero Hardcoded Recipes) & Chuẩn Hóa Hóa Học Cảm Quan Thuần Túy:
+     - **Phê bình chính xác từ tác giả (LC Boy)**: Việc gán nhãn tĩnh theo tên món như "Cà Phê Sữa Béo Ngậy", "Cà Phê Trứng Hà Nội", "Cà Phê Hương Mật" là vi phạm triết lý tự do sandbox Toca Kitchen, vô tình áp đặt suy đoán của máy móc lên sự sáng tạo của người chơi.
+     - **Giải pháp chuyển hóa sang Hóa Học Cảm Quan Thuần Túy (Pure Sensory Chemistry)**:
+       + Xóa bỏ 100% các cờ và nhãn tên món cứng.
+       + Thay bằng phản ứng trục vị tự nhiên: `✨ Lớp Béo Ngậy Làm Dịu Vị Đắng (Tạo chiều sâu êm mượt và cân bằng hậu vị)` kích hoạt khi bất kỳ món nào có `fatty >= 1.8 && bitter >= 2.0` (đúng cho mọi sự kết hợp nguyên liệu, không áp đặt tên món).
+       + Thay bằng phản ứng biến đổi vật lý/nhiệt: `🔥 Tinh Thể Đường Chuyển Hóa Khi Gặp Nhiệt (Dậy hương thơm ngọt đượm và tạo kết cấu bóng bẩy)` khi đường gặp nhiệt độ cao trong chảo hoặc lò.
+       + Quyền đặt tên món và định nghĩa món ăn thuộc về 100% quyền tự do của người chơi tại bảng Hoàn Thành Món (Phím P).
+  6. Cập nhật cơn thèm (`cravings`) của 4 thực khách và tài liệu hướng dẫn phím tắt modal Help:
+     - Hướng dẫn phím `H` / phím số `3` trong NVDA để nhảy qua 3 khu vực Bếp.
+     - Thêm mẹo làm kẹo hồ lô bọc đường caramel giòn tan, cà phê sữa đá tuyết, cà phê trứng và chè sen đường phèn.
+  7. Xây dựng và thực thi bộ kiểm thử tự động toàn diện (`test_culinary_upgrade.js`) bao phủ 4 nhóm kiểm thử: Semantic Structure 3 Headings, Database 69 nguyên liệu, Dynamic Heading Updates và Sensory Chemistry Synergies $\rightarrow$ Kết quả tuyệt đối **28/28 TESTS PASS (100%)**, bảo đảm 100% không còn bất kỳ công thức cứng nào trong mã nguồn.
+
+
+---
+
+## 11. Thông Tin Phiên Làm Việc: Khắc Phục Triệt Để Lỗi Mô Tả Món Nhồi/Cuộn & Nâng Cấp Động Cơ Ánh Xạ Phương Pháp Nấu methodToText (21/10/2026)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Mục tiêu & Các Cải Tiến Triển Khai**:
+  1. **Khắc Phục Lỗi Gán Cứng "Nướng Thơm Giòn" Ở Món Nhồi (Fix Hardcoded Stuffed Vessel Cooking)**:
+     - *Hiện tượng*: Người chơi xay nhuyễn cà phê và ca-cao, nhồi vào bột mì rồi chiên ngập dầu giòn tan, nhưng khi nếm hoặc bấm phím `I`, NVDA lại đọc *"lớp vỏ Bột mì đa dụng cao cấp nướng thơm giòn bên ngoài"*.
+     - *Nguyên nhân*: Tại dòng 3298 trong `generateSensoryTastingReview`, hệ thống đã gán cứng chuỗi `stuffedItem.cookLevel >= 1 ? 'nướng thơm giòn' : 'giòn xốp'`, bỏ qua hoàn toàn phương pháp nấu thực tế `stuffedItem.cookMethod`.
+     - *Khắc phục*: Thay thế bằng cơ chế ánh xạ động `methodToText(stuffedItem.cookMethod, stuffedItem.cookLevel, stuffedItem.outerItem?.needsCooking)`. Khi chiên ngập dầu $\rightarrow$ đọc *"được chiên ngập dầu giòn tan"*; khi áp chảo $\rightarrow$ *"được áp chảo chín tới vàng ươm"*; khi đút lò $\rightarrow$ *"được đút lò nướng thơm phức"*; khi nướng than $\rightarrow$ *"được nướng than hoa thơm lừng"*; khi luộc $\rightarrow$ *"được luộc chín mềm"*; khi chưa nấu $\rightarrow$ *"còn tươi sống chưa qua nhiệt"*.
+  2. **Khắc Phục Lỗi Vỏ Nhồi / Vỏ Cuộn Bị Lặp Lại Trong Ruột Nhân (Fix Wrapper/Vessel Leaking Into Stuffing)**:
+     - *Hiện tượng*: NVDA đọc *"vỏ Bột mì... nhồi đầy đặn nhân Bột mì, Cà phê & Ca-cao"*, vỏ ngoài bị trùng lặp làm một thành phần của nhân.
+     - *Nguyên nhân*: Thuộc tính `subItems` chứa cả vỏ ở vị trí đầu tiên `[outerVessel, ...innerStuffings]`, và khi duyệt `.map(s => s.name)` để mô tả nhân đã lấy nhầm cả vỏ ngoài.
+     - *Khắc phục*:
+       - Bổ sung trường `innerItems: [...innerStuffings]` cho `stuffedItem` và `innerItems: [...innerFillings]` cho `rolledItem`.
+       - Trong hàm `generateSensoryTastingReview`, trích xuất ruột nhân từ `innerItems` (hoặc tự động lọc bỏ `outerItem` ra khỏi `subItems`), đảm bảo ruột nhân chỉ chứa các nguyên liệu thực sự được nhồi/cuộn vào trong.
+  3. **Khắc Phục Lỗi Bẫy Cấp Độ 2 Trong Hàm Ánh Xạ `methodToText`**:
+     - *Hiện tượng*: Dòng `if (level === 2) return 'chiên giòn rụm'` khiến mọi món ăn nấu cấp độ 2 (kể cả nướng lò, nướng than hoa hay luộc hầm) đều bị gán nhãn sai thành "chiên giòn rụm".
+     - *Khắc phục*: Phân nhánh chi tiết cấp độ 1 và cấp độ 2 cho từng phương pháp: `deep_fried` (chiên ngập dầu vàng ươm giòn rụm), `grilled` (nướng than hoa xém cạnh thơm phức), `baked` (đút lò nướng vàng ươm giòn rụm), `fried` (áp chảo xém cạnh giòn thơm), `boiled` (ninh hầm nhừ mềm ngọt nước).
+  4. **Đồng Bộ Nhiệt Khi Nấu Cho `outerItem` Và `innerItems`**:
+     - Khi chế biến nhiệt (chiên, nướng, áp chảo, luộc), đồng bộ `cookLevel`, `cookMethod` và tắt cờ `needsCooking` cho cả `item.outerItem` và `item.innerItems`.
+  5. **Kiểm Thử Toàn Diện Tự Động**:
+     - Xây dựng và thực thi bộ kiểm thử tự động độc lập mô phỏng đúng kịch bản của người chơi (Cà phê + Ca-cao xay nhuyễn $\rightarrow$ Nhồi vào Bột mì $\rightarrow$ Chiên ngập dầu $\rightarrow$ Báo cáo cảm quan), kết quả:
+       - Tuyệt đối không chứa chữ "nướng" (PASS).
+       - Nhận diện chính xác "chiên ngập dầu giòn tan" (PASS).
+       - Tuyệt đối không lặp lại bột mì trong nhân nhồi (PASS).

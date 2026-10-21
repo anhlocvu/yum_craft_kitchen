@@ -336,7 +336,7 @@
               <p class="text-xs text-slate-500 font-medium">Mì, bột làm bánh, vỏ cuốn, bánh mì, đồ ăn vặt &amp; sô-cô-la</p>
             </div>
           </div>
-          <span id="fridge-total-count-badge" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-200 text-slate-700">61 món</span>
+          <span id="fridge-total-count-badge" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-200 text-slate-700">69 món</span>
         </div>
 
         <!-- Target Destination Selector: CHỈ BỎ VÀO BẾP HOẶC KHAY TẠM (BỎ NÚT RA DĨA) -->
@@ -370,6 +370,7 @@
       <!-- TABPANEL 2: BÀN CHẾ BIẾN & 9 DỤNG CỤ (WORKBENCH)                     -->
       <!-- ===================================================================== -->
       <div id="panel-workbench" role="tabpanel" tabindex="0" aria-labelledby="tab-workbench" class="hidden bg-white rounded-3xl shadow-sm border-2 border-amber-200/90 p-4 sm:p-6 max-w-5xl mx-auto flex flex-col gap-4">
+        <!-- Main Panel Header (Heading H2) -->
         <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-amber-100">
           <div class="flex items-center gap-2.5">
             <span class="text-3xl" aria-hidden="true">🔥</span>
@@ -385,57 +386,85 @@
           </span>
         </div>
 
-        <!-- 9 Cooking Tools Grid -->
-        <div id="station-selector-grid" class="grid grid-cols-3 sm:grid-cols-9 gap-1.5" role="toolbar" aria-label="Chọn 1 trong 9 công cụ nấu ăn">
-          <!-- Populated by JS -->
-        </div>
-
-        <!-- DYNAMIC SUB-PANEL: WRAPPER PICKER (FOR ROLLING MAT) OR VESSEL PICKER (FOR STUFFING) -->
-        <div id="station-wrapper-vessel-selector" class="hidden p-3.5 rounded-2xl bg-amber-50 border-2 border-amber-300 shadow-sm">
-          <div class="flex items-center justify-between mb-1.5">
-            <div id="wrap-vessel-selector-title" class="text-xs sm:text-sm font-extrabold text-amber-950 font-game uppercase tracking-wide">
-              🌯 Chọn Lớp Vỏ Cuốn Ngoài:
-            </div>
-            <span id="wrap-vessel-selected-label" class="text-xs font-bold text-orange-700 bg-white px-2.5 py-0.5 rounded-lg border border-amber-200">Chưa chọn</span>
+        <!-- =================================================================== -->
+        <!-- KHU 1: CHỌN CÔNG CỤ NẤU ĂN (HEADING H3)                             -->
+        <!-- =================================================================== -->
+        <section class="flex flex-col gap-2" aria-labelledby="heading-station-picker">
+          <div class="flex items-center justify-between">
+            <h3 id="heading-station-picker" class="text-xs sm:text-sm font-extrabold text-stone-700 uppercase tracking-wider font-game flex items-center gap-1.5">
+              <span aria-hidden="true">🛠️</span>
+              <span>1. Chọn Dụng Cụ Nấu (9 Dụng Cụ)</span>
+            </h3>
           </div>
-          <p id="wrap-vessel-selector-hint" class="text-xs text-amber-900 mb-2 leading-relaxed">
-            Hãy chọn 1 nguyên liệu đang có trong dụng cụ để làm lớp vỏ ngoài, tất cả các nguyên liệu còn lại sẽ được cuộn/nhồi vào bên trong!
-          </p>
-          <div id="wrap-vessel-options-container" class="grid grid-cols-2 sm:grid-cols-3 gap-2" role="radiogroup" aria-label="Chọn nguyên liệu làm vỏ ngoài">
-            <!-- Populated by JS from current station items -->
-          </div>
-        </div>
-
-        <!-- Workbench Canvas Simulation -->
-        <div class="relative rounded-2xl overflow-hidden bg-stone-900 border-2 border-stone-800 shadow-inner">
-          <canvas id="workbench-canvas" width="600" height="230" class="w-full h-[200px] sm:h-[240px] block" aria-hidden="true"></canvas>
-          <div class="absolute top-2 left-2 right-2 flex items-center justify-between pointer-events-none">
-            <span id="canvas-overlay-station-name" class="px-3 py-1 rounded-xl bg-black/75 text-amber-200 text-xs font-bold backdrop-blur-sm font-game">
-              🔪 Thớt &amp; Dao Sắc
-            </span>
-            <span id="canvas-overlay-temp" class="px-3 py-1 rounded-xl bg-black/75 text-white text-xs font-semibold backdrop-blur-sm">
-              Nhiệt độ: 25°C
-            </span>
-          </div>
-        </div>
-
-        <!-- Station Primary Actions Bar -->
-        <div class="bg-stone-50 rounded-2xl p-3 border border-stone-200">
-          <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-extrabold text-stone-700 uppercase tracking-wider font-game">Thao tác trên bếp hiện tại:</span>
-            <span id="station-items-count-label" class="text-xs font-bold text-orange-700">0 nguyên liệu trên bếp</span>
-          </div>
-          <div id="station-action-buttons" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <!-- 9 Cooking Tools Grid -->
+          <div id="station-selector-grid" class="grid grid-cols-3 sm:grid-cols-9 gap-1.5" role="toolbar" aria-label="Chọn 1 trong 9 công cụ nấu ăn">
             <!-- Populated by JS -->
           </div>
-        </div>
+        </section>
 
-        <!-- Current Items Inside Station List & Quick Actions -->
-        <div>
-          <div class="flex items-center justify-between mb-1.5">
-            <div class="text-xs font-bold text-stone-700 uppercase tracking-wider font-game">
-              Đang có trong dụng cụ này:
+        <!-- =================================================================== -->
+        <!-- KHU 2: THAO TÁC VỚI CÔNG CỤ ĐANG CHỌN (HEADING H3 ĐỘNG)             -->
+        <!-- =================================================================== -->
+        <section class="bg-amber-50/70 rounded-2xl p-3.5 border-2 border-amber-200/90 flex flex-col gap-3 shadow-xs" aria-labelledby="heading-station-actions">
+          <div class="flex items-center justify-between">
+            <h3 id="heading-station-actions" class="text-xs sm:text-sm font-extrabold text-amber-950 uppercase tracking-wider font-game flex items-center gap-1.5">
+              <span aria-hidden="true">🔪</span>
+              <span>2. Thao Tác Với Thớt &amp; Dao Sắc</span>
+            </h3>
+            <span id="station-items-count-label" class="text-xs font-bold text-orange-700 bg-white px-2.5 py-0.5 rounded-lg border border-amber-200 shadow-2xs">
+              0 nguyên liệu trên bếp
+            </span>
+          </div>
+
+          <!-- DYNAMIC SUB-PANEL: WRAPPER PICKER (FOR ROLLING MAT) OR VESSEL PICKER (FOR STUFFING) -->
+          <div id="station-wrapper-vessel-selector" class="hidden p-3.5 rounded-xl bg-white border-2 border-amber-300 shadow-sm">
+            <div class="flex items-center justify-between mb-1.5">
+              <div id="wrap-vessel-selector-title" class="text-xs sm:text-sm font-extrabold text-amber-950 font-game uppercase tracking-wide">
+                🌯 Chọn Lớp Vỏ Cuốn Ngoài:
+              </div>
+              <span id="wrap-vessel-selected-label" class="text-xs font-bold text-orange-700 bg-white px-2.5 py-0.5 rounded-lg border border-amber-200">Chưa chọn</span>
             </div>
+            <p id="wrap-vessel-selector-hint" class="text-xs text-amber-900 mb-2 leading-relaxed">
+              Hãy chọn 1 nguyên liệu đang có trong dụng cụ để làm lớp vỏ ngoài, tất cả các nguyên liệu còn lại sẽ được cuộn/nhồi vào bên trong!
+            </p>
+            <div id="wrap-vessel-options-container" class="grid grid-cols-2 sm:grid-cols-3 gap-2" role="radiogroup" aria-label="Chọn nguyên liệu làm vỏ ngoài">
+              <!-- Populated by JS from current station items -->
+            </div>
+          </div>
+
+          <!-- Workbench Canvas Simulation -->
+          <div class="relative rounded-2xl overflow-hidden bg-stone-900 border-2 border-stone-800 shadow-inner">
+            <canvas id="workbench-canvas" width="600" height="230" class="w-full h-[200px] sm:h-[240px] block" aria-hidden="true"></canvas>
+            <div class="absolute top-2 left-2 right-2 flex items-center justify-between pointer-events-none">
+              <span id="canvas-overlay-station-name" class="px-3 py-1 rounded-xl bg-black/75 text-amber-200 text-xs font-bold backdrop-blur-sm font-game">
+                🔪 Thớt &amp; Dao Sắc
+              </span>
+              <span id="canvas-overlay-temp" class="px-3 py-1 rounded-xl bg-black/75 text-white text-xs font-semibold backdrop-blur-sm">
+                Nhiệt độ: 25°C
+              </span>
+            </div>
+          </div>
+
+          <!-- Station Primary Actions Bar -->
+          <div class="bg-white/90 rounded-xl p-3 border border-amber-200/80 shadow-2xs">
+            <div class="text-[11px] font-bold text-stone-600 mb-1.5 uppercase font-game">
+              Bấm nút để thực hiện thao tác chế biến:
+            </div>
+            <div id="station-action-buttons" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- KHU 3: NGUYÊN LIỆU ĐANG CÓ TRONG DỤNG CỤ (HEADING H3)               -->
+        <!-- =================================================================== -->
+        <section class="bg-stone-50 rounded-2xl p-3.5 border border-stone-200 flex flex-col gap-2.5" aria-labelledby="heading-station-items">
+          <div class="flex items-center justify-between">
+            <h3 id="heading-station-items" class="text-xs sm:text-sm font-extrabold text-stone-800 uppercase tracking-wider font-game flex items-center gap-1.5">
+              <span aria-hidden="true">🥘</span>
+              <span>3. Nguyên Liệu Đang Có Trong Bếp</span>
+            </h3>
             <div class="flex items-center gap-2">
               <button id="btn-station-to-staging" type="button" class="text-xs font-bold text-amber-800 bg-amber-100 hover:bg-amber-200 px-3 py-1 rounded-xl transition" title="Cất đồ ăn từ Bếp ra Khay Tạm (Phím T)">
                 📦 Cất ra Khay Tạm (T)
@@ -448,7 +477,7 @@
           <div id="station-items-list" class="space-y-2 max-h-[180px] overflow-y-auto custom-scroll pr-1" role="list" aria-label="Danh sách nguyên liệu trong dụng cụ chế biến">
             <!-- Populated by JS -->
           </div>
-        </div>
+        </section>
       </div>
 
       <!-- ===================================================================== -->
@@ -773,6 +802,7 @@
               <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">F</kbd>: 🥄 Đút cho Thực Khách Ăn</li>
               <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">I</kbd>: Đọc to báo cáo vị và phân tích món</li>
               <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">H</kbd>: Mở Hướng Dẫn &amp; Phím Tắt</li>
+              <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">Phím H (hoặc 3) trong NVDA</kbd>: Nhảy qua 3 khu vực tại Bếp (1. Chọn công cụ -> 2. Thao tác -> 3. Nguyên liệu)</li>
             </ul>
           </div>
         </div>
@@ -784,6 +814,9 @@
             <li><strong>Nhúng bột chiên giòn:</strong> Lấy Tôm, Mực hoặc Xúc xích cùng Bột chiên giòn cho vào Chảo Chiên Giòn để làm món Tempura giòn tan rụm!</li>
             <li><strong>Thịt bò cuộn pate:</strong> Lấy Thịt bò và Pate từ tủ bỏ vào Bàn Cuốn -> Chọn Thịt bò làm vỏ ngoài -> Bấm Phím R để cuộn! Có thể chuyển ra Khay Tạm rồi cho vào Vỉ Nướng Than để nướng thơm lừng!</li>
             <li><strong>Bánh mì nhồi xúc xích pate:</strong> Bỏ Ổ Bánh Mì, Xúc Xích, Pate vào Trạm Nhồi -> Bấm Phím R để nhồi đẫm ruột -> Cho vào Lò Nướng nướng nóng giòn!</li>
+            <li><strong>Kẹo hồ lô (Tanghulu) &amp; Bánh bọc đường:</strong> Cho Dâu tây, Nho hoặc Chuối vào Chảo Chiên cùng Đường cát trắng hoặc Đường nâu -> Thắng đường chảy caramel bọc ngoài hoa quả tạo lớp vỏ kẹo giòn bóng bẩy!</li>
+            <li><strong>Cà phê sữa đá &amp; Bạc xỉu:</strong> Lấy Cà phê phin hoặc Espresso cho vào Máy Xay cùng Sữa tươi, Sữa đặc và Đá viên -> Bấm Xay để có ly cà phê đá xay tuyết béo ngậy!</li>
+            <li><strong>Chè đường phèn thanh mát:</strong> Bỏ Hạt sen tươi, Lê và Đường phèn vào Nồi Luộc &amp; Hầm để nấu món chè ngọt mát thanh lọc cơ thể!</li>
             <li><strong>Quy tắc bày dĩa:</strong> Sau khi hoàn thành món, toàn bộ đồ ăn sẽ được dọn sạch khỏi bếp và bày biện đẹp mắt lên dĩa ở Tab 5 để bạn đút cho khách ăn!</li>
           </ul>
         </div>
@@ -810,7 +843,8 @@
         cravings: [
           'Hôm nay tôi thèm một ổ Bánh Mì Việt Nam nhồi Thịt bò áp chảo, Xúc xích, Pate và nêm chút Tiêu đen, Chanh, Muối!',
           'Đầu bếp thử làm món Thịt bò cuộn Pate gan đem nướng trên vỉ than hoa thơm lừng xem sao!',
-          'Tôi đang thèm một ly Sữa tươi Ca-cao đá tuyết mát lạnh cùng bánh quy Oreo giòn rụm!'
+          'Tôi đang thèm một ly Sữa tươi Ca-cao đá tuyết mát lạnh cùng bánh quy Oreo giòn rụm!',
+          'Làm cho tôi một ly Cà Phê Sữa Đậm Đà béo ngậy từ Cà phê phin và Sữa đặc thơm nức mũi nhé!'
         ],
         likes: ['umami', 'aroma', 'salty', 'sweet'],
         lovesStructures: ['stuffed', 'rolled'],
@@ -827,7 +861,8 @@
         cravings: [
           'Miu thèm một cuốn Gỏi Cuốn Bánh Tráng có Tôm luộc, Bún tươi, Xà lách rau thơm chấm vị chua ngọt!',
           'Làm cho Miu món Cơm Cuộn Rong Biển cá hồi và bơ sáp béo ngậy nha!',
-          'Miu thích một ly Sinh tố Dâu tây + Sô-cô-la + Sữa đặc ngọt ngào mát lạnh từ Máy Xay!'
+          'Miu thích một ly Sinh tố Dâu tây + Sô-cô-la + Sữa đặc ngọt ngào mát lạnh từ Máy Xay!',
+          'Miu muốn ăn Kẹo Hồ Lô xiên Dâu Tây bọc Đường cát trắng caramel giòn tan óng ánh!'
         ],
         likes: ['sweet', 'sour', 'umami', 'fatty'],
         lovesStructures: ['rolled'],
@@ -844,7 +879,8 @@
         cravings: [
           'Ta thèm Xúc Xích nhồi Thịt băm nướng than hoa, thêm thật nhiều Ớt hiểm và Tương ớt cay nồng!',
           'Hãy cuốn Bánh tráng nhân Thịt ba chỉ, Tôm rồi đem nhúng Chảo Chiên Ngập Dầu làm Chả Giò giòn tan!',
-          'Làm cho ta một chiếc Bánh Taco ngô giòn nhồi Thịt bò xào cay xè lưỡi nhé!'
+          'Làm cho ta một chiếc Bánh Taco ngô giòn nhồi Thịt bò xào cay xè lưỡi nhé!',
+          'Hãy pha cho ta một tách Cà phê Espresso đậm đặc bốc khói để bừng bừng ngọn lửa nhiệt huyết!'
         ],
         likes: ['spicy', 'aroma', 'umami', 'salty'],
         lovesStructures: ['stuffed', 'loose'],
@@ -861,7 +897,8 @@
         cravings: [
           'Tôi muốn thưởng thức Phở Cuốn Hà Nội nhân Thịt bò xào tỏi tiêu và rau thơm thanh tao.',
           'Hãy thử làm Quả Ớt Chuông nhồi Thịt bò băm, Nấm hương và Phô mai rồi đút Lò Nướng!',
-          'Một món tráng miệng từ Sô-cô-la đắng, Bột ca-cao và Kẹo Marshmallow nướng chảy sẽ rất hoàn mỹ.'
+          'Một món tráng miệng từ Sô-cô-la đắng, Bột ca-cao và Kẹo Marshmallow nướng chảy sẽ rất hoàn mỹ.',
+          'Một chén Chè Hạt Sen hầm Đường Phèn thanh tao mát lành sẽ bồi bổ tinh thần tuyệt hảo.'
         ],
         likes: ['aroma', 'umami', 'sour', 'sweet'],
         lovesStructures: ['rolled', 'stuffed'],
@@ -871,10 +908,10 @@
     ];
 
     const FRIDGE_CATEGORIES = [
-      { id: 'all', name: 'Tất cả (61)' },
+      { id: 'all', name: 'Tất cả (69)' },
       { id: 'noodles_flour', name: '🍜 Mì & Bột Làm Bánh' },
       { id: 'wrappers', name: '🥖 Vỏ Bánh & Đồ Cuốn' },
-      { id: 'sweets', name: '🍫 Sữa, Bánh & Đồ Ngọt' },
+      { id: 'sweets', name: '☕🍫 Cà Phê, Đường & Đồ Ngọt' },
       { id: 'meat', name: '🥩 Thịt, Xúc Xích & Pate' },
       { id: 'seafood', name: '🦐 Hải Sản & Trứng' },
       { id: 'veg', name: '🥬 Rau Củ & Trái Cây' },
@@ -1596,6 +1633,106 @@
         flavorDesc: 'Áo lớp bột nhúng tôm, mực, xúc xích rồi chiên ngập dầu giòn tan béo ngậy',
         flavors: { umami: 1.4, salty: 0.8, sweet: 0.9, sour: 0.0, spicy: 0.0, fatty: 1.8, bitter: 0.0, aroma: 2.8, crunch: 4.5 }
       }
+    
+      ,
+      // 9. CÁC LOẠI ĐƯỜNG MẬT TỰ NHIÊN (SUGARS & SYRUPS) - VẬT LIỆU BỌC VỎ & CARAMEL
+      {
+        id: 'white_sugar',
+        name: 'Đường cát trắng tinh luyện',
+        category: 'sweets',
+        emoji: '🍬',
+        color: '#ffffff',
+        cookedColor: '#b45309',
+        needsCooking: false,
+        flavorDesc: 'Ngọt sắc nét óng ánh, thắng caramel làm kẹo hồ lô (tanghulu), tráng vỏ kẹo giòn hoặc đánh bông kem đường',
+        canBeWrapper: true,
+        flavors: { umami: 0.0, salty: 0.0, sweet: 3.8, sour: 0.0, spicy: 0.0, fatty: 0.2, bitter: 0.0, aroma: 0.8, crunch: 1.0 }
+      },
+      {
+        id: 'rock_sugar',
+        name: 'Đường phèn kết tinh thanh mát',
+        category: 'sweets',
+        emoji: '🧊',
+        color: '#f8fafc',
+        cookedColor: '#fde047',
+        needsCooking: false,
+        flavorDesc: 'Pha lê đường trong veo, vị ngọt thanh mát dịu lành, ngậm tan chậm, chuyên chưng yến, hầm lê, nấu chè hạt sen thanh tao',
+        canBeWrapper: false,
+        flavors: { umami: 0.0, salty: 0.0, sweet: 3.2, sour: 0.0, spicy: 0.0, fatty: 0.0, bitter: 0.0, aroma: 1.0, crunch: 0.5 }
+      },
+      {
+        id: 'brown_sugar',
+        name: 'Đường nâu mật mía tự nhiên',
+        category: 'sweets',
+        emoji: '🤎',
+        color: '#78350f',
+        cookedColor: '#451a03',
+        needsCooking: false,
+        flavorDesc: 'Hạt đường ẩm mịn thơm nồng mật mía và hương caramel sâu thẳm, nấu sốt trân châu đường đen, làm bánh gừng, rim thịt hổ phách',
+        canBeWrapper: true,
+        flavors: { umami: 0.4, salty: 0.1, sweet: 3.6, sour: 0.0, spicy: 0.0, fatty: 0.3, bitter: 0.1, aroma: 2.8, crunch: 0.5 }
+      },
+      {
+        id: 'palm_sugar',
+        name: 'Đường thốt nốt thơm bùi An Giang',
+        category: 'sweets',
+        emoji: '🌴',
+        color: '#d97706',
+        cookedColor: '#92400e',
+        needsCooking: false,
+        flavorDesc: 'Tán đường mềm mịn thơm ngát hương hoa thốt nốt Bảy Núi An Giang, vị ngọt bùi béo sâu lắng, làm bánh bò, chè thốt nốt, thắng sốt nướng',
+        canBeWrapper: true,
+        flavors: { umami: 0.3, salty: 0.0, sweet: 3.7, sour: 0.0, spicy: 0.0, fatty: 0.8, bitter: 0.0, aroma: 3.4, crunch: 0.3 }
+      },
+      // 10. CÁC LOẠI CÀ PHÊ THƯỢNG HẠNG (COFFEES) - THỨC UỐNG & NGUYÊN LIỆU LÀM BÁNH
+      {
+        id: 'brewed_coffee',
+        name: 'Cà phê phin truyền thống nguyên chất',
+        category: 'sweets',
+        emoji: '☕',
+        color: '#271c19',
+        cookedColor: '#1c1917',
+        needsCooking: false,
+        flavorDesc: 'Nước cốt cà phê Robusta đen sánh đậm đà nhỏ giọt phin truyền thống, thơm nồng quyến rũ, vị đắng đượm đà, pha cà phê sữa đá, bạc xỉu, làm Tiramisu',
+        canBeWrapper: false,
+        flavors: { umami: 0.8, salty: 0.0, sweet: 0.5, sour: 0.4, spicy: 0.0, fatty: 0.2, bitter: 3.8, aroma: 4.2, crunch: 0.0 }
+      },
+      {
+        id: 'coffee_grounds',
+        name: 'Bột cà phê rang xay thơm lừng',
+        category: 'sweets',
+        emoji: '🫘',
+        color: '#3e2723',
+        cookedColor: '#271c19',
+        needsCooking: false,
+        flavorDesc: 'Hạt cà phê Robusta rang mộc xay mịn thơm nức mũi, vị đắng mộc mạc thơm ngát bốc tỏa, nhào chung bột mì làm cốt bánh nướng cà phê, áo kẹo',
+        canBeWrapper: false,
+        flavors: { umami: 0.5, salty: 0.0, sweet: 0.2, sour: 0.3, spicy: 0.0, fatty: 0.4, bitter: 3.5, aroma: 4.6, crunch: 1.0 }
+      },
+      {
+        id: 'espresso',
+        name: 'Cốt Cà phê Espresso đậm đặc',
+        category: 'sweets',
+        emoji: '⚡',
+        color: '#451a03',
+        cookedColor: '#291307',
+        needsCooking: false,
+        flavorDesc: 'Chiết xuất áp suất cao với lớp crema vàng óng ả bồng bềnh, thơm nồng ngất ngây, đắng sâu sắc sảo pha vị chua thanh tinh tế, làm đá xay mát lạnh',
+        canBeWrapper: false,
+        flavors: { umami: 1.6, salty: 0.0, sweet: 0.4, sour: 1.0, spicy: 0.0, fatty: 0.5, bitter: 4.4, aroma: 4.8, crunch: 0.0 }
+      },
+      {
+        id: 'instant_coffee',
+        name: 'Cà phê hòa tan thơm béo',
+        category: 'sweets',
+        emoji: '🧋',
+        color: '#8d6e63',
+        cookedColor: '#4e342e',
+        needsCooking: false,
+        flavorDesc: 'Bột cà phê hòa tan tiện lợi, thơm dịu, dễ hòa tan vào sữa tươi, kem béo, bơ hoặc nhào chung bột bánh quy',
+        canBeWrapper: false,
+        flavors: { umami: 0.4, salty: 0.0, sweet: 1.8, sour: 0.2, spicy: 0.0, fatty: 1.2, bitter: 2.2, aroma: 3.0, crunch: 0.0 }
+      }
     ];
 
     // 9 COOKING STATIONS (YUMCRAFT KITCHEN COMPLETE SUITE)
@@ -2126,7 +2263,7 @@
      * 5. MÔ HÌNH DỮ LIỆU MÓN ĂN & HÒA VỊ THỰC TẾ (CULINARY CHEMISTRY)
      *************************************************************************/
     function determineDefaultTexture(ing) {
-      if (ing.id === 'milk' || ing.id === 'ice_cubes') return 'drink';
+      if (ing.id === 'milk' || ing.id === 'ice_cubes' || ing.id === 'brewed_coffee' || ing.id === 'espresso') return 'drink';
       const crispyIds = ['instant_ramen', 'roasted_peanuts', 'taco_shell', 'banh_mi_vn', 'croissant', 'oreo', 'cucumber', 'guava', 'june_plum'];
       if (crispyIds.includes(ing.id) || (ing.flavors && ing.flavors.crunch >= 2.5)) {
         return 'crispy';
@@ -2228,6 +2365,7 @@
       let hasMeatOrSavory = false;
       let hasCheese = false;
       let hasHoneyOrButter = false;
+      let hasCaramelizedSugar = false;
       const allStructures = new Set();
 
       function walkItem(it, weight = 1.0) {
@@ -2244,6 +2382,11 @@
         if (it.category === 'sweets' || it.id === 'chocolate' || it.id === 'milk' || it.id === 'oreo') hasSweets = true;
         if (it.category === 'meat' || it.category === 'seafood' || it.id === 'egg' || it.id === 'pate') hasMeatOrSavory = true;
         if (it.id === 'cheese_stick') hasCheese = true;
+        if (it.baseId === 'white_sugar' || it.baseId === 'brown_sugar' || it.baseId === 'palm_sugar' || it.baseId === 'rock_sugar' || it.baseId === 'malt_syrup') {
+          if (it.cookLevel >= 1 && (it.cookMethod === 'fried' || it.cookMethod === 'deep_fried' || it.cookMethod === 'baked' || it.cookMethod === 'grilled')) {
+            hasCaramelizedSugar = true;
+          }
+        }
 
         Object.keys(totals).forEach(k => {
           totals[k] += (it.flavors[k] || 0) * weight;
@@ -2262,6 +2405,9 @@
             if (sub.category === 'sweets' || sub.id === 'chocolate' || sub.id === 'milk' || sub.id === 'oreo') hasSweets = true;
             if (sub.category === 'meat' || sub.category === 'seafood' || sub.id === 'egg' || sub.id === 'pate') hasMeatOrSavory = true;
             if (sub.id === 'cheese_stick') hasCheese = true;
+            if (sub.baseId === 'white_sugar' || sub.baseId === 'brown_sugar' || sub.baseId === 'palm_sugar' || sub.baseId === 'rock_sugar' || sub.baseId === 'malt_syrup') {
+              if (sub.cookLevel >= 1 || it.cookLevel >= 1) hasCaramelizedSugar = true;
+            }
             if (sub.spicesApplied) {
               sub.spicesApplied.forEach(sp => {
                 if (sp.id === 'cheese_powder') hasCheese = true;
@@ -2312,6 +2458,18 @@
       // 5. Rich Sweet + Fat Harmony (Pure sensory)
       if (blended.sweet >= 2.6 && blended.fatty >= 2.0 && blended.aroma >= 1.8) {
         synergies.push('✨ Hòa Vị Béo Ngọt (Cân bằng độ béo ngậy và vị ngọt êm dịu)');
+      }
+      // 5b. Fat tames Bitterness (Pure Sensory Chemistry - Hóa học cảm quan tự do, không công thức cứng)
+      if (blended.fatty >= 1.8 && blended.bitter >= 2.0) {
+        blended.bitter *= 0.82;
+        blended.aroma += 1.2;
+        synergies.push('✨ Lớp Béo Ngậy Làm Dịu Vị Đắng (Tạo chiều sâu êm mượt và cân bằng hậu vị)');
+      }
+      // 5c. Sugar Heat Transformation (Caramelization physics - Biến đổi vật lý/hóa học thực phẩm)
+      if (hasCaramelizedSugar) {
+        blended.aroma += 1.6;
+        blended.fatty += 0.4;
+        synergies.push('🔥 Tinh Thể Đường Chuyển Hóa Khi Gặp Nhiệt (Dậy hương thơm ngọt đượm và tạo kết cấu bóng bẩy)');
       }
       // 6. Cheese & Umami richness
       if (hasCheese && (hasMeatOrSavory || blended.umami >= 2.0)) {
@@ -2589,6 +2747,7 @@
           hasIce: outerWrapper.hasIce || innerFillings.some(i => i.hasIce),
           spicesApplied: combinedSpices,
           subItems: [outerWrapper, ...innerFillings],
+          innerItems: [...innerFillings],
           outerItem: outerWrapper,
           flavors: combinedFlavors
         };
@@ -2657,6 +2816,7 @@
           hasIce: outerVessel.hasIce || innerStuffings.some(i => i.hasIce),
           spicesApplied: combinedSpices,
           subItems: [outerVessel, ...innerStuffings],
+          innerItems: [...innerStuffings],
           outerItem: outerVessel,
           flavors: combinedFlavors
         };
@@ -2757,6 +2917,22 @@
               sub.cookLevel = Math.max(sub.cookLevel, item.cookLevel);
               sub.cookMethod = heat.method;
               sub.spicesApplied.forEach(sp => { sp.cookedIn = true; });
+              if (item.cookLevel >= 1) sub.needsCooking = false;
+            });
+          }
+
+          if (item.outerItem) {
+            item.outerItem.cookLevel = Math.max(item.outerItem.cookLevel || 0, item.cookLevel);
+            item.outerItem.cookMethod = heat.method;
+            if (item.cookLevel >= 1) item.outerItem.needsCooking = false;
+          }
+
+          if (item.innerItems && item.innerItems.length > 0) {
+            item.innerItems.forEach(sub => {
+              sub.cookLevel = Math.max(sub.cookLevel || 0, item.cookLevel);
+              sub.cookMethod = heat.method;
+              sub.spicesApplied.forEach(sp => { sp.cookedIn = true; });
+              if (item.cookLevel >= 1) sub.needsCooking = false;
             });
           }
 
@@ -3116,32 +3292,52 @@
       const stuffedItem = items.find(it => it.kind === 'stuffed');
       const blendedItem = items.find(it => it.kind === 'blended' || it.cookMethod === 'blended');
 
-      const methodToText = (m, level) => {
-        if (level === 2) return 'chiên giòn rụm';
-        if (m === 'grilled') return 'nướng than hoa thơm lừng';
-        if (m === 'fried') return 'áp chảo chín tới vàng ươm';
-        if (m === 'baked') return 'đút lò nướng thơm phức';
-        if (m === 'deep_fried') return 'chiên ngập dầu giòn tan';
-        if (m === 'boiled') return 'luộc chín mềm ngọt nước';
-        return 'chế biến thơm ngon';
+      const methodToText = (m, level, needsCooking = false) => {
+        if (!level || level === 0 || m === 'none') {
+          return needsCooking ? 'còn tươi sống chưa qua nhiệt' : 'tươi nguyên bản';
+        }
+        if (m === 'deep_fried') {
+          return level >= 2 ? 'chiên ngập dầu vàng ươm giòn rụm' : 'chiên ngập dầu giòn tan';
+        }
+        if (m === 'grilled') {
+          return level >= 2 ? 'nướng than hoa xém cạnh thơm phức' : 'nướng than hoa thơm lừng';
+        }
+        if (m === 'fried') {
+          return level >= 2 ? 'áp chảo xém cạnh giòn thơm' : 'áp chảo chín tới vàng ươm';
+        }
+        if (m === 'baked') {
+          return level >= 2 ? 'đút lò nướng vàng ươm giòn rụm' : 'đút lò nướng chín thơm phức';
+        }
+        if (m === 'boiled') {
+          return level >= 2 ? 'ninh hầm nhừ mềm ngọt nước' : 'luộc chín mềm ngọt nước';
+        }
+        return level >= 2 ? 'chế biến chín kỹ thơm lừng' : 'chế biến chín tới thơm ngon';
       };
 
       const subject = finalDishName ? `Món '${finalDishName}'` : 'Món ăn';
 
       if (rolledItem) {
         const outer = rolledItem.outerItem ? rolledItem.outerItem.name : rolledItem.name;
-        const outerCook = methodToText(rolledItem.cookMethod, rolledItem.cookLevel);
-        const inners = (rolledItem.subItems && rolledItem.subItems.length > 0)
-          ? rolledItem.subItems.map(s => s.name).join(' và ')
+        const outerCook = methodToText(rolledItem.cookMethod, rolledItem.cookLevel, rolledItem.outerItem?.needsCooking);
+        const rollVerb = (outerCook.startsWith('còn ') || outerCook.startsWith('tươi ')) ? outerCook : `được ${outerCook}`;
+        const innerList = (rolledItem.innerItems && rolledItem.innerItems.length > 0)
+          ? rolledItem.innerItems
+          : (rolledItem.subItems || []).filter(s => s !== rolledItem.outerItem && s.uid !== rolledItem.outerItem?.uid);
+        const inners = innerList.length > 0
+          ? innerList.map(s => s.name).join(' và ')
           : 'nhân béo bùi';
-        structureDesc = `${subject} với ${outer} được ${outerCook}, cuộn trọn lớp ${inners} ở bên trong`;
+        structureDesc = `${subject} với ${outer} ${rollVerb}, cuộn trọn lớp ${inners} ở bên trong`;
       } else if (stuffedItem) {
         const vessel = stuffedItem.outerItem ? stuffedItem.outerItem.name : stuffedItem.name;
-        const vesselCook = stuffedItem.cookLevel >= 1 ? 'nướng thơm giòn' : 'giòn xốp';
-        const inners = (stuffedItem.subItems && stuffedItem.subItems.length > 0)
-          ? stuffedItem.subItems.map(s => s.name).join(', ')
+        const vesselCook = methodToText(stuffedItem.cookMethod, stuffedItem.cookLevel, stuffedItem.outerItem?.needsCooking);
+        const cookVerb = (vesselCook.startsWith('còn ') || vesselCook.startsWith('tươi ')) ? vesselCook : `được ${vesselCook}`;
+        const innerList = (stuffedItem.innerItems && stuffedItem.innerItems.length > 0)
+          ? stuffedItem.innerItems
+          : (stuffedItem.subItems || []).filter(s => s !== stuffedItem.outerItem && s.uid !== stuffedItem.outerItem?.uid);
+        const inners = innerList.length > 0
+          ? innerList.map(s => s.name).join(', ')
           : 'nhân đậm đà';
-        structureDesc = `${subject} với lớp vỏ ${vessel} ${vesselCook} bên ngoài, được nhồi đầy đặn nhân ${inners} bên trong`;
+        structureDesc = `${subject} với lớp vỏ ${vessel} ${cookVerb} bên ngoài, được nhồi đầy đặn nhân ${inners} bên trong`;
       } else if (blendedItem) {
         const subList = (blendedItem.subItems && blendedItem.subItems.length > 0)
           ? blendedItem.subItems.filter(i => i.id !== 'ice_cubes')
@@ -3153,8 +3349,9 @@
       } else {
         const ingNames = items.slice(0, 3).map(i => i.name).join(' cùng ');
         const first = items[0];
-        const cook = first ? methodToText(first.cookMethod, first.cookLevel) : 'chế biến kỹ lưỡng';
-        structureDesc = finalDishName ? `Món '${finalDishName}' (${ingNames}) được ${cook}` : `${ingNames} được ${cook}`;
+        const cook = first ? methodToText(first.cookMethod, first.cookLevel, first?.needsCooking) : 'chế biến kỹ lưỡng';
+        const cookVerb = (cook.startsWith('còn ') || cook.startsWith('tươi ')) ? cook : `được ${cook}`;
+        structureDesc = finalDishName ? `Món '${finalDishName}' (${ingNames}) ${cookVerb}` : `${ingNames} ${cookVerb}`;
       }
 
       // B. Taste Sensations (Dynamic Pure Sensory Lexicon - Ranked by Dominant Intensity)
@@ -3776,6 +3973,14 @@
       document.getElementById('canvas-overlay-temp').textContent = `Nhiệt độ: ${activeSt.temp}`;
       document.getElementById('station-desc-sub').textContent = activeSt.desc;
       document.getElementById('station-items-count-label').textContent = `${state.stationItems.length} nguyên liệu trên bếp`;
+      const headingActions = document.getElementById('heading-station-actions');
+      if (headingActions) {
+        headingActions.innerHTML = '<span aria-hidden="true">' + activeSt.emoji + '</span><span>2. Thao Tác Với ' + activeSt.name + '</span>';
+      }
+      const headingItems = document.getElementById('heading-station-items');
+      if (headingItems) {
+        headingItems.innerHTML = '<span aria-hidden="true">🥘</span><span>3. Nguyên Liệu Đang Có Trong ' + activeSt.name + ' (' + state.stationItems.length + ')</span>';
+      }
 
       // Dynamic sub-panel for picking Wrapper (in rolling mat) or Vessel (in stuffing station)
       const wrapperVesselPanel = document.getElementById('station-wrapper-vessel-selector');
