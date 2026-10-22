@@ -2517,7 +2517,27 @@
         parts.push('cháy khét đen');
       }
 
-      if (item.spicesApplied.length > 0) {
+      // Format gia vị phân tầng cho món cuốn / nhồi hoặc món đơn
+      const isLayered = (item.kind === 'rolled' || item.kind === 'stuffed');
+      const outerList = item.outerSpices || (item.outerItem && item.outerItem.spicesApplied) || [];
+      const innerList = item.innerSpices || (item.innerItems && item.innerItems.flatMap(i => i.spicesApplied || [])) || [];
+
+      if (isLayered && (outerList.length > 0 || innerList.length > 0)) {
+        const formatCounts = (arr) => {
+          const counts = {};
+          arr.forEach(s => { counts[s.name] = (counts[s.name] || 0) + 1; });
+          return Object.entries(counts).map(([n, c]) => (c > 1 ? `${n} x${c}` : n)).join(', ');
+        };
+        const outerStr = formatCounts(outerList);
+        const innerStr = formatCounts(innerList);
+        if (outerStr && innerStr) {
+          parts.push(`vỏ nêm: ${outerStr}; nhân nêm: ${innerStr}`);
+        } else if (outerStr) {
+          parts.push(`vỏ nêm: ${outerStr}`);
+        } else if (innerStr) {
+          parts.push(`nhân nêm: ${innerStr}`);
+        }
+      } else if (item.spicesApplied && item.spicesApplied.length > 0) {
         const counts = {};
         item.spicesApplied.forEach(s => { counts[s.name] = (counts[s.name] || 0) + 1; });
         const sStr = Object.entries(counts).map(([n, c]) => (c > 1 ? `${n} x${c}` : n)).join(', ');
@@ -2865,7 +2885,19 @@
       playSoundEffect('spice');
       const share = 1 / Math.sqrt(targetArray.length);
       targetArray.forEach(it => {
-        it.spicesApplied.push({ id: spice.id, name: spice.name, cookedIn: false });
+        const spiceRecord = { id: spice.id, name: spice.name, cookedIn: false };
+        it.spicesApplied.push(spiceRecord);
+
+        // Nếu là món đã cuốn hoặc nhồi, gia vị này nêm trực tiếp lên lớp vỏ ngoài!
+        if (it.kind === 'rolled' || it.kind === 'stuffed') {
+          if (!it.outerSpices) it.outerSpices = [];
+          it.outerSpices.push({ ...spiceRecord });
+          if (it.outerItem) {
+            if (!it.outerItem.spicesApplied) it.outerItem.spicesApplied = [];
+            it.outerItem.spicesApplied.push({ ...spiceRecord });
+          }
+        }
+
         Object.keys(spice.add).forEach(k => {
           it.flavors[k] = Math.max(0, (it.flavors[k] || 0) + spice.add[k] * share);
         });
@@ -2873,7 +2905,11 @@
 
       state.stationActionFlash = 16;
       state.stationActionType = 'spice';
-      announceNVDA(`Đã nêm ${spice.name} (${spice.desc}) vào ${targetName}.`, 'polite');
+      if (targetArray.length === 1 && (targetArray[0].kind === 'rolled' || targetArray[0].kind === 'stuffed')) {
+        announceNVDA(`Đã nêm ${spice.name} (${spice.desc}) lên lớp vỏ ngoài của món "${targetArray[0].name}".`, 'polite');
+      } else {
+        announceNVDA(`Đã nêm ${spice.name} (${spice.desc}) vào ${targetName}.`, 'polite');
+      }
       renderAll();
     }
 
@@ -2928,16 +2964,22 @@
 
         const combinedFlavors = { ...outerWrapper.flavors };
         const combinedSpices = [...outerWrapper.spicesApplied];
+        const outerSpices = outerWrapper.spicesApplied ? outerWrapper.spicesApplied.map(sp => ({ ...sp })) : [];
+        const innerSpices = [];
         let anyNeedsCooking = outerWrapper.needsCooking && outerWrapper.cookLevel === 0;
         let maxCookLevel = outerWrapper.cookLevel;
+        const rollFillingShare = 1 / Math.sqrt(Math.max(1, innerFillings.length));
 
         innerFillings.forEach(f => {
           Object.keys(combinedFlavors).forEach(k => {
-            combinedFlavors[k] = (combinedFlavors[k] || 0) + (f.flavors[k] || 0) * 0.85;
+            combinedFlavors[k] = (combinedFlavors[k] || 0) + (f.flavors[k] || 0) * 0.85 * rollFillingShare;
           });
           if (f.needsCooking && f.cookLevel === 0) anyNeedsCooking = true;
           if (f.cookLevel > maxCookLevel) maxCookLevel = f.cookLevel;
-          f.spicesApplied.forEach(sp => combinedSpices.push({ ...sp }));
+          (f.spicesApplied || []).forEach(sp => {
+            combinedSpices.push({ ...sp });
+            innerSpices.push({ ...sp });
+          });
         });
 
         combinedFlavors.aroma += 1.5;
@@ -2966,6 +3008,8 @@
           outerTexture: outerTexture,
           hasIce: outerWrapper.hasIce || innerFillings.some(i => i.hasIce),
           spicesApplied: combinedSpices,
+          outerSpices: outerSpices,
+          innerSpices: innerSpices,
           subItems: [outerWrapper, ...innerFillings],
           innerItems: [...innerFillings],
           outerItem: outerWrapper,
@@ -2999,14 +3043,20 @@
 
         const combinedFlavors = { ...outerVessel.flavors };
         const combinedSpices = [...outerVessel.spicesApplied];
+        const outerSpices = outerVessel.spicesApplied ? outerVessel.spicesApplied.map(sp => ({ ...sp })) : [];
+        const innerSpices = [];
         let anyNeedsCooking = outerVessel.needsCooking && outerVessel.cookLevel === 0;
+        const stuffFillingShare = 1 / Math.sqrt(Math.max(1, innerStuffings.length));
 
         innerStuffings.forEach(s => {
           Object.keys(combinedFlavors).forEach(k => {
-            combinedFlavors[k] = (combinedFlavors[k] || 0) + (s.flavors[k] || 0) * 0.85;
+            combinedFlavors[k] = (combinedFlavors[k] || 0) + (s.flavors[k] || 0) * 0.85 * stuffFillingShare;
           });
           if (s.needsCooking && s.cookLevel === 0) anyNeedsCooking = true;
-          s.spicesApplied.forEach(sp => combinedSpices.push({ ...sp }));
+          (s.spicesApplied || []).forEach(sp => {
+            combinedSpices.push({ ...sp });
+            innerSpices.push({ ...sp });
+          });
         });
 
         combinedFlavors.aroma += 1.6;
@@ -3035,6 +3085,8 @@
           outerTexture: outerTexture,
           hasIce: outerVessel.hasIce || innerStuffings.some(i => i.hasIce),
           spicesApplied: combinedSpices,
+          outerSpices: outerSpices,
+          innerSpices: innerSpices,
           subItems: [outerVessel, ...innerStuffings],
           innerItems: [...innerStuffings],
           outerItem: outerVessel,
@@ -3131,6 +3183,8 @@
           item.cookLevel += 1;
           item.cookMethod = heat.method;
           item.spicesApplied.forEach(sp => { sp.cookedIn = true; });
+          if (item.outerSpices) item.outerSpices.forEach(sp => { sp.cookedIn = true; });
+          if (item.innerSpices) item.innerSpices.forEach(sp => { sp.cookedIn = true; });
 
           if (item.subItems && item.subItems.length > 0) {
             item.subItems.forEach(sub => {
@@ -3465,7 +3519,7 @@
         };
       }
 
-      if (f.salty > 5.5) {
+      if (f.salty > 7.0) {
         let saltySpeech = '';
         if (character.id === 'chef_bear') {
           saltySpeech = `"Úi chà chà! Tay ai nêm mà món '${finalDishName}' mặn chát cả lưỡi thế này! Cho tôi xin một xô nước lọc gấp kẻo quéo thận mất!"`;
@@ -3535,6 +3589,12 @@
       };
 
       const subject = finalDishName ? `Món '${finalDishName}'` : 'Món ăn';
+      const getUniqueSpices = (list) => {
+        if (!list || list.length === 0) return [];
+        const set = new Set();
+        list.forEach(sp => { if (sp && sp.name) set.add(sp.name); });
+        return Array.from(set);
+      };
 
       if (rolledItem) {
         const outer = rolledItem.outerItem ? rolledItem.outerItem.name : rolledItem.name;
@@ -3546,7 +3606,22 @@
         const inners = innerList.length > 0
           ? innerList.map(s => s.name).join(' và ')
           : 'nhân béo bùi';
-        structureDesc = `${subject} với ${outer} ${rollVerb}, cuộn trọn lớp ${inners} ở bên trong`;
+
+        const outerSpicesList = getUniqueSpices(rolledItem.outerSpices || (rolledItem.outerItem && rolledItem.outerItem.spicesApplied));
+        const innerSpicesList = getUniqueSpices(rolledItem.innerSpices || (rolledItem.innerItems && rolledItem.innerItems.flatMap(i => i.spicesApplied || [])));
+
+        const outerSpiceText = outerSpicesList.length > 0 ? ` được nêm ${outerSpicesList.join(', ')} bên ngoài` : '';
+        const innerSpiceText = innerSpicesList.length > 0 ? ` được nêm với ${innerSpicesList.join(' và ')} bên trong` : '';
+
+        if (outerSpiceText && innerSpiceText) {
+          structureDesc = `${subject} với lớp vỏ ${outer} ${rollVerb}${outerSpiceText}, cuộn trọn phần nhân ${inners}${innerSpiceText}`;
+        } else if (outerSpiceText) {
+          structureDesc = `${subject} với lớp vỏ ${outer} ${rollVerb}${outerSpiceText}, cuộn trọn phần nhân thanh đạm ${inners} bên trong`;
+        } else if (innerSpiceText) {
+          structureDesc = `${subject} với lớp vỏ ${outer} ${rollVerb} bên ngoài, cuộn trọn phần nhân ${inners}${innerSpiceText}`;
+        } else {
+          structureDesc = `${subject} với ${outer} ${rollVerb}, cuộn trọn lớp ${inners} ở bên trong`;
+        }
       } else if (stuffedItem) {
         const vessel = stuffedItem.outerItem ? stuffedItem.outerItem.name : stuffedItem.name;
         const vesselCook = methodToText(stuffedItem.cookMethod, stuffedItem.cookLevel, stuffedItem.outerItem?.needsCooking);
@@ -3557,7 +3632,22 @@
         const inners = innerList.length > 0
           ? innerList.map(s => s.name).join(', ')
           : 'nhân đậm đà';
-        structureDesc = `${subject} với lớp vỏ ${vessel} ${cookVerb} bên ngoài, được nhồi đầy đặn nhân ${inners} bên trong`;
+
+        const outerSpicesList = getUniqueSpices(stuffedItem.outerSpices || (stuffedItem.outerItem && stuffedItem.outerItem.spicesApplied));
+        const innerSpicesList = getUniqueSpices(stuffedItem.innerSpices || (stuffedItem.innerItems && stuffedItem.innerItems.flatMap(i => i.spicesApplied || [])));
+
+        const outerSpiceText = outerSpicesList.length > 0 ? ` được nêm ${outerSpicesList.join(', ')} bên ngoài` : '';
+        const innerSpiceText = innerSpicesList.length > 0 ? ` được nêm đậm đà với ${innerSpicesList.join(' và ')} bên trong` : '';
+
+        if (outerSpiceText && innerSpiceText) {
+          structureDesc = `${subject} với lớp vỏ ${vessel} ${cookVerb}${outerSpiceText}, nhồi đẫm phần nhân ${inners}${innerSpiceText}`;
+        } else if (outerSpiceText) {
+          structureDesc = `${subject} với lớp vỏ ${vessel} ${cookVerb}${outerSpiceText}, nhồi phần nhân thanh đạm ${inners} bên trong`;
+        } else if (innerSpiceText) {
+          structureDesc = `${subject} với lớp vỏ ${vessel} ${cookVerb} bên ngoài, nhồi đẫm phần nhân ${inners}${innerSpiceText}`;
+        } else {
+          structureDesc = `${subject} với lớp vỏ ${vessel} ${cookVerb} bên ngoài, được nhồi đầy đặn nhân ${inners} bên trong`;
+        }
       } else if (blendedItem) {
         const subList = (blendedItem.subItems && blendedItem.subItems.length > 0)
           ? blendedItem.subItems.filter(i => i.id !== 'ice_cubes')
@@ -3593,21 +3683,23 @@
         ? `có ${topTastes.join(', ')}`
         : 'hương vị thanh đạm mộc mạc';
 
-      // C. Spices Applied
-      const spiceNames = new Set();
+      // C. Spices Applied for Loose / Unlayered Items (tránh lặp lại gia vị đã mô tả phân tầng ở cuốn/nhồi)
+      let spiceStr = '';
+      const looseSpiceNames = new Set();
       items.forEach(it => {
-        it.spicesApplied.forEach(sp => spiceNames.add(sp.name));
-        if (it.subItems) {
-          it.subItems.forEach(sub => {
-            if (sub.spicesApplied) sub.spicesApplied.forEach(sp => spiceNames.add(sp.name));
-          });
+        if (it.kind !== 'rolled' && it.kind !== 'stuffed') {
+          (it.spicesApplied || []).forEach(sp => looseSpiceNames.add(sp.name));
+          if (it.subItems) {
+            it.subItems.forEach(sub => {
+              if (sub.spicesApplied) sub.spicesApplied.forEach(sp => looseSpiceNames.add(sp.name));
+            });
+          }
         }
       });
-      const spiceArr = Array.from(spiceNames);
-      let spiceStr = '';
-      if (spiceArr.length > 0) {
-        const topSpices = spiceArr.slice(0, 4).join(', ');
-        const extraCount = spiceArr.length > 4 ? ` và ${spiceArr.length - 4} loại gia vị khác` : '';
+      const looseSpiceArr = Array.from(looseSpiceNames);
+      if (looseSpiceArr.length > 0) {
+        const topSpices = looseSpiceArr.slice(0, 4).join(', ');
+        const extraCount = looseSpiceArr.length > 4 ? ` và ${looseSpiceArr.length - 4} loại gia vị khác` : '';
         spiceStr = `, nêm thêm ${topSpices}${extraCount}`;
       }
 
@@ -3678,7 +3770,7 @@
       // 2. Kiểm tra phản ứng hài hước & cảnh báo nghiêm trọng (Toca Kitchen Gag)
       const rawDishes = dishReviews.filter(dr => dr.dish.analysis.hasRawMeat);
       const burntDishes = dishReviews.filter(dr => dr.dish.analysis.hasBurnt);
-      const superSaltyDishes = dishReviews.filter(dr => dr.dish.analysis.normalized.salty > 5.5);
+      const superSaltyDishes = dishReviews.filter(dr => dr.dish.analysis.normalized.salty > 7.0);
       const superSpicyDishes = dishReviews.filter(dr => dr.dish.analysis.normalized.spicy > character.maxSpiceTolerance);
 
       // Có món còn thịt sống tanh

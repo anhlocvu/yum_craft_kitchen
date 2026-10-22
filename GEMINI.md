@@ -14,7 +14,7 @@
 ## 1. Thông Tin Phiên Làm Việc Mới Nhất
 - **Ngày thực hiện**: 22/10/2026
 - **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
-- **Mục tiêu**: Bổ sung 16 nguyên liệu mới (9 loại đậu, hạt sen, củ sen + 7 loại hành, mỡ hành, hành phi), tạo danh mục ngăn tủ mới `🫘 Đậu, Hạt & Củ Sen`, nâng cấp tổng số nguyên liệu lên 85 món, cập nhật phản ứng hòa vị cảm quan (synergies), hỗ trợ nhồi nhân củ sen / hành tây và cuộn lá hành, bảo đảm 100% chuẩn trợ năng WCAG 2.2 AAA / NVDA First.
+- **Mục tiêu**: Xây dựng Động cơ Gia vị Phân tầng (Layered Seasoning Engine) cho Món Cuốn & Món Nhồi, phân tách độc lập gia vị vỏ ngoài (`outerSpices`) và gia vị nhân bên trong (`innerSpices`), nâng cấp thuật toán hòa trộn hương vị (`fillingShare`), chuẩn hóa câu cảm quan ẩm thực đa tầng và mô tả trạng thái trợ năng NVDA đạt chuẩn WCAG 2.2 AAA.
 
 ---
 
@@ -386,3 +386,40 @@
        - Cờ `canBeVessel` và `canBeWrapper` hoạt động chính xác (PASS).
        - Kích hoạt đúng 3 phản ứng hòa vị mới (Chè hạt sen, Hành phi mỡ hành, Hành tây caramel) (PASS).
        - Nhồi củ sen với thịt nạc băm và chiên ngập dầu giòn tan, thực khách nhận xét đúng 4 tầng cảm quan (PASS).
+
+
+---
+
+## 10. Thông Tin Phiên Làm Việc: Động Cơ Gia Vị Phân Tầng Cho Món Cuốn & Món Nhồi (Layered Seasoning Engine) & Chuẩn Hóa Cảm Quan NVDA (22/10/2026)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Vấn đề giải quyết**:
+  - Khi người chơi làm món cuốn (Roll) hoặc món nhồi (Stuff) — ví dụ: bánh mì kẹp nhân pate, xúc xích, thịt ba chỉ đã chiên và nêm tương ớt + mayonnaise, sau đó nhồi vào bánh mì rồi rắc muối lên vỏ ngoài — trước đây hệ thống gộp phẳng toàn bộ gia vị vào một mảng duy nhất và đọc ra chung chung: `được nêm với muối, tương ớt, và sốt mayonnaise`. Người chơi không cảm nhận được sự phân tầng thực tế giữa gia vị nêm vỏ ngoài và gia vị nêm nhân bên trong.
+- **Các giải pháp & kiến trúc kỹ thuật đã triển khai**:
+  1. **Kiến Trúc Mô Hình Dữ Liệu Gia Vị Phân Tầng (`outerSpices` vs `innerSpices`)**:
+     - Cập nhật cả 2 trạm chế biến cốt lõi `roll_tight` (Bàn Cuốn Đa Năng) và `stuff_pack` (Trạm Kẹp & Nhồi Nhân) để khởi tạo và lưu giữ độc lập 2 mảng gia vị:
+       - `outerSpices`: Lưu giữ các gia vị của lớp vỏ ngoài (kế thừa từ `outerWrapper.spicesApplied` / `outerVessel.spicesApplied` và ghi nhận thêm bất kỳ gia vị nào người chơi nêm sau khi đã cuộn/nhồi).
+       - `innerSpices`: Gom toàn bộ gia vị đã được nêm vào các nguyên liệu nhân bên trong trước khi cuộn/nhồi.
+       - `spicesApplied`: Tiếp tục duy trì danh sách tổng thể để bảo đảm tính tương thích hóa học vị giác 8 trục.
+  2. **Nâng Cấp Hàm Nêm Gia Vị Thông Minh (`applySpice`)**:
+     - Khi người chơi chọn nêm bất kỳ gia vị nào (Muối, Tiêu, Bơ, Mật ong...) lên món đã cuộn (`rolled`) hoặc đã nhồi (`stuffed`):
+       - Hệ thống tự động ghi nhận gia vị đó vào `it.outerSpices` và đồng bộ vào `it.outerItem.spicesApplied`.
+       - ARIA Live Region thông báo đích danh: `Đã nêm [Tên gia vị] lên lớp vỏ ngoài của món "[Tên món]".` giúp người dùng khiếm thị cảm nhận rõ ràng vị trí gia vị bám vào.
+  3. **Chuẩn Hóa Thuật Toán Hòa Trộn Hương Vị Cảm Quan (`fillingShare`)**:
+     - Áp dụng hệ số thể tích gia quyền `fillingShare = 1 / Math.sqrt(Math.max(1, innerCount))` khi hòa trộn hương vị các nhân trong `roll_tight` và `stuff_pack`.
+     - Khắc phục triệt để hiện tượng cộng dồn số học khiến các món kẹp nhiều nhân đạm mặn (pate, xúc xích, thịt ba chỉ) bị đội điểm mặn vượt ngưỡng 5.5 và kích hoạt nhầm gag reaction "mặn chát khát nước". Nâng ngưỡng mặn cực đoan lên > 7.0 (chỉ kích hoạt khi cố tình nêm quá nhiều lần muối/nước mắm).
+  4. **Nâng Cấp Động Cơ Cảm Quan Ẩm Thực Phân Tầng (`generateSensoryTastingReview`)**:
+     - Tách bạch 4 kịch bản cảm quan cấu trúc:
+       - *Cả vỏ và nhân đều có gia vị*: `Món '[Tên]' với lớp vỏ [Vỏ] [Chế biến] được nêm [Gia vị vỏ] bên ngoài, nhồi đẫm/cuộn trọn phần nhân [Các nhân] được nêm đậm đà với [Gia vị nhân] bên trong, có vị [Top 2-3 vị nổi bật]...`
+       - *Chỉ nhân có gia vị, vỏ giữ mộc*: `với lớp vỏ [Vỏ] [Chế biến] bên ngoài, nhồi đẫm phần nhân [Các nhân] được nêm với [Gia vị nhân] bên trong...` (Tuyệt đối không gán ghép gia vị nhân ra vỏ).
+       - *Chỉ vỏ có gia vị, nhân giữ mộc*: `với lớp vỏ [Vỏ] được nêm [Gia vị vỏ] bên ngoài, nhồi phần nhân thanh đạm [Các nhân] bên trong...`
+       - *Món rời/không cuốn nhồi*: Gom gia vị tự nhiên ở đuôi câu, loại bỏ hoàn toàn việc lặp lại từ ngữ vô nghĩa.
+  5. **Trực Quan Hóa Thẻ Món & Trợ Năng Báo Cáo Phím `I`**:
+     - Cập nhật hàm `describeItemStateShort(item)`: Thẻ món ăn trên Bàn Chế Biến, Khay Tạm và Đĩa Ăn hiển thị rành mạch: `vỏ nêm: Muối biển; nhân nêm: Tương ớt cay ngọt, Sốt Mayonnaise`.
+     - Phím tắt `I` (`readDishSummary`) và lời thoại thực khách khi thưởng thức (`feedCharacter`) đồng bộ đọc to câu cảm quan phân tầng chi tiết.
+  6. **Kiểm Thử Tự Động Toàn Diện (`test_layered_spices.js`)**:
+     - Xây dựng và thực thi thành công 4 kịch bản kiểm thử:
+       - *CA 1 (Bánh mì kẹp nhân chiên nêm tương ớt & mayonnaise, vỏ ngoài rắc muối)*: PASS 100%.
+       - *CA 2 (Bò cuộn nấm kim châm nướng than phết mật ong ngoài, nhân nêm tiêu & dầu hào trong)*: PASS 100%.
+       - *CA 3 (Gỏi cuốn tôm thịt nêm nước mắm trong nhân, vỏ bánh tráng mộc)*: PASS 100%.
+       - *CA 4 (Bánh mì nướng bơ rắc muối ngoài, kẹp dưa leo mộc thanh đạm)*: PASS 100%.
+     - Kết quả kiểm thử: **21/21 PASS (100%)**, cú pháp JavaScript `index.html` hợp lệ 100%.
