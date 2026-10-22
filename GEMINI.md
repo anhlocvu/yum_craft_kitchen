@@ -6,15 +6,15 @@
 > 2. **Hóa Học Vị Giác Cảm Quan Động (Dynamic Sensory Chemistry)**: Hệ thống đánh giá dựa trên các định luật vật lý và hóa học vị giác thực tế (Umami, Mặn, Ngọt, Chua, Cay, Béo, Đắng, Thơm, Giòn), phản ánh trung thực những gì người chơi vừa thực sự chế biến và nêm nếm. Tuyệt đối không gán ghép các nhãn hương vị tĩnh hoặc tự ý suy đoán nguyên liệu không có trong món ăn.
 > 3. **Nhận Xét Của Thực Khách Sinh Động & Chân Thực (Living Character Critique)**: Khi thưởng thức, nhân vật sẽ miêu tả chi tiết cảm giác vị giác, kết cấu món ăn (nướng, luộc, chiên, cuộn, nhồi...) và mùi vị của các loại gia vị người chơi đã nêm, phản ánh đúng gu thưởng thức và biểu cảm của từng thực khách.
 > 4. **Trợ Năng Toàn Diện Chuẩn Quốc Tế (WCAG AA/AAA & NVDA First)**: Mọi tương tác, cảm giác vị giác và diễn biến nấu nướng đều phải được truyền tải hoàn hảo, tự nhiên và liền mạch đến người chơi khiếm thị thông qua NVDA và bàn phím.
-
+>5 ** không được đưa vào bất kỳ công thức cứng nhắt nào trong code, vì đây là game nấu ăn tự gio, không phải game nấu ăn theo công thức xách giáo khoa
 ---
 
 # NHẬT KÝ DỰ ÁN — YUMCRAFT KITCHEN
 
 ## 1. Thông Tin Phiên Làm Việc Mới Nhất
-- **Ngày thực hiện**: 21/10/2026
+- **Ngày thực hiện**: 22/10/2026
 - **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
-- **Mục tiêu**: Khắc phục triệt để lỗi mô tả món nhồi/cuộn bị gán cứng "nướng thơm giòn", sửa lỗi vỏ ngoài lọt vào ruột nhân, nâng cấp động cơ ánh xạ phương pháp nấu `methodToText` theo 2 cấp độ nhiệt cho từng dụng cụ, và đồng bộ hóa trạng thái nhiệt cho vỏ và nhân khi qua lửa.
+- **Mục tiêu**: Bổ sung 16 nguyên liệu mới (9 loại đậu, hạt sen, củ sen + 7 loại hành, mỡ hành, hành phi), tạo danh mục ngăn tủ mới `🫘 Đậu, Hạt & Củ Sen`, nâng cấp tổng số nguyên liệu lên 85 món, cập nhật phản ứng hòa vị cảm quan (synergies), hỗ trợ nhồi nhân củ sen / hành tây và cuộn lá hành, bảo đảm 100% chuẩn trợ năng WCAG 2.2 AAA / NVDA First.
 
 ---
 
@@ -338,3 +338,51 @@
        - Tuyệt đối không chứa chữ "nướng" (PASS).
        - Nhận diện chính xác "chiên ngập dầu giòn tan" (PASS).
        - Tuyệt đối không lặp lại bột mì trong nhân nhồi (PASS).
+
+---
+
+## 12. Thông Tin Phiên Làm Việc: Bổ Sung 16 Nguyên Liệu Mới (Nhóm Đậu, Hạt Sen, Củ Sen & Nhóm Hành, Mỡ Hành, Hành Phi), Danh Mục Ngăn Tủ '🫘 Đậu, Hạt & Củ Sen' & Tối Ưu Hóa Học Vị Giác (22/10/2026)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Mục tiêu & Các Cải Tiến Triển Khai**:
+  1. **Bổ Sung 16 Nguyên Liệu Mới Đậm Chất Ẩm Thực Việt Nam & Quốc Tế**:
+     - **Nhóm Các Loại Đậu, Hạt & Củ Sen (9 nguyên liệu)**:
+       - 🟢 **Đậu xanh bở bùi** (`mung_bean`): Nấu chín bở tơi ngọt bùi thanh mát, chuyên nấu chè đường phèn, xôi vò, làm nhân bánh đậu xanh hoặc nhân chả giò.
+       - ⚫ **Đậu đen xanh lòng bùi đậm** (`black_bean`): Bùi đậm đà giải nhiệt mùa hè, nấu chè đậu đen ngọt mát, hầm chân giò ngọt nước hoặc nấu xôi béo ngậy.
+       - ⚪ **Đậu trắng hạt to dẻo bùi** (`white_bean`): Hạt to mẩy dẻo bùi, nấu chè đậu trắng cốt dừa béo ngậy, hầm bò sốt vang hoặc nấu súp rau củ thanh đạm.
+       - 🔴 **Đậu đỏ hạt ngọc bùi ngọt** (`red_bean`): Hạt đỏ thắm ngọt bùi thanh tâm dưỡng nhan, nấu chè đậu đỏ cầu duyên, cháo bổ dưỡng hoặc làm nhân bánh ngọt ngào.
+       - 🟡 **Đậu nành hạt vàng giàu đạm** (`soybean`): Hạt vàng óng giàu đạm thực vật, xay sữa đậu nành thanh khiết béo ngậy, nấu súp hầm hoặc rang sấy ăn bùi giòn.
+       - 🪷 **Hạt sen tươi bở bùi thanh tao** (`lotus_seed`): Hạt sen bở tơi thanh khiết an thần, chuyên chưng yến, hầm gà bổ dưỡng, nấu chè đường phèn thanh tao hoặc làm nhân bánh trung thu.
+       - 🥔 **Củ sen tươi giòn ngọt thanh mát** (`lotus_root`): Giòn ngọt sần sật mọng nước, có các lỗ rỗng hoàn hảo $\rightarrow$ **`canBeVessel: true`** (khoét lỗ nhồi thịt băm tôm xay chiên giòn rụm), bóp gỏi hoặc hầm canh sườn ngọt nước.
+       - 🫛 **Đậu que giòn ngọt mọng nước** (`green_beans`): Trái đậu non xanh giòn ngọt nước, xào thịt bò xém cạnh, luộc chín chấm kho quẹt hoặc nướng áp chảo.
+       - 🟢 **Đậu Hà Lan ngọt mọng hạt** (`green_peas`): Từng hạt tròn mọng ngọt thanh bùi dẻo, xào cơm chiên Dương Châu, nấu súp kem béo ngậy hoặc xào tôm mực.
+       - *Điều chuyển `roasted_peanuts` (Đậu phộng rang)* từ `starch` sang danh mục `beans_seeds` để gom nhóm hạt chuẩn xác.
+     - **Nhóm Các Loại Hành, Mỡ Hành & Hành Phi (7 nguyên liệu)**:
+       - 🧅 **Củ hành tây giòn mọng nước** (`onion`): Giòn ngọt mọng nước hăng cay dịu, tách bẹ làm khuôn nhồi thịt $\rightarrow$ **`canBeVessel: true`** (nhồi thịt nướng lò caramel hóa ngọt lịm hoặc bóp gỏi gà tái chanh).
+       - 🧅 **Hành tím củ giòn thơm nồng** (`shallot`): Thơm nồng ngào ngạt, băm nhuyễn phi thơm, ướp thịt nướng than hoa, bóp gỏi ngó sen tôm thịt hoặc ngâm giấm chua ngọt giòn tan.
+       - 🌿 **Hành lá tươi xanh thơm ngát** (`scallion`): Cọng hành tươi xanh thơm mát nức lòng $\rightarrow$ **`canBeWrapper: true`** (chần mềm làm dây buộc túm chả cuốn), rắc lên mọi món súp cháo phở, xào thịt.
+       - 🧅 **Hành phi vàng giòn rụm thơm lừng** (`fried_shallots`): Từng lát hành phi vàng ươm giòn rụm béo bùi thơm ngất ngây (kết cấu **`crispy`**), rắc lên xôi xéo, bánh cuốn nóng, hủ tiếu hoặc bánh tráng trộn.
+       - 🧈 **Mỡ hành béo ngậy óng ánh** (`scallion_oil`): Hành hoa xối mỡ nóng ngào ngạt béo ngậy óng ả (kết cấu **`soft`**), rưới lên bắp nướng, sò điệp hàu nướng than, cơm tấm sườn hoặc bánh hỏi.
+       - 🌿 **Hẹ lá xanh thơm ngọt thanh** (`garlic_chives`): Lá hẹ dẹp thơm dịu ngọt thanh, nấu canh hẹ đậu hũ non thịt băm thanh mát giải nhiệt, xào hến hoặc cuốn gỏi cuốn tôm thịt.
+       - 🥬 **Tỏi tây Bo-rô ngọt dày** (`leek`): Thân trắng dày mọng nước ngọt thanh đậm đà, xào thịt bò, nấu súp hầm kem béo kiểu Âu hoặc nướng bơ tỏi thơm nức mũi.
+  2. **Tái Cấu Trúc Danh Mục Ngăn Tủ Lạnh & Tự Động Hóa Số Lượng**:
+     - Thêm danh mục mới `beans_seeds`: **"🫘 Đậu, Hạt & Củ Sen"**.
+     - Cập nhật danh mục rau củ thành `veg`: **"🥬 Rau Củ & Các Loại Hành"**.
+     - Cập nhật danh mục tinh bột thành `starch`: **"🍚 Cơm, Khoai & Phô Mai"**.
+     - Tổng số lượng nguyên liệu trong tủ tăng từ **69 lên 85 nguyên liệu**.
+     - Cập nhật tab `all` tự động hiển thị: `Tất cả (85)` và thông báo NVDA: `Đã mở ngăn tủ: Tất cả 85 món`.
+     - Cập nhật badge Tủ Lạnh và placeholder tìm kiếm: `🔍 Tìm nguyên liệu (vd: đậu xanh, củ sen, hành phi, mỡ hành, mì ý, xúc xích...)`.
+  3. **Nâng Cấp Động Cơ Hóa Học Vị Giác & Phản Ứng Hòa Vị Thuần Túy (Sensory Synergies - Zero Recipe Assumption)**:
+     - `🧅✨ Tinh Dầu Hành & Độ Béo Dậy Hương (Hương thơm bốc tỏa ngào ngạt kích thích gai vị giác)`: Kích hoạt khi có Hành phi hoặc Mỡ hành kết hợp cùng tinh bột hoặc đạm hoặc khi chỉ số thơm béo cao, phản ánh sự khuếch tán tinh dầu thơm hòa tan trong lipid.
+     - `🫘✨ Hòa Vị Bùi Ngọt Thanh Khiết (Vị bùi bở của đậu hạt quyện vị ngọt thanh tạo chiều sâu êm dịu)`: Kích hoạt khi đậu hạt được nấu chín kết hợp cùng chất tạo ngọt (đường, mật, sữa), phản ánh tương tác giữa tinh bột bùi bở và vị ngọt dịu, tuyệt đối KHÔNG gán nhãn thành "Chè" hay bất kỳ món cứng nào.
+     - `🔥🧅 Vị Ngọt Thực Vật Chuyển Hóa Qua Nhiệt (Vị hăng cay chuyển hóa thành ngọt thanh đượm đà)`: Kích hoạt khi củ hành được nấu qua nhiệt (xào, nướng, áp chảo), phản ánh sự chuyển hóa tự nhiên của đường thực vật và phản ứng Maillard.
+  4. **Tối Ưu Trạm Nhồi & Trạm Cuốn Cho Củ Sen, Hành Tây & Hành Lá**:
+     - `stuff_pack`: Tự động nhận diện các nguyên liệu có `canBeVessel: true` (bao gồm `lotus_root` Củ sen, `onion` Hành tây, `banh_mi_vn`, `croissant`, `bell_pepper`, `squid`, `oreo`...).
+     - `roll_tight`: Tự động nhận diện các nguyên liệu có `canBeWrapper: true` (bao gồm `scallion` Hành lá, `rice_paper`, `nori_seaweed`, `betel_leaf`, `pho_sheet`, `beef`...).
+  5. **Kiểm Thử Toàn Diện Tự Động (Automated Test Suite)**:
+     - Xây dựng và thực thi thành công bộ kiểm thử kịch bản món ăn `test_new_ingredients_scenarios.js` đạt kết quả tuyệt đối **16/16 PASS (100%)**:
+       - 85 nguyên liệu duy nhất, không trùng lặp ID (PASS).
+       - Phân loại danh mục chuẩn xác (PASS).
+       - Kết cấu `crispy` cho hành phi & củ sen, `soft` cho mỡ hành (PASS).
+       - Cờ `canBeVessel` và `canBeWrapper` hoạt động chính xác (PASS).
+       - Kích hoạt đúng 3 phản ứng hòa vị mới (Chè hạt sen, Hành phi mỡ hành, Hành tây caramel) (PASS).
+       - Nhồi củ sen với thịt nạc băm và chiên ngập dầu giòn tan, thực khách nhận xét đúng 4 tầng cảm quan (PASS).

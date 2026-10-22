@@ -333,10 +333,10 @@
               <h2 class="text-base sm:text-lg font-extrabold text-slate-800 font-game leading-tight">
                 Tủ Lạnh &amp; Kho Nguyên Liệu
               </h2>
-              <p class="text-xs text-slate-500 font-medium">Mì, bột làm bánh, vỏ cuốn, bánh mì, đồ ăn vặt &amp; sô-cô-la</p>
+              <p class="text-xs text-slate-500 font-medium">Đậu hạt, củ sen, các loại hành, mì, bột làm bánh, vỏ cuốn, đồ ngọt &amp; đạm</p>
             </div>
           </div>
-          <span id="fridge-total-count-badge" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-200 text-slate-700">69 món</span>
+          <span id="fridge-total-count-badge" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-200 text-slate-700">85 món</span>
         </div>
 
         <!-- Target Destination Selector: CHỈ BỎ VÀO BẾP HOẶC KHAY TẠM (BỎ NÚT RA DĨA) -->
@@ -357,7 +357,7 @@
         <!-- Search Bar -->
         <div>
           <label for="fridge-search-input" class="sr-only">Tìm nhanh nguyên liệu trong tủ</label>
-          <input id="fridge-search-input" type="search" placeholder="🔍 Tìm nguyên liệu (vd: mì ý, bột mì, xúc xích, phô mai, oreo, bột chiên giòn...)" class="w-full px-4 py-2.5 rounded-2xl border border-slate-300 text-xs sm:text-sm focus:border-orange-500 bg-white shadow-inner font-medium" />
+          <input id="fridge-search-input" type="search" placeholder="🔍 Tìm nguyên liệu (vd: đậu xanh, củ sen, hành phi, mỡ hành, mì ý, xúc xích...)" class="w-full px-4 py-2.5 rounded-2xl border border-slate-300 text-xs sm:text-sm focus:border-orange-500 bg-white shadow-inner font-medium" />
         </div>
 
         <!-- Ingredients Shelf Grid -->
@@ -908,17 +908,18 @@
     ];
 
     const FRIDGE_CATEGORIES = [
-      { id: 'all', name: 'Tất cả (69)' },
+      { id: 'all', name: 'Tất cả' },
+      { id: 'beans_seeds', name: '🫘 Đậu, Hạt & Củ Sen' },
+      { id: 'veg', name: '🥬 Rau Củ & Các Loại Hành' },
       { id: 'noodles_flour', name: '🍜 Mì & Bột Làm Bánh' },
       { id: 'wrappers', name: '🥖 Vỏ Bánh & Đồ Cuốn' },
       { id: 'sweets', name: '☕🍫 Cà Phê, Đường & Đồ Ngọt' },
       { id: 'meat', name: '🥩 Thịt, Xúc Xích & Pate' },
       { id: 'seafood', name: '🦐 Hải Sản & Trứng' },
-      { id: 'veg', name: '🥬 Rau Củ & Trái Cây' },
-      { id: 'starch', name: '🍚 Tinh Bột & Phô Mai' }
+      { id: 'starch', name: '🍚 Cơm, Khoai & Phô Mai' }
     ];
 
-    // EXPANDED 61 INGREDIENTS INCLUDING NOODLES, FLOURS, WRAPPERS, BREADS, SNACKS, FRUITS & DRINKS
+    // EXPANDED 85 INGREDIENTS INCLUDING BEANS, SEEDS, LOTUS, ONIONS, SCALLION OIL, FRIED SHALLOTS, NOODLES, FLOURS, WRAPPERS, BREADS, SNACKS, FRUITS & DRINKS
     const INGREDIENTS = [
       // 1. VỎ BÁNH & ĐỒ CUỐN (WRAPPERS & VESSELS) - NOW IN THE PANTRY!
       {
@@ -1523,7 +1524,7 @@
       {
         id: 'roasted_peanuts',
         name: 'Đậu Phộng Rang Bùi Thơm',
-        category: 'starch',
+        category: 'beans_seeds',
         emoji: '🥜',
         color: '#d97706',
         cookedColor: '#b45309',
@@ -1732,6 +1733,191 @@
         flavorDesc: 'Bột cà phê hòa tan tiện lợi, thơm dịu, dễ hòa tan vào sữa tươi, kem béo, bơ hoặc nhào chung bột bánh quy',
         canBeWrapper: false,
         flavors: { umami: 0.4, salty: 0.0, sweet: 1.8, sour: 0.2, spicy: 0.0, fatty: 1.2, bitter: 2.2, aroma: 3.0, crunch: 0.0 }
+      },
+
+      // 11. CÁC LOẠI ĐẬU, HẠT & CỦ SEN (BEANS, LOTUS SEEDS & ROOTS - NEW!)
+      {
+        id: 'mung_bean',
+        name: 'Đậu xanh bở bùi',
+        category: 'beans_seeds',
+        emoji: '🟢',
+        color: '#84cc16',
+        cookedColor: '#65a30d',
+        needsCooking: true,
+        flavorDesc: 'Nấu chín bở tơi bùi ngọt thanh mát, chuyên nấu chè đường phèn, xôi vò, làm nhân bánh đậu xanh hoặc nhân chả giò',
+        flavors: { umami: 1.6, salty: 0.1, sweet: 1.8, sour: 0.0, spicy: 0.0, fatty: 0.5, bitter: 0.0, aroma: 2.4, crunch: 0.2 }
+      },
+      {
+        id: 'black_bean',
+        name: 'Đậu đen xanh lòng bùi đậm',
+        category: 'beans_seeds',
+        emoji: '⚫',
+        color: '#1c1917',
+        cookedColor: '#292524',
+        needsCooking: true,
+        flavorDesc: 'Bùi đậm đà giải nhiệt mùa hè, nấu chè đậu đen ngọt mát, hầm chân giò ngọt nước hoặc nấu xôi béo ngậy',
+        flavors: { umami: 1.8, salty: 0.1, sweet: 1.6, sour: 0.0, spicy: 0.0, fatty: 0.6, bitter: 0.1, aroma: 2.5, crunch: 0.2 }
+      },
+      {
+        id: 'white_bean',
+        name: 'Đậu trắng hạt to dẻo bùi',
+        category: 'beans_seeds',
+        emoji: '⚪',
+        color: '#f5f5f4',
+        cookedColor: '#e7e5e4',
+        needsCooking: true,
+        flavorDesc: 'Hạt to mẩy dẻo bùi, nấu chè đậu trắng cốt dừa béo ngậy, hầm bò sốt vang hoặc nấu súp rau củ thanh đạm',
+        flavors: { umami: 1.7, salty: 0.1, sweet: 1.7, sour: 0.0, spicy: 0.0, fatty: 0.7, bitter: 0.0, aroma: 2.2, crunch: 0.2 }
+      },
+      {
+        id: 'red_bean',
+        name: 'Đậu đỏ hạt ngọc bùi ngọt',
+        category: 'beans_seeds',
+        emoji: '🔴',
+        color: '#991b1b',
+        cookedColor: '#7f1d1d',
+        needsCooking: true,
+        flavorDesc: 'Hạt đỏ thắm ngọt bùi thanh tâm dưỡng nhan, nấu chè đậu đỏ cầu duyên, cháo bổ dưỡng hoặc làm nhân bánh ngọt ngào',
+        flavors: { umami: 1.6, salty: 0.1, sweet: 2.0, sour: 0.0, spicy: 0.0, fatty: 0.4, bitter: 0.0, aroma: 2.6, crunch: 0.2 }
+      },
+      {
+        id: 'soybean',
+        name: 'Đậu nành hạt vàng giàu đạm',
+        category: 'beans_seeds',
+        emoji: '🟡',
+        color: '#facc15',
+        cookedColor: '#eab308',
+        needsCooking: true,
+        flavorDesc: 'Hạt vàng óng giàu đạm thực vật, xay sữa đậu nành thanh khiết béo ngậy, nấu súp hầm hoặc rang sấy ăn bùi giòn',
+        flavors: { umami: 2.6, salty: 0.2, sweet: 1.4, sour: 0.0, spicy: 0.0, fatty: 2.4, bitter: 0.0, aroma: 2.8, crunch: 0.3 }
+      },
+      {
+        id: 'lotus_seed',
+        name: 'Hạt sen tươi bở bùi thanh tao',
+        category: 'beans_seeds',
+        emoji: '🪷',
+        color: '#fef3c7',
+        cookedColor: '#fde68a',
+        needsCooking: true,
+        flavorDesc: 'Hạt sen bở tơi thanh khiết an thần, chuyên chưng yến, hầm gà bổ dưỡng, nấu chè đường phèn thanh tao hoặc làm nhân bánh trung thu',
+        flavors: { umami: 1.5, salty: 0.1, sweet: 2.2, sour: 0.0, spicy: 0.0, fatty: 0.8, bitter: 0.1, aroma: 3.4, crunch: 0.2 }
+      },
+      {
+        id: 'lotus_root',
+        name: 'Củ sen tươi giòn ngọt thanh mát',
+        category: 'beans_seeds',
+        emoji: '🥔',
+        color: '#f5f5f4',
+        cookedColor: '#e7e5e4',
+        needsCooking: false,
+        canBeVessel: true,
+        flavorDesc: 'Giòn ngọt sần sật mọng nước, có các lỗ rỗng hoàn hảo để nhồi thịt băm tôm xay chiên giòn, bóp gỏi hoặc hầm canh sườn ngọt nước',
+        flavors: { umami: 1.4, salty: 0.1, sweet: 2.0, sour: 0.1, spicy: 0.0, fatty: 0.1, bitter: 0.0, aroma: 2.6, crunch: 4.2 }
+      },
+      {
+        id: 'green_beans',
+        name: 'Đậu que giòn ngọt mọng nước',
+        category: 'beans_seeds',
+        emoji: '🫛',
+        color: '#22c55e',
+        cookedColor: '#16a34a',
+        needsCooking: true,
+        flavorDesc: 'Trái đậu non xanh giòn ngọt nước, xào thịt bò xém cạnh, luộc chín chấm kho quẹt hoặc nướng áp chảo',
+        flavors: { umami: 1.4, salty: 0.1, sweet: 1.8, sour: 0.0, spicy: 0.0, fatty: 0.1, bitter: 0.1, aroma: 2.0, crunch: 3.8 }
+      },
+      {
+        id: 'green_peas',
+        name: 'Đậu Hà Lan ngọt mọng hạt',
+        category: 'beans_seeds',
+        emoji: '🟢',
+        color: '#4ade80',
+        cookedColor: '#22c55e',
+        needsCooking: true,
+        flavorDesc: 'Từng hạt tròn mọng ngọt thanh bùi dẻo, xào cơm chiên Dương Châu, nấu súp kem béo ngậy hoặc xào tôm mực',
+        flavors: { umami: 1.8, salty: 0.1, sweet: 2.5, sour: 0.0, spicy: 0.0, fatty: 0.3, bitter: 0.0, aroma: 2.3, crunch: 2.6 }
+      },
+
+      // 12. CÁC LOẠI HÀNH, MỠ HÀNH & HÀNH PHI (ALLIUMS, CRISPY SHALLOTS & SCALLION OIL - NEW!)
+      {
+        id: 'onion',
+        name: 'Củ hành tây giòn mọng nước',
+        category: 'veg',
+        emoji: '🧅',
+        color: '#fef08a',
+        cookedColor: '#d97706',
+        needsCooking: false,
+        canBeVessel: true,
+        flavorDesc: 'Giòn ngọt mọng nước hăng cay dịu, tách bẹ làm khuôn nhồi thịt nướng lò caramel hóa ngọt lịm hoặc bóp gỏi gà tái chanh',
+        flavors: { umami: 1.8, salty: 0.1, sweet: 2.6, sour: 0.2, spicy: 1.2, fatty: 0.1, bitter: 0.0, aroma: 3.2, crunch: 3.5 }
+      },
+      {
+        id: 'shallot',
+        name: 'Hành tím củ giòn thơm nồng',
+        category: 'veg',
+        emoji: '🧅',
+        color: '#a855f7',
+        cookedColor: '#7e22ce',
+        needsCooking: false,
+        flavorDesc: 'Thơm nồng ngào ngạt, băm nhuyễn phi thơm, ướp thịt nướng than hoa, bóp gỏi ngó sen tôm thịt hoặc ngâm giấm chua ngọt giòn tan',
+        flavors: { umami: 2.0, salty: 0.2, sweet: 2.2, sour: 0.2, spicy: 1.6, fatty: 0.1, bitter: 0.1, aroma: 3.8, crunch: 3.2 }
+      },
+      {
+        id: 'scallion',
+        name: 'Hành lá tươi xanh thơm ngát',
+        category: 'veg',
+        emoji: '🌿',
+        color: '#22c55e',
+        cookedColor: '#16a34a',
+        needsCooking: false,
+        canBeWrapper: true,
+        flavorDesc: 'Cọng hành tươi xanh thơm mát nức lòng, cắt nhỏ rắc lên mọi món súp cháo phở, xào thịt hoặc chần mềm buộc túm chả cuốn',
+        flavors: { umami: 1.2, salty: 0.1, sweet: 1.4, sour: 0.0, spicy: 0.8, fatty: 0.1, bitter: 0.1, aroma: 3.6, crunch: 2.0 }
+      },
+      {
+        id: 'fried_shallots',
+        name: 'Hành phi vàng giòn rụm thơm lừng',
+        category: 'veg',
+        emoji: '🧅',
+        color: '#f59e0b',
+        cookedColor: '#b45309',
+        needsCooking: false,
+        texture: 'crispy',
+        flavorDesc: 'Từng lát hành phi vàng ươm giòn rụm béo bùi thơm ngất ngây, rắc lên xôi xéo, bánh cuốn nóng, hủ tiếu hoặc bánh tráng trộn',
+        flavors: { umami: 2.8, salty: 0.5, sweet: 2.0, sour: 0.0, spicy: 0.0, fatty: 3.2, bitter: 0.0, aroma: 4.8, crunch: 4.8 }
+      },
+      {
+        id: 'scallion_oil',
+        name: 'Mỡ hành béo ngậy óng ánh',
+        category: 'veg',
+        emoji: '🧈',
+        color: '#84cc16',
+        cookedColor: '#4d7c0f',
+        needsCooking: false,
+        texture: 'soft',
+        flavorDesc: 'Hành hoa xối mỡ nóng ngào ngạt béo ngậy óng ả, rưới lên bắp nướng, sò điệp hàu nướng than, cơm tấm sườn hoặc bánh hỏi',
+        flavors: { umami: 2.4, salty: 0.6, sweet: 1.5, sour: 0.0, spicy: 0.2, fatty: 4.5, bitter: 0.0, aroma: 4.6, crunch: 0.2 }
+      },
+      {
+        id: 'garlic_chives',
+        name: 'Hẹ lá xanh thơm ngọt thanh',
+        category: 'veg',
+        emoji: '🌿',
+        color: '#15803d',
+        cookedColor: '#166534',
+        needsCooking: false,
+        flavorDesc: 'Lá hẹ dẹp thơm dịu ngọt thanh, nấu canh hẹ đậu hũ non thịt băm thanh mát giải nhiệt, xào hến hoặc cuốn gỏi cuốn tôm thịt',
+        flavors: { umami: 1.3, salty: 0.1, sweet: 1.6, sour: 0.0, spicy: 0.6, fatty: 0.1, bitter: 0.1, aroma: 3.4, crunch: 2.2 }
+      },
+      {
+        id: 'leek',
+        name: 'Tỏi tây Bo-rô ngọt dày',
+        category: 'veg',
+        emoji: '🥬',
+        color: '#86efac',
+        cookedColor: '#4ade80',
+        needsCooking: false,
+        flavorDesc: 'Thân trắng dày mọng nước ngọt thanh đậm đà, xào thịt bò, nấu súp hầm kem béo kiểu Âu hoặc nướng bơ tỏi thơm nức mũi',
+        flavors: { umami: 1.7, salty: 0.1, sweet: 2.4, sour: 0.0, spicy: 0.4, fatty: 0.1, bitter: 0.0, aroma: 3.2, crunch: 3.0 }
       }
     ];
 
@@ -2263,8 +2449,9 @@
      * 5. MÔ HÌNH DỮ LIỆU MÓN ĂN & HÒA VỊ THỰC TẾ (CULINARY CHEMISTRY)
      *************************************************************************/
     function determineDefaultTexture(ing) {
+      if (ing.texture) return ing.texture;
       if (ing.id === 'milk' || ing.id === 'ice_cubes' || ing.id === 'brewed_coffee' || ing.id === 'espresso') return 'drink';
-      const crispyIds = ['instant_ramen', 'roasted_peanuts', 'taco_shell', 'banh_mi_vn', 'croissant', 'oreo', 'cucumber', 'guava', 'june_plum'];
+      const crispyIds = ['instant_ramen', 'roasted_peanuts', 'taco_shell', 'banh_mi_vn', 'croissant', 'oreo', 'cucumber', 'guava', 'june_plum', 'fried_shallots', 'lotus_root'];
       if (crispyIds.includes(ing.id) || (ing.flavors && ing.flavors.crunch >= 2.5)) {
         return 'crispy';
       }
@@ -2366,6 +2553,10 @@
       let hasCheese = false;
       let hasHoneyOrButter = false;
       let hasCaramelizedSugar = false;
+      let hasShallotOrScallionOil = false;
+      let hasBeansOrLotus = false;
+      let hasCaramelizedOnion = false;
+      let hasStarchOrGrains = false;
       const allStructures = new Set();
 
       function walkItem(it, weight = 1.0) {
@@ -2387,6 +2578,12 @@
             hasCaramelizedSugar = true;
           }
         }
+        if (it.baseId === 'fried_shallots' || it.baseId === 'scallion_oil' || it.id === 'fried_shallots' || it.id === 'scallion_oil') hasShallotOrScallionOil = true;
+        if (it.category === 'beans_seeds' || it.baseId === 'mung_bean' || it.baseId === 'black_bean' || it.baseId === 'white_bean' || it.baseId === 'red_bean' || it.baseId === 'lotus_seed' || it.baseId === 'lotus_root') {
+          if (it.cookLevel >= 1 || it.cookMethod === 'boiled') hasBeansOrLotus = true;
+        }
+        if (it.baseId === 'onion' && it.cookLevel >= 1) hasCaramelizedOnion = true;
+        if (it.category === 'starch' || it.category === 'noodles_flour' || it.baseId === 'rice_paper' || it.baseId === 'sweet_corn') hasStarchOrGrains = true;
 
         Object.keys(totals).forEach(k => {
           totals[k] += (it.flavors[k] || 0) * weight;
@@ -2408,6 +2605,12 @@
             if (sub.baseId === 'white_sugar' || sub.baseId === 'brown_sugar' || sub.baseId === 'palm_sugar' || sub.baseId === 'rock_sugar' || sub.baseId === 'malt_syrup') {
               if (sub.cookLevel >= 1 || it.cookLevel >= 1) hasCaramelizedSugar = true;
             }
+            if (sub.baseId === 'fried_shallots' || sub.baseId === 'scallion_oil' || sub.id === 'fried_shallots' || sub.id === 'scallion_oil') hasShallotOrScallionOil = true;
+            if (sub.category === 'beans_seeds' || sub.baseId === 'mung_bean' || sub.baseId === 'black_bean' || sub.baseId === 'white_bean' || sub.baseId === 'red_bean' || sub.baseId === 'lotus_seed' || sub.baseId === 'lotus_root') {
+              if (sub.cookLevel >= 1 || it.cookLevel >= 1 || it.cookMethod === 'boiled') hasBeansOrLotus = true;
+            }
+            if (sub.baseId === 'onion' && (sub.cookLevel >= 1 || it.cookLevel >= 1)) hasCaramelizedOnion = true;
+            if (sub.category === 'starch' || sub.category === 'noodles_flour' || sub.baseId === 'rice_paper' || sub.baseId === 'sweet_corn') hasStarchOrGrains = true;
             if (sub.spicesApplied) {
               sub.spicesApplied.forEach(sp => {
                 if (sp.id === 'cheese_powder') hasCheese = true;
@@ -2486,6 +2689,23 @@
       }
       if (allStructures.has('stuffed')) {
         synergies.push('🥖 Kết Cấu Bánh Kẹp Nhồi Nhân Đậm Đà');
+      }
+      // 9. Tinh dầu thơm từ hành kết hợp độ béo
+      if (hasShallotOrScallionOil && (hasStarchOrGrains || hasMeatOrSavory || blended.aroma >= 2.0)) {
+        blended.aroma += 1.4;
+        synergies.push('🧅✨ Tinh Dầu Hành & Độ Béo Dậy Hương (Hương thơm bốc tỏa ngào ngạt kích thích gai vị giác)');
+      }
+      // 10. Đậu hạt bùi bở hòa quyện cùng vị ngọt thanh
+      if (hasBeansOrLotus && (hasSweets || hasHoneyOrButter || blended.sweet >= 2.0)) {
+        blended.aroma += 1.2;
+        blended.sweet *= 0.95;
+        synergies.push('🫘✨ Hòa Vị Bùi Ngọt Thanh Khiết (Vị bùi bở của đậu hạt quyện vị ngọt thanh tạo chiều sâu êm dịu)');
+      }
+      // 11. Đường thực vật trong củ hành chuyển hóa qua nhiệt
+      if (hasCaramelizedOnion) {
+        blended.sweet += 0.4;
+        blended.aroma += 1.0;
+        synergies.push('🔥🧅 Vị Ngọt Thực Vật Chuyển Hóa Qua Nhiệt (Vị hăng cay chuyển hóa thành ngọt thanh đượm đà)');
       }
 
       if (hasRawMeat) {
@@ -2698,7 +2918,7 @@
         // Identify which item is outer wrapper
         let wrapperIdx = state.stationItems.findIndex(i => i.uid === state.selectedWrapperUid);
         if (wrapperIdx === -1) {
-          const preferred = state.stationItems.findIndex(i => i.baseId === 'rice_paper' || i.baseId === 'nori_seaweed' || i.baseId === 'betel_leaf' || i.baseId === 'pho_sheet' || i.baseId === 'tortilla_wrap' || i.baseId === 'beef' || i.baseId === 'pork_belly');
+          const preferred = state.stationItems.findIndex(i => i.canBeWrapper || i.baseId === 'rice_paper' || i.baseId === 'nori_seaweed' || i.baseId === 'betel_leaf' || i.baseId === 'pho_sheet' || i.baseId === 'tortilla_wrap' || i.baseId === 'beef' || i.baseId === 'pork_belly' || i.baseId === 'scallion');
           wrapperIdx = preferred !== -1 ? preferred : 0;
         }
 
@@ -2769,7 +2989,7 @@
 
         let vesselIdx = state.stationItems.findIndex(i => i.uid === state.selectedVesselUid);
         if (vesselIdx === -1) {
-          const preferred = state.stationItems.findIndex(i => i.baseId === 'banh_mi_vn' || i.baseId === 'sausage' || i.baseId === 'burger_bun' || i.baseId === 'taco_shell' || i.baseId === 'bell_pepper' || i.baseId === 'squid' || i.baseId === 'oreo');
+          const preferred = state.stationItems.findIndex(i => i.canBeVessel || i.baseId === 'banh_mi_vn' || i.baseId === 'sausage' || i.baseId === 'burger_bun' || i.baseId === 'taco_shell' || i.baseId === 'bell_pepper' || i.baseId === 'squid' || i.baseId === 'oreo' || i.baseId === 'croissant' || i.baseId === 'lotus_root' || i.baseId === 'onion');
           vesselIdx = preferred !== -1 ? preferred : 0;
         }
 
@@ -3891,11 +4111,13 @@
           btn.className = `px-2.5 py-1 rounded-xl text-xs font-bold transition ${
             isAct ? 'bg-orange-600 text-white shadow-sm' : 'bg-white hover:bg-slate-200 text-slate-700 border border-slate-300'
           }`;
-          btn.textContent = cat.name;
+          const catDisplayName = cat.id === 'all' ? `Tất cả (${INGREDIENTS.length})` : cat.name;
+          btn.textContent = catDisplayName;
           btn.addEventListener('click', () => {
             state.activeCategoryId = cat.id;
             playSoundEffect('pick');
-            announceNVDA(`Đã mở ngăn tủ: ${cat.name}`, 'polite');
+            const catAnnounceName = cat.id === 'all' ? `Tất cả ${INGREDIENTS.length} món` : cat.name;
+            announceNVDA(`Đã mở ngăn tủ: ${catAnnounceName}`, 'polite');
             renderFridge();
           });
           tabsEl.appendChild(btn);
