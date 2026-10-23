@@ -12,9 +12,9 @@
 # NHẬT KÝ DỰ ÁN — YUMCRAFT KITCHEN
 
 ## 1. Thông Tin Phiên Làm Việc Mới Nhất
-- **Ngày thực hiện**: 22/10/2026
+- **Ngày thực hiện**: 23/10/2026
 - **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
-- **Mục tiêu**: Xây dựng Động cơ Gia vị Phân tầng (Layered Seasoning Engine) cho Món Cuốn & Món Nhồi, phân tách độc lập gia vị vỏ ngoài (`outerSpices`) và gia vị nhân bên trong (`innerSpices`), nâng cấp thuật toán hòa trộn hương vị (`fillingShare`), chuẩn hóa câu cảm quan ẩm thực đa tầng và mô tả trạng thái trợ năng NVDA đạt chuẩn WCAG 2.2 AAA.
+- **Mục tiêu**: Chuẩn hóa cấu trúc ngữ pháp và tối ưu nhịp thở prosody cho trình đọc màn hình NVDA (WCAG 3.1 & 2.2 AAA): Triệt tiêu hoàn toàn lỗi lặp từ ("và ... và ...", "cùng ... cùng ..."), chèn dấu chấm câu `. ` ngắt nhịp phân tách danh sách nhân và gia vị nêm, xóa bỏ hoàn toàn cơ chế cắt xén (.slice) để liệt kê đầy đủ 100% nguyên liệu và 100% gia vị cho mọi thể loại món (món rời, món nhồi, món cuốn, món xay và mâm cỗ đại tiệc).
 
 ---
 
@@ -423,3 +423,34 @@
        - *CA 3 (Gỏi cuốn tôm thịt nêm nước mắm trong nhân, vỏ bánh tráng mộc)*: PASS 100%.
        - *CA 4 (Bánh mì nướng bơ rắc muối ngoài, kẹp dưa leo mộc thanh đạm)*: PASS 100%.
      - Kết quả kiểm thử: **21/21 PASS (100%)**, cú pháp JavaScript `index.html` hợp lệ 100%.
+
+---
+
+## 13. Thông Tin Phiên Làm Việc: Chuẩn Hóa Cấu Trúc Ngữ Pháp Liệt Kê 100% Nguyên Liệu & Gia Vị, Tối Ưu Nhịp Đọc NVDA (23/10/2026)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Vấn đề giải quyết**:
+  1. *Lỗi dính liền ngữ nghĩa và thiếu nhịp thở NVDA*: Trong các món nhồi (`stuffedItem`) và món cuốn (`rolledItem`), danh sách nguyên liệu nhân và câu nêm gia vị bị ghép dính liền nhau (ví dụ: `...Thịt ba chỉ heo được nêm đậm đà với...`). Trình đọc màn hình NVDA đọc dồn dập không có dấu ngắt, khiến người nghe hiểu nhầm chỉ có miếng thịt ba chỉ heo được nêm gia vị.
+  2. *Lỗi lặp từ nối liên tiếp ("và ... và ...", "cùng ... cùng ...")*: Do sử dụng `.join(' và ')` hoặc `.join(' cùng ')` thẳng đuột, câu mô tả có tới 4-5 từ "và" hoặc nhiều từ "cùng" lặp đi lặp lại khiến lời nhận xét của thực khách bị giật cục, nói vấp.
+  3. *Lỗi cắt xén thông tin món ăn (.slice)*: Món rời nhiều nguyên liệu từng bị `.slice(0, 3)` làm mất các nguyên liệu thứ 4, 5, 6; và gia vị từng bị `.slice(0, 4)` gom thành "và X loại gia vị khác", làm giảm tính tự do sáng tạo và không trân trọng trọn vẹn thành quả của người chơi.
+  4. *Lỗi lặp từ ", và " trong thực đơn đại tiệc 5 sao*: Lời thoại Chef Bear từng dùng `.join(', và ')` gây lặp từ giữa các món ăn.
+- **Các giải pháp & kiến trúc kỹ thuật đã triển khai**:
+  1. **Xây Dựng Hàm Tiện Ích Trợ Năng Chuẩn Mực (`formatNaturalList`)**:
+     - Tự động ghép danh sách nguyên liệu và gia vị theo đúng chuẩn cú pháp ngữ pháp tiếng Việt:
+       - 1 phần tử: `A`
+       - 2 phần tử: `A [conjunction] B` (ví dụ: `A và B` hoặc `A cùng B`)
+       - 3+ phần tử: `A, B, C [conjunction] D`
+  2. **Tối Ưu Hóa Nhịp Điệu NVDA & Chèn Dấu Chấm Ngắt Nhịp Cho Món Nhồi & Món Cuốn**:
+     - Phân tách rõ rệt danh sách nhân và câu gia vị bằng dấu chấm câu:
+       `nhồi đẫm phần nhân [Danh sách nhân]. Được nêm đậm đà với [Danh sách gia vị nhân] bên trong`
+     - Viết hoa chữ `Được` sau dấu chấm câu tạo nhịp nghỉ ngắt quãng tự nhiên (~300ms) cho các bộ đọc NVDA (Sao Mai, Microsoft An, eSpeak-NG), phân định rành mạch cấu trúc nhân và gia vị nêm.
+     - Bổ sung dấu phẩy `, được nêm...` ở lớp vỏ ngoài để tránh lặp từ "được... được...".
+  3. **Xóa Bỏ Triệt Để Mọi Cơ Chế Cắt Xén — Liệt Kê Đầy Đủ 100%**:
+     - *Món rời*: Loại bỏ `.slice(0, 3)`, liệt kê 100% toàn bộ nguyên liệu xào/nấu bằng `formatNaturalList(items, 'cùng')`.
+     - *Gia vị nêm rời*: Loại bỏ `.slice(0, 4)` và nhãn `và X loại gia vị khác`, liệt kê 100% toàn bộ gia vị bằng `formatNaturalList(looseSpices, 'và')`.
+     - *Món cuốn & món nhồi*: Liệt kê đầy đủ 100% nhân và 100% gia vị vỏ lẫn ruột.
+  4. **Chuẩn Hóa Lời Thoại Mâm Cỗ Đại Tiệc (3 đến 6+ món)**:
+     - Sửa `.join(', và ')` thành `formatNaturalList` ở dòng 3922, giúp lời nhận xét của Bếp Trưởng Gấu Bự khi đạt 5 sao đại tiệc trở nên trơn tru, hào sảng và không còn lỗi lặp từ.
+     - Khẳng định và bảo toàn cơ chế: Mâm cỗ 5 món, 6 món hay nhiều hơn đều được duyệt và xướng tên đầy đủ 100% cả trên Bàn Tiệc (Tab 5), Lời nhận xét khi đút ăn (Phím F) và Báo cáo phím tắt I (`readDishSummary`).
+  5. **Kiểm Thử Hồi Quy Tự Động Toàn Diện**:
+     - Chạy script kiểm thử chuyên sâu `test_word_repetition.js` và `test_full_listing.js`: xác nhận triệt tiêu 100% cảnh báo lặp từ "A và B và C", liệt kê đủ 6/6 nguyên liệu và 6/6 gia vị trong kịch bản cực đại.
+     - Chạy lại các bộ kiểm thử tích hợp (`test_new_ingredients_scenarios.js`) đạt kết quả tuyệt đối **16/16 PASS (100%)**.

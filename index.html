@@ -3458,6 +3458,15 @@
       }
     }
 
+    // HÀM TIỆN ÍCH TRỢ NĂNG: Nối danh sách tự nhiên tiếng Việt (Zero Hardcoded - Liệt kê đầy đủ 100%)
+    function formatNaturalList(items, conjunction = 'và') {
+      if (!items || items.length === 0) return '';
+      if (items.length === 1) return items[0];
+      if (items.length === 2) return `${items[0]} ${conjunction} ${items[1]}`;
+      const allButLast = items.slice(0, -1).join(', ');
+      return `${allButLast} ${conjunction} ${items[items.length - 1]}`;
+    }
+
     // DYNAMIC SENSORY TASTING REVIEW (TOCA KITCHEN STYLE - NO HARDCODED RECIPES)
     function generateSensoryTastingReview(items, analysis, character, dishNameOverride = null) {
       if (!items || items.length === 0) {
@@ -3604,14 +3613,14 @@
           ? rolledItem.innerItems
           : (rolledItem.subItems || []).filter(s => s !== rolledItem.outerItem && s.uid !== rolledItem.outerItem?.uid);
         const inners = innerList.length > 0
-          ? innerList.map(s => s.name).join(' và ')
+          ? formatNaturalList(innerList.map(s => s.name), 'và')
           : 'nhân béo bùi';
 
         const outerSpicesList = getUniqueSpices(rolledItem.outerSpices || (rolledItem.outerItem && rolledItem.outerItem.spicesApplied));
         const innerSpicesList = getUniqueSpices(rolledItem.innerSpices || (rolledItem.innerItems && rolledItem.innerItems.flatMap(i => i.spicesApplied || [])));
 
-        const outerSpiceText = outerSpicesList.length > 0 ? ` được nêm ${outerSpicesList.join(', ')} bên ngoài` : '';
-        const innerSpiceText = innerSpicesList.length > 0 ? ` được nêm với ${innerSpicesList.join(' và ')} bên trong` : '';
+        const outerSpiceText = outerSpicesList.length > 0 ? `, được nêm ${formatNaturalList(outerSpicesList, 'và')} bên ngoài` : '';
+        const innerSpiceText = innerSpicesList.length > 0 ? `. Được nêm với ${formatNaturalList(innerSpicesList, 'và')} bên trong` : '';
 
         if (outerSpiceText && innerSpiceText) {
           structureDesc = `${subject} với lớp vỏ ${outer} ${rollVerb}${outerSpiceText}, cuộn trọn phần nhân ${inners}${innerSpiceText}`;
@@ -3630,14 +3639,14 @@
           ? stuffedItem.innerItems
           : (stuffedItem.subItems || []).filter(s => s !== stuffedItem.outerItem && s.uid !== stuffedItem.outerItem?.uid);
         const inners = innerList.length > 0
-          ? innerList.map(s => s.name).join(', ')
+          ? formatNaturalList(innerList.map(s => s.name), 'và')
           : 'nhân đậm đà';
 
         const outerSpicesList = getUniqueSpices(stuffedItem.outerSpices || (stuffedItem.outerItem && stuffedItem.outerItem.spicesApplied));
         const innerSpicesList = getUniqueSpices(stuffedItem.innerSpices || (stuffedItem.innerItems && stuffedItem.innerItems.flatMap(i => i.spicesApplied || [])));
 
-        const outerSpiceText = outerSpicesList.length > 0 ? ` được nêm ${outerSpicesList.join(', ')} bên ngoài` : '';
-        const innerSpiceText = innerSpicesList.length > 0 ? ` được nêm đậm đà với ${innerSpicesList.join(' và ')} bên trong` : '';
+        const outerSpiceText = outerSpicesList.length > 0 ? `, được nêm ${formatNaturalList(outerSpicesList, 'và')} bên ngoài` : '';
+        const innerSpiceText = innerSpicesList.length > 0 ? `. Được nêm đậm đà với ${formatNaturalList(innerSpicesList, 'và')} bên trong` : '';
 
         if (outerSpiceText && innerSpiceText) {
           structureDesc = `${subject} với lớp vỏ ${vessel} ${cookVerb}${outerSpiceText}, nhồi đẫm phần nhân ${inners}${innerSpiceText}`;
@@ -3652,12 +3661,12 @@
         const subList = (blendedItem.subItems && blendedItem.subItems.length > 0)
           ? blendedItem.subItems.filter(i => i.id !== 'ice_cubes')
           : items.filter(i => i.id !== 'ice_cubes');
-        const ingNames = subList.map(i => i.name).join(', ').replace(/, ([^,]*)$/, ' và $1');
+        const ingNames = formatNaturalList(subList.map(i => i.name), 'và');
         const hasIce = (blendedItem.subItems || items).some(i => i.id === 'ice_cubes' || i.baseId === 'ice_cubes');
         const coldPhrase = hasIce ? 'mát lạnh ' : '';
         structureDesc = `${subject} được xay nhuyễn sánh mịn ${coldPhrase}từ ${ingNames || 'các nguyên liệu'}`;
       } else {
-        const ingNames = items.slice(0, 3).map(i => i.name).join(' cùng ');
+        const ingNames = formatNaturalList(items.map(i => i.name), 'cùng');
         const first = items[0];
         const cook = first ? methodToText(first.cookMethod, first.cookLevel, first?.needsCooking) : 'chế biến kỹ lưỡng';
         const cookVerb = (cook.startsWith('còn ') || cook.startsWith('tươi ')) ? cook : `được ${cook}`;
@@ -3698,9 +3707,8 @@
       });
       const looseSpiceArr = Array.from(looseSpiceNames);
       if (looseSpiceArr.length > 0) {
-        const topSpices = looseSpiceArr.slice(0, 4).join(', ');
-        const extraCount = looseSpiceArr.length > 4 ? ` và ${looseSpiceArr.length - 4} loại gia vị khác` : '';
-        spiceStr = `, nêm thêm ${topSpices}${extraCount}`;
+        const allSpicesFormatted = formatNaturalList(looseSpiceArr, 'và');
+        spiceStr = `, nêm thêm ${allSpicesFormatted}`;
       }
 
       // D. Combine Narrative
@@ -3915,11 +3923,11 @@
           moodTag = avgScore >= 80 ? `Mâm Cỗ Hoàng Gia ${dishes.length} Món! 🏆✨` : `Mâm Cỗ ${dishes.length} Món Đa Sắc! 🍲🌟`;
         }
 
-        const dishListNames = dishDetails.map(d => `'${d.name}'`).join(', ');
+        const dishListNames = formatNaturalList(dishDetails.map(d => `'${d.name}'`), 'và');
 
         if (avgScore >= 80) {
           if (character.id === 'chef_bear') {
-            speech = `"Nhoàm nhoàm... TRỜI ƠI MỘT MÂM CỖ ĐẠI TIỆC HOÀNG GIA! Tận ${dishes.length} món được chuẩn bị công phu: ${dishDetails.map(d => `'${d.name}' (${d.desc})`).join(', và ')}! Ăn một bữa thịnh soạn no nê ngập tràn hương vị thế này thì sướng nhất trần đời, điểm tuyệt đối cho đầu bếp!"`;
+            speech = `"Nhoàm nhoàm... TRỜI ƠI MỘT MÂM CỖ ĐẠI TIỆC HOÀNG GIA! Tận ${dishes.length} món được chuẩn bị công phu: ${formatNaturalList(dishDetails.map(d => `'${d.name}' (${d.desc})`), 'và')}! Ăn một bữa thịnh soạn no nê ngập tràn hương vị thế này thì sướng nhất trần đời, điểm tuyệt đối cho đầu bếp!"`;
           } else if (character.id === 'cat_miu') {
             speech = `"Măm măm... ÔI MÂM CỖ NHIỀU MÓN QUÁ! Có tận ${dishes.length} món thơm lừng bày đầy trên bàn: ${dishListNames}! Món nào cũng ngon tuyệt làm Miu no căng bụng luôn nè!"`;
           } else if (character.id === 'dragon_long') {
