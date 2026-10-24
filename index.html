@@ -2523,6 +2523,7 @@
         cutState: 'whole', // 'whole' | 'sliced' | 'diced' | 'minced'
         cookLevel: 0, // 0 = raw/fresh, 1 = cooked, 2 = crispy brown, >=3 = burnt
         cookMethod: 'none',
+        actionHistory: [], // Lưu tuần tự chuỗi phương pháp chế biến vật lý tự do (Toca Kitchen Sandbox)
         texture: defTex, // 'soft' | 'crispy' | 'liquid' | 'drink'
         hasIce: ing.id === 'ice_cubes',
         outerTexture: null, // used for rolled and stuffed items
@@ -2557,7 +2558,17 @@
         brewed: 'hãm nóng'
       };
 
-      if (item.cookMethod === 'blended') {
+      if (item.actionHistory && item.actionHistory.length > 1) {
+        const cleanActs = [];
+        item.actionHistory.forEach(a => {
+          if (cleanActs.length === 0 || cleanActs[cleanActs.length - 1] !== a) cleanActs.push(a);
+        });
+        const chainStr = cleanActs.map(a => methodMap[a] || a).join(' ➔ ');
+        parts.push(chainStr);
+        if (item.cookLevel === 1) parts.push('chín tới');
+        else if (item.cookLevel === 2) parts.push('chín vàng giòn');
+        else if (item.cookLevel >= 3) parts.push('cháy khét đen');
+      } else if (item.cookMethod === 'blended') {
         parts.push('xay sánh mịn');
       } else if (item.cookMethod === 'stirred') {
         parts.push('khuấy đều');
@@ -2652,8 +2663,8 @@
         if (it.category === 'sweets' || it.id === 'chocolate' || it.id === 'milk' || it.id === 'oreo') hasSweets = true;
         if (it.category === 'meat' || it.category === 'seafood' || it.id === 'egg' || it.id === 'pate') hasMeatOrSavory = true;
         if (it.id === 'cheese_stick') hasCheese = true;
-        if (it.baseId === 'white_sugar' || it.baseId === 'brown_sugar' || it.baseId === 'palm_sugar' || it.baseId === 'rock_sugar' || it.baseId === 'malt_syrup') {
-          if (it.cookLevel >= 1 && (it.cookMethod === 'fried' || it.cookMethod === 'deep_fried' || it.cookMethod === 'baked' || it.cookMethod === 'grilled')) {
+        if (it.baseId === 'white_sugar' || it.baseId === 'brown_sugar' || it.baseId === 'palm_sugar' || it.baseId === 'rock_sugar' || it.baseId === 'malt_syrup' || it.baseId === 'condensed_milk' || it.id === 'condensed_milk') {
+          if (it.cookLevel >= 1 && (it.cookMethod === 'fried' || it.cookMethod === 'deep_fried' || it.cookMethod === 'baked' || it.cookMethod === 'grilled' || (it.actionHistory && it.actionHistory.some(a => ['fried', 'deep_fried', 'baked', 'grilled'].includes(a))))) {
             hasCaramelizedSugar = true;
           }
         }
@@ -2681,7 +2692,7 @@
             if (sub.category === 'sweets' || sub.id === 'chocolate' || sub.id === 'milk' || sub.id === 'oreo') hasSweets = true;
             if (sub.category === 'meat' || sub.category === 'seafood' || sub.id === 'egg' || sub.id === 'pate') hasMeatOrSavory = true;
             if (sub.id === 'cheese_stick') hasCheese = true;
-            if (sub.baseId === 'white_sugar' || sub.baseId === 'brown_sugar' || sub.baseId === 'palm_sugar' || sub.baseId === 'rock_sugar' || sub.baseId === 'malt_syrup') {
+            if (sub.baseId === 'white_sugar' || sub.baseId === 'brown_sugar' || sub.baseId === 'palm_sugar' || sub.baseId === 'rock_sugar' || sub.baseId === 'malt_syrup' || sub.baseId === 'condensed_milk' || sub.id === 'condensed_milk') {
               if (sub.cookLevel >= 1 || it.cookLevel >= 1) hasCaramelizedSugar = true;
             }
             if (sub.baseId === 'fried_shallots' || sub.baseId === 'scallion_oil' || sub.id === 'fried_shallots' || sub.id === 'scallion_oil') hasShallotOrScallionOil = true;
@@ -2994,6 +3005,10 @@
         const labelMap = { slice: 'thái lát mỏng', dice: 'thái hạt lựu', mince: 'băm nhuyễn' };
         state.stationItems.forEach(item => {
           item.cutState = cutMap[actionId];
+          if (!item.actionHistory) item.actionHistory = [];
+          if (!item.actionHistory.includes(cutMap[actionId])) {
+            item.actionHistory.push(cutMap[actionId]);
+          }
           item.flavors.aroma += 0.5;
           item.flavors.umami += 0.2;
         });
@@ -3049,6 +3064,16 @@
 
         const outerTexture = outerWrapper.texture === 'crispy' ? 'crispy' : 'soft';
 
+        const inheritedRollActions = [...(outerWrapper.actionHistory || [])];
+        innerFillings.forEach(f => {
+          (f.actionHistory || []).forEach(act => {
+            if (!inheritedRollActions.includes(act)) inheritedRollActions.push(act);
+          });
+        });
+        if (inheritedRollActions.length === 0 || inheritedRollActions[inheritedRollActions.length - 1] !== 'rolled') {
+          inheritedRollActions.push('rolled');
+        }
+
         const rolledItem = {
           uid: state.nextItemUid++,
           kind: 'rolled',
@@ -3063,6 +3088,7 @@
           cutState: 'whole',
           cookLevel: anyNeedsCooking ? 0 : Math.max(1, maxCookLevel),
           cookMethod: outerWrapper.cookMethod !== 'none' ? outerWrapper.cookMethod : 'none',
+          actionHistory: inheritedRollActions,
           texture: outerTexture,
           outerTexture: outerTexture,
           hasIce: outerWrapper.hasIce || innerFillings.some(i => i.hasIce),
@@ -3126,6 +3152,16 @@
 
         const outerTexture = outerVessel.texture === 'crispy' ? 'crispy' : 'soft';
 
+        const inheritedStuffActions = [...(outerVessel.actionHistory || [])];
+        innerStuffings.forEach(f => {
+          (f.actionHistory || []).forEach(act => {
+            if (!inheritedStuffActions.includes(act)) inheritedStuffActions.push(act);
+          });
+        });
+        if (inheritedStuffActions.length === 0 || inheritedStuffActions[inheritedStuffActions.length - 1] !== 'stuffed') {
+          inheritedStuffActions.push('stuffed');
+        }
+
         const stuffedItem = {
           uid: state.nextItemUid++,
           kind: 'stuffed',
@@ -3140,6 +3176,7 @@
           cutState: 'whole',
           cookLevel: anyNeedsCooking ? 0 : 1,
           cookMethod: outerVessel.cookMethod !== 'none' ? outerVessel.cookMethod : 'none',
+          actionHistory: inheritedStuffActions,
           texture: outerTexture,
           outerTexture: outerTexture,
           hasIce: outerVessel.hasIce || innerStuffings.some(i => i.hasIce),
@@ -3187,6 +3224,18 @@
 
         const hasIceInBlender = state.stationItems.some(i => itemContainsIce(i));
 
+        const inheritedBlendActions = [];
+        state.stationItems.forEach(item => {
+          (item.actionHistory || []).forEach(act => {
+            if (inheritedBlendActions.length === 0 || inheritedBlendActions[inheritedBlendActions.length - 1] !== act) {
+              inheritedBlendActions.push(act);
+            }
+          });
+        });
+        if (inheritedBlendActions.length === 0 || inheritedBlendActions[inheritedBlendActions.length - 1] !== 'blended') {
+          inheritedBlendActions.push('blended');
+        }
+
         const blendedItem = {
           uid: state.nextItemUid++,
           kind: 'blended',
@@ -3201,6 +3250,7 @@
           cutState: 'minced',
           cookLevel: anyRaw ? 0 : 1,
           cookMethod: 'blended',
+          actionHistory: inheritedBlendActions,
           texture: 'drink',
           hasIce: hasIceInBlender,
           outerTexture: null,
@@ -3297,14 +3347,32 @@
           combinedFlavors.fatty *= 1.08;
         }
 
-        // Tự do ghép tên từ chính các nguyên liệu, kết hợp thao tác liên tiếp
-        let methodLabel = actionId === 'brew_infuse' ? 'hãm nóng' : (actionId === 'shake_shaker' ? 'lắc shaker' : 'khuấy ly');
-        if (isContinuousBeverage) {
-          const prevMethod = state.stationItems[0].cookMethod;
-          if (prevMethod === 'stirred' && actionId === 'shake_shaker') methodLabel = 'khuấy & lắc bọt';
-          else if (prevMethod === 'shaken' && actionId === 'stir_pour') methodLabel = 'lắc & khuấy đều';
-          else if (prevMethod === 'brewed' && actionId === 'shake_shaker') methodLabel = 'hãm nóng & lắc bọt';
+        // Kế thừa và bảo toàn chuỗi phương pháp chế biến liên tục (Toca Kitchen Sandbox)
+        const inheritedBevActions = [];
+        state.stationItems.forEach(item => {
+          (item.actionHistory || []).forEach(act => {
+            if (inheritedBevActions.length === 0 || inheritedBevActions[inheritedBevActions.length - 1] !== act) {
+              inheritedBevActions.push(act);
+            }
+          });
+        });
+        if (inheritedBevActions.length === 0 || inheritedBevActions[inheritedBevActions.length - 1] !== method) {
+          inheritedBevActions.push(method);
         }
+
+        const actionShortLabels = {
+          stirred: 'khuấy ly',
+          shaken: 'lắc shaker',
+          brewed: 'hãm nóng',
+          blended: 'xay sinh tố',
+          boiled: 'luộc/hầm',
+          fried: 'áp chảo',
+          deep_fried: 'chiên ngập dầu',
+          baked: 'nướng lò',
+          grilled: 'nướng than'
+        };
+
+        const methodLabel = inheritedBevActions.map(a => actionShortLabels[a] || a).join(' & ');
         const defaultBeverageName = `${names.join(' & ')} (${methodLabel})`;
 
         // Emoji linh hoạt
@@ -3328,6 +3396,7 @@
           cutState: 'whole',
           cookLevel: anyRaw ? 0 : 1,
           cookMethod: method,
+          actionHistory: [...inheritedBevActions],
           texture: 'drink',
           hasIce: hasIce,
           iceMelted: iceMelted,
@@ -3381,6 +3450,10 @@
         state.stationItems.forEach(item => {
           item.cookLevel += 1;
           item.cookMethod = heat.method;
+          if (!item.actionHistory) item.actionHistory = [];
+          if (item.actionHistory.length === 0 || item.actionHistory[item.actionHistory.length - 1] !== heat.method) {
+            item.actionHistory.push(heat.method);
+          }
           item.spicesApplied.forEach(sp => { sp.cookedIn = true; });
           if (item.outerSpices) item.outerSpices.forEach(sp => { sp.cookedIn = true; });
           if (item.innerSpices) item.innerSpices.forEach(sp => { sp.cookedIn = true; });
@@ -3389,6 +3462,10 @@
             item.subItems.forEach(sub => {
               sub.cookLevel = Math.max(sub.cookLevel, item.cookLevel);
               sub.cookMethod = heat.method;
+              if (!sub.actionHistory) sub.actionHistory = [];
+              if (sub.actionHistory.length === 0 || sub.actionHistory[sub.actionHistory.length - 1] !== heat.method) {
+                sub.actionHistory.push(heat.method);
+              }
               sub.spicesApplied.forEach(sp => { sp.cookedIn = true; });
               if (item.cookLevel >= 1) sub.needsCooking = false;
             });
@@ -3397,6 +3474,10 @@
           if (item.outerItem) {
             item.outerItem.cookLevel = Math.max(item.outerItem.cookLevel || 0, item.cookLevel);
             item.outerItem.cookMethod = heat.method;
+            if (!item.outerItem.actionHistory) item.outerItem.actionHistory = [];
+            if (item.outerItem.actionHistory.length === 0 || item.outerItem.actionHistory[item.outerItem.actionHistory.length - 1] !== heat.method) {
+              item.outerItem.actionHistory.push(heat.method);
+            }
             if (item.cookLevel >= 1) item.outerItem.needsCooking = false;
           }
 
@@ -3404,6 +3485,10 @@
             item.innerItems.forEach(sub => {
               sub.cookLevel = Math.max(sub.cookLevel || 0, item.cookLevel);
               sub.cookMethod = heat.method;
+              if (!sub.actionHistory) sub.actionHistory = [];
+              if (sub.actionHistory.length === 0 || sub.actionHistory[sub.actionHistory.length - 1] !== heat.method) {
+                sub.actionHistory.push(heat.method);
+              }
               sub.spicesApplied.forEach(sp => { sp.cookedIn = true; });
               if (item.cookLevel >= 1) sub.needsCooking = false;
             });
@@ -3669,6 +3754,102 @@
       return `${allButLast} ${conjunction} ${items[items.length - 1]}`;
     }
 
+    // FORMAT CHUỖI PHƯƠNG PHÁP CHẾ BIẾN TỰ NHIÊN (TOCA KITCHEN SANDBOX: 1 ĐẾN 7+ BƯỚC)
+    function formatActionHistoryChain(actions, cookLevel = 1, hasIce = false, iceMelted = false, needsCooking = false) {
+      if (!actions || actions.length === 0) {
+        if (cookLevel >= 3) return 'bị quá lửa cháy khét đen';
+        if (cookLevel === 0) return needsCooking ? 'còn tươi sống chưa qua chế biến nhiệt' : 'còn tươi nguyên bản';
+        return 'được chế biến chín tới thơm ngon';
+      }
+
+      // Lọc bỏ các thao tác trùng lặp liền kề
+      const cleanActions = [];
+      actions.forEach(act => {
+        if (cleanActions.length === 0 || cleanActions[cleanActions.length - 1] !== act) {
+          cleanActions.push(act);
+        }
+      });
+
+      const interMap = {
+        sliced: 'thái lát',
+        diced: 'thái hạt lựu',
+        minced: 'băm nhuyễn',
+        stirred: 'khuấy đều',
+        shaken: 'lắc sủi bọt',
+        brewed: 'hãm nóng',
+        blended: 'xay nhuyễn sánh mịn',
+        rolled: 'cuộn chặt',
+        stuffed: 'nhồi nhân',
+        boiled: 'luộc chín mềm',
+        fried: 'áp chảo',
+        deep_fried: 'chiên ngập dầu',
+        baked: 'đút lò nướng',
+        grilled: 'nướng than hoa'
+      };
+
+      const getFinalActionText = (act) => {
+        if (act === 'deep_fried') {
+          if (cookLevel >= 3) return 'đem chiên ngập dầu cháy khét';
+          if (cookLevel >= 2) return 'đem chiên ngập dầu vàng ươm giòn rụm';
+          return 'đem chiên ngập dầu giòn tan';
+        }
+        if (act === 'grilled') {
+          if (cookLevel >= 3) return 'đem nướng than hoa cháy đen';
+          if (cookLevel >= 2) return 'đem nướng than hoa xém cạnh thơm phức';
+          return 'đem nướng than hoa chín tới thơm lừng';
+        }
+        if (act === 'fried') {
+          if (cookLevel >= 3) return 'đem áp chảo cháy khét';
+          if (cookLevel >= 2) return 'đem áp chảo xém cạnh giòn thơm';
+          return 'đem áp chảo chín tới vàng ươm';
+        }
+        if (act === 'baked') {
+          if (cookLevel >= 3) return 'đem đút lò nướng cháy đen';
+          if (cookLevel >= 2) return 'đem đút lò nướng vàng ươm giòn rụm';
+          return 'đem đút lò nướng chín thơm phức';
+        }
+        if (act === 'boiled') {
+          if (cookLevel >= 2) return 'đem ninh hầm nhừ mềm ngọt nước';
+          return 'đem luộc chín mềm ngọt nước';
+        }
+        if (act === 'blended') {
+          return hasIce ? 'xay nhuyễn sánh mịn mát lạnh' : 'xay nhuyễn sánh mịn';
+        }
+        if (act === 'shaken') {
+          return hasIce ? 'lắc bình shaker sủi bọt mát lạnh' : 'lắc bình shaker sủi bọt';
+        }
+        if (act === 'stirred') {
+          return hasIce ? 'pha chế khuấy đều mát lạnh' : 'pha chế khuấy đều';
+        }
+        if (act === 'brewed') {
+          if (iceMelted) return 'hãm nước sôi làm tan chảy hoàn toàn đá viên, tạo nên thức uống ấm dịu thanh mát';
+          return 'hãm nóng bốc khói thơm nồng';
+        }
+        if (act === 'rolled') return 'cuộn trọn chặt tay';
+        if (act === 'stuffed') return 'nhồi đầy đặn vào ruột';
+        if (act === 'minced') return 'băm nhuyễn';
+        if (act === 'diced') return 'thái hạt lựu';
+        if (act === 'sliced') return 'thái lát';
+        return interMap[act] || act;
+      };
+
+      if (cleanActions.length === 1) {
+        const act = cleanActions[0];
+        return `được ${getFinalActionText(act)}`;
+      }
+
+      const lastAct = cleanActions[cleanActions.length - 1];
+      const prevActs = cleanActions.slice(0, -1);
+      const prevPhrases = prevActs.map(a => interMap[a] || a);
+      const finalDesc = getFinalActionText(lastAct);
+
+      if (prevPhrases.length === 1) {
+        return `được ${prevPhrases[0]} rồi ${finalDesc}`;
+      } else {
+        return `được ${prevPhrases.join(', ')} rồi ${finalDesc}`;
+      }
+    }
+
     // DYNAMIC SENSORY TASTING REVIEW (TOCA KITCHEN STYLE - NO HARDCODED RECIPES)
     function generateSensoryTastingReview(items, analysis, character, dishNameOverride = null) {
       if (!items || items.length === 0) {
@@ -3860,40 +4041,43 @@
         } else {
           structureDesc = `${subject} với lớp vỏ ${vessel} ${cookVerb} bên ngoài, được nhồi đầy đặn nhân ${inners} bên trong`;
         }
-      } else if (blendedItem) {
-        const subList = (blendedItem.subItems && blendedItem.subItems.length > 0)
-          ? blendedItem.subItems.filter(i => i.id !== 'ice_cubes')
-          : items.filter(i => i.id !== 'ice_cubes');
-        const ingNames = formatNaturalList(subList.map(i => i.name), 'và');
-        const hasIce = (blendedItem.subItems || items).some(i => i.id === 'ice_cubes' || i.baseId === 'ice_cubes');
-        const coldPhrase = hasIce ? 'mát lạnh ' : '';
-        structureDesc = `${subject} được xay nhuyễn sánh mịn ${coldPhrase}từ ${ingNames || 'các nguyên liệu'}`;
-      } else if (beverageItem) {
-        const subList = (beverageItem.subItems && beverageItem.subItems.length > 0)
-          ? beverageItem.subItems.filter(i => i.id !== 'ice_cubes')
-          : items.filter(i => i.id !== 'ice_cubes');
-        const ingNames = formatNaturalList(subList.map(i => i.name), 'và');
-        // Đồng bộ 100% với thuộc tính vật lý hasIce của ly thức uống và âm thanh ăn uống
-        const hasIce = !!beverageItem.hasIce;
-        const coldPhrase = hasIce ? 'mát lạnh sảng khoái ' : '';
-
-        if (beverageItem.cookMethod === 'brewed') {
-          if (beverageItem.iceMelted) {
-            structureDesc = `${subject} được hãm nước sôi làm tan chảy hoàn toàn đá viên, tạo nên thức uống ấm dịu thanh mát từ ${ingNames || 'các nguyên liệu'}`;
-          } else {
-            structureDesc = `${subject} được hãm nóng bốc khói thơm nồng từ ${ingNames || 'các nguyên liệu'}`;
-          }
-        } else if (beverageItem.cookMethod === 'shaken') {
-          structureDesc = `${subject} được lắc bình shaker sủi bọt ${coldPhrase}từ ${ingNames || 'các nguyên liệu'}`;
-        } else {
-          structureDesc = `${subject} được pha chế khuấy đều ${coldPhrase}từ ${ingNames || 'các nguyên liệu'}`;
-        }
       } else {
-        const ingNames = formatNaturalList(items.map(i => i.name), 'cùng');
-        const first = items[0];
-        const cook = first ? methodToText(first.cookMethod, first.cookLevel, first?.needsCooking) : 'chế biến kỹ lưỡng';
-        const cookVerb = (cook.startsWith('còn ') || cook.startsWith('tươi ')) ? cook : `được ${cook}`;
-        structureDesc = finalDishName ? `Món '${finalDishName}' (${ingNames}) ${cookVerb}` : `${ingNames} ${cookVerb}`;
+        // TẤT CẢ CÁC MÓN ĂN & ĐỒ UỐNG TỰ DO (TOCA KITCHEN SANDBOX: PHA CHẾ, XAY, NẤU NHIỆT, KẾT HỢP ĐA CÔNG ĐOẠN 1 ĐẾN 7+ BƯỚC)
+        const mainItem = items[0];
+        const subList = (mainItem && mainItem.subItems && mainItem.subItems.length > 0)
+          ? mainItem.subItems.filter(i => i.id !== 'ice_cubes' && i.baseId !== 'ice_cubes')
+          : items.filter(i => i.id !== 'ice_cubes' && i.baseId !== 'ice_cubes');
+        const ingNames = formatNaturalList(subList.map(i => i.name), 'và');
+
+        // Tập hợp toàn bộ lịch sử thao tác vật lý theo đúng thứ tự thời gian
+        let allActions = [];
+        if (mainItem && mainItem.actionHistory && mainItem.actionHistory.length > 0) {
+          allActions = [...mainItem.actionHistory];
+        } else {
+          items.forEach(it => {
+            (it.actionHistory || []).forEach(act => {
+              if (allActions.length === 0 || allActions[allActions.length - 1] !== act) {
+                allActions.push(act);
+              }
+            });
+            if (allActions.length === 0 && it.cookMethod && it.cookMethod !== 'none') {
+              allActions.push(it.cookMethod);
+            }
+          });
+        }
+
+        const maxLevel = Math.max(...items.map(i => i.cookLevel || 0));
+        const hasIce = items.some(i => itemContainsIce(i));
+        const iceMelted = items.some(i => i.iceMelted);
+        const needsCooking = items.some(i => i.needsCooking);
+
+        const actionsDesc = formatActionHistoryChain(allActions, maxLevel, hasIce, iceMelted, needsCooking);
+
+        if (allActions.length === 0) {
+          structureDesc = finalDishName ? `Món '${finalDishName}' (${ingNames}) ${actionsDesc}` : `${ingNames} ${actionsDesc}`;
+        } else {
+          structureDesc = `${subject} ${actionsDesc} từ ${ingNames || 'các nguyên liệu'}`;
+        }
       }
 
       // B. Taste Sensations (Dynamic Pure Sensory Lexicon - Ranked by Dominant Intensity)

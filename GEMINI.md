@@ -12,9 +12,17 @@
 # NHẬT KÝ DỰ ÁN — YUMCRAFT KITCHEN
 
 ## 1. Thông Tin Phiên Làm Việc Mới Nhất
-- **Ngày thực hiện**: 24/10/2026
+- **Ngày thực hiện**: 24/10/2026 (Phiên Nâng Cấp Chuỗi Thao Tác Vật Lý & Cảm Quan Đa Tầng)
 - **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
-- **Mục tiêu**: Mở rộng khái niệm đồ uống và xây dựng **Trạm Pha Chế Đồ Uống Tự Do (10. Trạm Pha Chế)** tuân thủ 100% triết lý Toca Kitchen Sandbox (Zero Hardcoded Recipes) & Hóa học vị giác cảm quan; Tích hợp **Ma Trận 5 Âm Thanh Foley Chế Biến Thực Tế (Play Wait)** (`stir_liquid.ogg`, `stir_ice.ogg`, `shake_liquid.ogg`, `shake_ice.ogg`, `brew_drink.ogg`); Tự động kích hoạt trạng thái nhiệt độ vật lý `hasIce` và kết nối liền mạch với 2 âm thanh thưởng thức (`drink.ogg` và `drink_with_ice.ogg`); Bổ sung nguyên liệu `pure_water` (Nước lọc) và `green_tea_leaves` (Lá trà xanh tươi) nâng tổng số nguyên liệu lên 87 món; Kiểm thử tự động 7 kịch bản đồ uống đạt tuyệt đối **40/40 PASS (100%)**.
+- **Mục tiêu**: 
+  1. Khắc phục triệt để lỗi ghi đè thao tác: Khi người chơi khuấy rồi lắc, hệ thống lưu đầy đủ cả 2 công đoạn (thay vì chỉ nhận mỗi bước lắc cuối cùng).
+  2. Khắc phục triệt để lỗi phân nhánh tĩnh: Khi người chơi lắc đồ uống rồi đem chiên ngập dầu/áp chảo/nướng lò, hệ thống nhận diện đầy đủ cả bước lắc và bước chiên ngập dầu (thay vì bị fallback thành "pha chế khuấy đều").
+  3. Xây dựng Kiến Trúc Chuỗi Thao Tác Vật Lý Tự Do (`actionHistory`): Hỗ trợ không giới hạn số lượng công đoạn (1, 2, 3, 4, 5, 6, 7+ bước liên tiếp: khuấy, lắc, xay, luộc, áp chảo, chiên ngập dầu, nướng lò, nướng than...) tuân thủ 100% triết lý Toca Kitchen Sandbox (Zero Hardcoded Recipes).
+  4. Xây dựng Động cơ kết nối tự nhiên tiếng Việt `formatActionHistoryChain`: Nối các bước bằng ngữ pháp chuẩn xác và sống động.
+  5. Đồng bộ chuyển hóa kết cấu vật lý và âm thanh thưởng thức: Món thức uống bị chiên giòn tự động chuyển sang `texture = 'crispy'` và kích hoạt âm thanh nhai giòn `eat_crispy_food.ogg`.
+  6. Bổ sung chuyển hóa nhiệt đường sữa đặc (`condensed_milk`) khi qua nhiệt độ cao trong `analyzeCulinaryChemistry`.
+  7. Tối ưu trợ năng NVDA: Thẻ trạng thái `describeItemStateShort` hiển thị tiến trình chuỗi thao tác bằng ký hiệu mũi tên `➔` trực quan.
+  8. Kiểm thử tự động toàn diện 29 kịch bản trong `test_culinary_engine_comprehensive.js` đạt kết quả tuyệt đối **29/29 TESTS PASS (100%)**.
 
 ---
 
