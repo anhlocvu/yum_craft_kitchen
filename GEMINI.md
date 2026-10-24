@@ -12,9 +12,9 @@
 # NHẬT KÝ DỰ ÁN — YUMCRAFT KITCHEN
 
 ## 1. Thông Tin Phiên Làm Việc Mới Nhất
-- **Ngày thực hiện**: 23/10/2026
+- **Ngày thực hiện**: 24/10/2026
 - **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
-- **Mục tiêu**: Chuẩn hóa cấu trúc ngữ pháp và tối ưu nhịp thở prosody cho trình đọc màn hình NVDA (WCAG 3.1 & 2.2 AAA): Triệt tiêu hoàn toàn lỗi lặp từ ("và ... và ...", "cùng ... cùng ..."), chèn dấu chấm câu `. ` ngắt nhịp phân tách danh sách nhân và gia vị nêm, xóa bỏ hoàn toàn cơ chế cắt xén (.slice) để liệt kê đầy đủ 100% nguyên liệu và 100% gia vị cho mọi thể loại món (món rời, món nhồi, món cuốn, món xay và mâm cỗ đại tiệc).
+- **Mục tiêu**: Mở rộng khái niệm đồ uống và xây dựng **Trạm Pha Chế Đồ Uống Tự Do (10. Trạm Pha Chế)** tuân thủ 100% triết lý Toca Kitchen Sandbox (Zero Hardcoded Recipes) & Hóa học vị giác cảm quan; Tích hợp **Ma Trận 5 Âm Thanh Foley Chế Biến Thực Tế (Play Wait)** (`stir_liquid.ogg`, `stir_ice.ogg`, `shake_liquid.ogg`, `shake_ice.ogg`, `brew_drink.ogg`); Tự động kích hoạt trạng thái nhiệt độ vật lý `hasIce` và kết nối liền mạch với 2 âm thanh thưởng thức (`drink.ogg` và `drink_with_ice.ogg`); Bổ sung nguyên liệu `pure_water` (Nước lọc) và `green_tea_leaves` (Lá trà xanh tươi) nâng tổng số nguyên liệu lên 87 món; Kiểm thử tự động 7 kịch bản đồ uống đạt tuyệt đối **40/40 PASS (100%)**.
 
 ---
 
@@ -454,3 +454,67 @@
   5. **Kiểm Thử Hồi Quy Tự Động Toàn Diện**:
      - Chạy script kiểm thử chuyên sâu `test_word_repetition.js` và `test_full_listing.js`: xác nhận triệt tiêu 100% cảnh báo lặp từ "A và B và C", liệt kê đủ 6/6 nguyên liệu và 6/6 gia vị trong kịch bản cực đại.
      - Chạy lại các bộ kiểm thử tích hợp (`test_new_ingredients_scenarios.js`) đạt kết quả tuyệt đối **16/16 PASS (100%)**.
+
+
+---
+
+## 14. Thông Tin Phiên Làm Việc: Xây Dựng Trạm Pha Chế Đồ Uống Tự Do (10. Trạm Pha Chế) & Ma Trận 5 Âm Thanh Foley Play Wait (24/10/2026)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Bối cảnh & Vấn đề giải quyết**:
+  1. *Khái niệm đồ uống bị đóng khung trong Máy Xay Sinh Tố*: Trước đây, món ăn chỉ được coi là "đồ uống" khi đi qua Máy Xay Sinh Tố (`kind: 'blended'`), phát tiếng máy xay rè rè (`blender.ogg`) và gán nhãn "xay nhuyễn sánh mịn". Khi người chơi muốn pha cà phê phin nguyên chất, cà phê sữa đá, bạc xỉu, trà chanh đá hay cacao nóng, việc phải đưa vào máy xay làm mất đi tính chân thực và thanh tao của nghệ thuật pha chế.
+  2. *Nghịch lý âm thanh khi pha chế không có đá*: Người dùng Vũ Anh Lộc (LC Boy) đã chỉ ra phát hiện vật lý vô cùng sắc bén: nếu người chơi pha một ly nước nguội hoặc nước nóng không có đá mà lại nghe tiếng đá va lách cách thì sẽ rất vô lý và gượng gạo.
+  3. *Bảo tồn triệt để Triết lý Toca Kitchen Sandbox (Zero Hardcoded Recipes)*: Tuyệt đối không hardcode bất kỳ công thức cứng nào (như không tự tiện gán ghép cà phê + sữa thành "Cà phê sữa" hay áp đặt công thức sách giáo khoa). Mọi thức uống đều là sự kết hợp tự do 100% của người chơi.
+- **Các giải pháp & kiến trúc kỹ thuật đã triển khai**:
+  1. **Bổ Sung Dụng Cụ Thứ 10: "🍹 Trạm Pha Chế Đồ Uống" (`beverage_station`)**:
+     - Nâng cấp thanh công cụ từ 9 lên 10 dụng cụ nấu ăn: `<div id="station-selector-grid" class="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-1.5" role="toolbar" aria-label="Chọn 1 trong 10 công cụ nấu ăn">`.
+     - Hỗ trợ 3 thao tác chuyên biệt với phím tắt trực quan:
+       - 🥄 **Khuấy Đều & Rót Ly (Phím C)** (`stir_pour`): Khuấy tan nguyên liệu lỏng trong ly thủy tinh.
+       - 🫨 **Lắc Bình Shaker (Phím S)** (`shake_shaker`): Lắc sủi bọt mịn và hòa quyện bồng bềnh trong bình Boston Shaker.
+       - ♨️ **Hãm Trà & Cà Phê Nóng (Phím B)** (`brew_infuse`): Rót nước sôi hãm nóng chiết xuất hương vị sâu lắng bốc khói.
+  2. **Tích Hợp Ma Trận 5 Âm Thanh Foley Thực Tế Chế Biến Theo Cơ Chế Play Wait**:
+     - Cả 5 file âm thanh đều được phát theo cơ chế **Play Wait** (`await playExternalAudio(soundFile, true)`), kích hoạt `state.isCookingBusy = true` và `aria-busy="true"` chống spam click:
+       - `stir_liquid.ogg`: Khuấy ly khi **KHÔNG CÓ ĐÁ** (tiếng nước lỏng chảy róc rách, muỗng xoay êm trong chất lỏng).
+       - `stir_ice.ogg`: Khuấy ly khi **CÓ ĐÁ VIÊN** (tiếng muỗng chạm đá viên lách cách trong ly).
+       - `shake_liquid.ogg`: Lắc bình shaker khi **KHÔNG CÓ ĐÁ** (Dry Shake - tiếng chất lỏng vỗ sóng sánh mạnh trong bình kín).
+       - `shake_ice.ogg`: Lắc bình shaker khi **CÓ ĐÁ VIÊN** (tiếng đá xóc lách cách rộn rã trong bình kim loại).
+       - `brew_drink.ogg`: Hãm nước sôi nóng hổi (tiếng rót nước sôi và tiếng xì hơi nước bốc khói).
+  3. **Vật Lý & Hóa Học Vị Giác Cảm Quan Đồ Uống (`kind: 'beverage'`)**:
+     - Tạo ra thực thể thức uống hoàn chỉnh với `texture = 'drink'`.
+     - Tự động nhận diện cờ vật lý `hasIce = true` khi trong thành phần có đá viên (`ice_cubes`).
+     - Khi thực khách thưởng thức (`feedCharacter`):
+       - Nếu có đá (`hasIce: true`) $\rightarrow$ phát âm thanh hút rột rột lách cách đá viên `drink_with_ice.ogg`.
+       - Nếu không đá (`hasIce: false`) $\rightarrow$ phát âm thanh uống ừng ực thanh mát `drink.ogg`.
+     - Tác động cảm quan vật lý tự nhiên:
+       - Có đá: làm dịu độ gắt của vị đắng, ngọt, chua (`* 0.88`) và tăng cảm giác thanh mát sảng khoái.
+       - Hãm nóng: làm dậy hương thơm nồng nàn (`aroma += 1.8`) và vị đắng đậm sâu lắng.
+       - Lắc shaker: tăng độ sánh bọt và béo bùi (`aroma += 1.2`, `fatty *= 1.08`).
+  4. **Nâng Cấp Bộ Máy Đánh Giá Cảm Quan (`generateSensoryTastingReview`)**:
+     - Thêm nhánh miêu tả cấu trúc đồ uống chân thực:
+       - Hãm nóng: `Món '[Tên món]' được hãm nóng bốc khói thơm nồng từ [100% nguyên liệu]...`
+       - Lắc shaker: `Món '[Tên món]' được lắc bình shaker sủi bọt mát lạnh sảng khoái từ [100% nguyên liệu]...`
+       - Khuấy ly: `Món '[Tên món]' được pha chế khuấy đều mát lạnh sảng khoái từ [100% nguyên liệu]...`
+     - Tuyệt đối không gán ghép công thức cứng, phản ánh trung thực 100% tên món do người chơi đặt và danh sách nguyên liệu/gia vị đã nêm.
+  5. **Mở Rộng Kho Nguyên Liệu Lên 87 Món (+2 Nguyên Liệu Nước & Trà)**:
+     - 💧 **Nước lọc tinh khiết** (`pure_water`): Nước lọc trong veo thanh mát, dùng pha loãng cà phê, châm trà, pha nước chanh đường.
+     - 🍃 **Lá trà xanh tươi non** (`green_tea_leaves`): Búp trà xanh tươi mơn mởn, vị chát thanh hậu ngọt sâu lắng.
+  6. **Đồ Họa Canvas 2D Quầy Bar Pha Chế & Trợ Năng WCAG 2.2 AAA**:
+     - Vẽ quầy bar gỗ sang trọng, thảm cao su đen chống trượt, ly thủy tinh pha chế ở trung tâm với mực nước màu sắc động và đá viên nổi bồng bềnh.
+     - Phím tắt bàn phím toàn diện: `C` (Khuấy), `S` (Lắc shaker), `B` (Hãm nóng) được thông báo rõ ràng cho NVDA.
+  7. **Kiểm Thử Tự Động Toàn Diện 7 Kịch Bản Đồ Uống (`test_beverage_station.js`)**:
+     - Kiểm thử thành công 100% các kịch bản:
+       - *Kịch bản 1 (Cà phê phin nguyên chất hãm nóng)*: `brew_drink.ogg` $\rightarrow$ `drink.ogg`, không có sữa, không có đá.
+       - *Kịch bản 2 (Cà phê phin + Sữa đặc + Đá viên khuấy ly)*: `stir_ice.ogg` $\rightarrow$ `drink_with_ice.ogg`, liệt kê đủ 100% nguyên liệu.
+       - *Kịch bản 3 (Trà xanh + Nước lọc + Chanh + Mật ong + Đá lắc shaker)*: `shake_ice.ogg` $\rightarrow$ `drink_with_ice.ogg`.
+       - *Kịch bản 4 (Sữa tươi + Ca-cao KHÔNG ĐÁ khuấy & lắc)*: `stir_liquid.ogg` & `shake_liquid.ogg` $\rightarrow$ `drink.ogg`.
+       - *Kịch bản 5 (Cà phê + Bò sống + Ớt + Mắm + Đá)*: Nhận diện phản ứng gag hốt hoảng thịt sống tanh của Toca Kitchen.
+       - *Kịch bản 6 (Cà phê + Khoai lang mật chín + Đá)*: Lắc shaker đá mát lạnh, liệt kê 100% nguyên liệu.
+     - Kết quả kiểm thử: **40/40 TESTS PASS (100%)**.
+  8. **Đặc Tính Nhiệt Động Học: Nước Sôi Làm Tan Chảy Hoàn Toàn Đá Viên (`iceMelted`)**:
+     - *Hiện tượng vật lý*: Khi chọn thao tác **♨️ Hãm Trà & Cà Phê Nước Nóng (`brew_infuse`)** mà trong ly có **Đá Viên (`ice_cubes`)** (hoặc khi đun nấu trong Nồi luộc, Chảo chiên, Lò nướng): Nhiệt lượng nước sôi 90°C–100°C lập tức làm tan chảy toàn bộ đá viên thành nước lỏng.
+     - *Trạng thái vật lý*: Cờ `hasIce` tự động chuyển thành `false` (vì không còn đá viên rắn), kích hoạt cờ `iceMelted = true`.
+     - *Nhiệt độ dung dịch*: Cân bằng nhiệt hạ xuống thành nước ấm dịu thanh mát (~40°C), làm dịu độ đậm đặc nhưng hòa quyện êm dịu (`sweet *= 0.92`, `bitter *= 0.92`, `aroma += 1.2`).
+     - *Âm thanh khi thưởng thức*: Tự động chuyển sang phát tiếng uống nước ấm không đá `drink.ogg` (vì không còn đá viên để hút lách cách).
+     - *Thông báo NVDA & Nhận xét cảm quan*:
+       - NVDA: `"Nước sôi nóng hổi đã làm tan chảy toàn bộ đá viên! Hòa quyện thành thức uống '[Tên món]' ấm dịu thanh mát."`
+       - Thực khách nhận xét: `"Món '[Tên món]' được hãm nước sôi làm tan chảy hoàn toàn đá viên, tạo nên thức uống ấm dịu thanh mát từ [100% nguyên liệu]..."`.
+     - *Bổ sung Kịch bản 8 vào bộ kiểm thử*: Nâng tổng số bài test lên tuyệt đối **45/45 TESTS PASS (100%)**.

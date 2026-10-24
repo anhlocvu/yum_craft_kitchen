@@ -393,11 +393,11 @@
           <div class="flex items-center justify-between">
             <h3 id="heading-station-picker" class="text-xs sm:text-sm font-extrabold text-stone-700 uppercase tracking-wider font-game flex items-center gap-1.5">
               <span aria-hidden="true">🛠️</span>
-              <span>1. Chọn Dụng Cụ Nấu (9 Dụng Cụ)</span>
+              <span>1. Chọn Dụng Cụ Nấu (10 Dụng Cụ)</span>
             </h3>
           </div>
-          <!-- 9 Cooking Tools Grid -->
-          <div id="station-selector-grid" class="grid grid-cols-3 sm:grid-cols-9 gap-1.5" role="toolbar" aria-label="Chọn 1 trong 9 công cụ nấu ăn">
+          <!-- 10 Cooking Tools Grid -->
+          <div id="station-selector-grid" class="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-1.5" role="toolbar" aria-label="Chọn 1 trong 10 công cụ nấu ăn">
             <!-- Populated by JS -->
           </div>
         </section>
@@ -797,6 +797,8 @@
             <ul class="space-y-1 font-medium">
               <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">C</kbd>: Chế biến / Nấu tại bếp hiện tại</li>
               <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">R</kbd>: Cuốn tròn (ở Bàn Cuốn) hoặc Nhồi kẹp (ở Trạm Nhồi)</li>
+              <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">S</kbd>: Lắc bình Shaker (tại Trạm Pha Chế)</li>
+              <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">B</kbd>: Hãm trà &amp; cà phê nước nóng (tại Trạm Pha Chế)</li>
               <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">T</kbd>: Cất đồ từ Bếp ra Khay Tạm</li>
               <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">P</kbd>: ⭐ Hoàn Thành Món Ăn &amp; Đặt Tên (khi có đồ ăn)</li>
               <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">F</kbd>: 🥄 Đút cho Thực Khách Ăn</li>
@@ -815,7 +817,7 @@
             <li><strong>Thịt bò cuộn pate:</strong> Lấy Thịt bò và Pate từ tủ bỏ vào Bàn Cuốn -> Chọn Thịt bò làm vỏ ngoài -> Bấm Phím R để cuộn! Có thể chuyển ra Khay Tạm rồi cho vào Vỉ Nướng Than để nướng thơm lừng!</li>
             <li><strong>Bánh mì nhồi xúc xích pate:</strong> Bỏ Ổ Bánh Mì, Xúc Xích, Pate vào Trạm Nhồi -> Bấm Phím R để nhồi đẫm ruột -> Cho vào Lò Nướng nướng nóng giòn!</li>
             <li><strong>Kẹo hồ lô (Tanghulu) &amp; Bánh bọc đường:</strong> Cho Dâu tây, Nho hoặc Chuối vào Chảo Chiên cùng Đường cát trắng hoặc Đường nâu -> Thắng đường chảy caramel bọc ngoài hoa quả tạo lớp vỏ kẹo giòn bóng bẩy!</li>
-            <li><strong>Cà phê sữa đá &amp; Bạc xỉu:</strong> Lấy Cà phê phin hoặc Espresso cho vào Máy Xay cùng Sữa tươi, Sữa đặc và Đá viên -> Bấm Xay để có ly cà phê đá xay tuyết béo ngậy!</li>
+            <li><strong>Pha chế đồ uống tự do:</strong> Chọn Trạm Pha Chế Đồ Uống (Dụng cụ 10) -> Cho Cà phê, Trà, Sữa, Đá viên hoặc bất kỳ nguyên liệu nào -> Bấm Khuấy Ly (C), Lắc Shaker (S) hoặc Hãm Nước Nóng (B) để tự do sáng tạo đồ uống!</li>
             <li><strong>Chè đường phèn thanh mát:</strong> Bỏ Hạt sen tươi, Lê và Đường phèn vào Nồi Luộc &amp; Hầm để nấu món chè ngọt mát thanh lọc cơ thể!</li>
             <li><strong>Quy tắc bày dĩa:</strong> Sau khi hoàn thành món, toàn bộ đồ ăn sẽ được dọn sạch khỏi bếp và bày biện đẹp mắt lên dĩa ở Tab 5 để bạn đút cho khách ăn!</li>
           </ul>
@@ -1133,6 +1135,18 @@
         needsCooking: false,
         flavorDesc: 'Mát lạnh tê lưỡi, xay nhuyễn thành đá tuyết giải khát cực đã',
         flavors: { umami: 0.0, salty: 0.0, sweet: 0.0, sour: 0.0, spicy: 0.0, fatty: 0.0, bitter: 0.0, aroma: 1.0, crunch: 3.0 }
+      },
+      {
+        id: 'pure_water',
+        name: 'Nước lọc tinh khiết',
+        category: 'sweets',
+        emoji: '💧',
+        color: '#bae6fd',
+        cookedColor: '#e0f2fe',
+        needsCooking: false,
+        flavorDesc: 'Nước lọc trong veo tinh khiết thanh khiết, dùng để pha loãng cốt cà phê, châm trà, pha nước chanh đường',
+        canBeWrapper: false,
+        flavors: { umami: 0.0, salty: 0.0, sweet: 0.2, sour: 0.0, spicy: 0.0, fatty: 0.0, bitter: 0.0, aroma: 0.4, crunch: 0.0 }
       },
       {
         id: 'malt_syrup',
@@ -1734,6 +1748,18 @@
         canBeWrapper: false,
         flavors: { umami: 0.4, salty: 0.0, sweet: 1.8, sour: 0.2, spicy: 0.0, fatty: 1.2, bitter: 2.2, aroma: 3.0, crunch: 0.0 }
       },
+      {
+        id: 'green_tea_leaves',
+        name: 'Lá trà xanh tươi non',
+        category: 'sweets',
+        emoji: '🍃',
+        color: '#15803d',
+        cookedColor: '#166534',
+        needsCooking: false,
+        flavorDesc: 'Lá trà xanh tươi non búp mơn mởn, vị chát thanh dịu và hậu ngọt đượm đà sâu lắng, hãm trà nóng hoặc lắc trà đá thanh nhiệt',
+        canBeWrapper: false,
+        flavors: { umami: 0.8, salty: 0.0, sweet: 0.4, sour: 0.2, spicy: 0.0, fatty: 0.0, bitter: 2.8, aroma: 4.8, crunch: 0.1 }
+      },
 
       // 11. CÁC LOẠI ĐẬU, HẠT & CỦ SEN (BEANS, LOTUS SEEDS & ROOTS - NEW!)
       {
@@ -2024,6 +2050,20 @@
         desc: 'Xay nhuyễn sinh tố, sữa sô-cô-la oreo đá tuyết hoặc xay sốt sánh mịn',
         actions: [
           { id: 'blend_smooth', label: '🌪️ Bấm Máy Xay Nhuyễn (C)', desc: 'Xay mịn tất cả thành sinh tố / sốt' }
+        ]
+      },
+      {
+        id: 'beverage_station',
+        name: 'Trạm Pha Chế Đồ Uống',
+        shortName: '10. Pha Chế',
+        emoji: '🍹',
+        temp: '25°C (Pha chế)',
+        desc: 'Khuấy ly, lắc bình shaker hoặc hãm nóng cà phê, trà, sữa và mọi thức uống tự do',
+        isBeverageStation: true,
+        actions: [
+          { id: 'stir_pour', label: '🥄 Khuấy Đều & Rót Ly (C)', desc: 'Khuấy đều các thành phần trong ly thủy tinh' },
+          { id: 'shake_shaker', label: '🫨 Lắc Bình Shaker (S)', desc: 'Lắc mạnh trong bình shaker để hòa tan và sủi bọt' },
+          { id: 'brew_infuse', label: '♨️ Hãm Trà & Cà Phê Nóng (B)', desc: 'Rót nước sôi hãm nóng chiết xuất hương vị bốc khói' }
         ]
       }
     ];
@@ -2450,12 +2490,21 @@
      *************************************************************************/
     function determineDefaultTexture(ing) {
       if (ing.texture) return ing.texture;
-      if (ing.id === 'milk' || ing.id === 'ice_cubes' || ing.id === 'brewed_coffee' || ing.id === 'espresso') return 'drink';
+      if (ing.id === 'milk' || ing.id === 'ice_cubes' || ing.id === 'pure_water' || ing.id === 'brewed_coffee' || ing.id === 'espresso') return 'drink';
       const crispyIds = ['instant_ramen', 'roasted_peanuts', 'taco_shell', 'banh_mi_vn', 'croissant', 'oreo', 'cucumber', 'guava', 'june_plum', 'fried_shallots', 'lotus_root'];
       if (crispyIds.includes(ing.id) || (ing.flavors && ing.flavors.crunch >= 2.5)) {
         return 'crispy';
       }
       return 'soft';
+    }
+
+    function itemContainsIce(item) {
+      if (!item) return false;
+      if (item.hasIce) return true;
+      if (item.id === 'ice_cubes' || item.baseId === 'ice_cubes') return true;
+      if (item.subItems && item.subItems.some(sub => itemContainsIce(sub))) return true;
+      if (item.innerItems && item.innerItems.some(inner => itemContainsIce(inner))) return true;
+      return false;
     }
 
     function createFoodItem(ing) {
@@ -2502,11 +2551,20 @@
         deep_fried: 'chiên ngập dầu',
         baked: 'đút lò nướng',
         grilled: 'nướng than hoa',
-        blended: 'xay sinh tố'
+        blended: 'xay sinh tố',
+        stirred: 'khuấy ly',
+        shaken: 'lắc shaker',
+        brewed: 'hãm nóng'
       };
 
       if (item.cookMethod === 'blended') {
         parts.push('xay sánh mịn');
+      } else if (item.cookMethod === 'stirred') {
+        parts.push('khuấy đều');
+      } else if (item.cookMethod === 'shaken') {
+        parts.push('lắc sủi bọt');
+      } else if (item.cookMethod === 'brewed') {
+        parts.push('hãm nóng bốc khói');
       } else if (item.cookLevel === 0) {
         parts.push(item.needsCooking ? 'còn sống' : 'tươi ngon');
       } else if (item.cookLevel === 1) {
@@ -2583,6 +2641,7 @@
         if (it.kind === 'rolled') allStructures.add('rolled');
         else if (it.kind === 'stuffed') allStructures.add('stuffed');
         else if (it.kind === 'blended') allStructures.add('blended');
+        else if (it.kind === 'beverage') allStructures.add('beverage');
         else allStructures.add('loose');
 
         if (it.isFreshBalancer && it.cookLevel <= 1) hasFreshBalancer = true;
@@ -3126,7 +3185,7 @@
         const isSweetDrink = state.stationItems.every(i => i.category === 'sweets' || i.category === 'veg' || i.baseId === 'milk' || i.baseId === 'chocolate' || i.baseId === 'oreo');
         const defaultBlendName = `${names.slice(0, 3).join(' & ')} (xay nhuyễn)`;
 
-        const hasIceInBlender = state.stationItems.some(i => i.id === 'ice_cubes' || i.baseId === 'ice_cubes');
+        const hasIceInBlender = state.stationItems.some(i => itemContainsIce(i));
 
         const blendedItem = {
           uid: state.nextItemUid++,
@@ -3155,6 +3214,146 @@
         state.isCookingBusy = false;
         const coldBlendedPhrase = hasIceInBlender ? 'mát lạnh' : 'thơm ngon';
         announceNVDA(`Máy xay đã xay nhuyễn tất cả thành món "${blendedItem.name}" sánh mịn ${coldBlendedPhrase}!`, 'polite');
+        renderAll();
+        return;
+      }
+
+      // 4b. Trạm Pha Chế Đồ Uống (Beverage Station) - PLAY WAIT VỚI 5 ÂM THANH FOLEY TỰ NHIÊN
+      if (actionId === 'stir_pour' || actionId === 'shake_shaker' || actionId === 'brew_infuse') {
+        state.isCookingBusy = true;
+        state.stationActionFlash = 45;
+        state.stationActionType = actionId;
+        renderWorkbench();
+
+        // Nhận diện đá viên đa tầng (kể cả khi thức uống đã qua khuấy/lắc trước đó)
+        const hadIce = state.stationItems.some(i => itemContainsIce(i));
+        const isBrewing = actionId === 'brew_infuse';
+        // Nước sôi 90-100°C làm tan chảy toàn bộ đá viên!
+        const iceMelted = isBrewing && hadIce;
+        const hasIce = hadIce && !isBrewing;
+
+        let soundFile = 'stir_liquid.ogg';
+        let actionVerb = 'khuấy đều';
+        let method = 'stirred';
+
+        if (actionId === 'stir_pour') {
+          soundFile = hasIce ? 'stir_ice.ogg' : 'stir_liquid.ogg';
+          actionVerb = 'khuấy đều trong ly thủy tinh';
+          method = 'stirred';
+        } else if (actionId === 'shake_shaker') {
+          soundFile = hasIce ? 'shake_ice.ogg' : 'shake_liquid.ogg';
+          actionVerb = 'lắc bình shaker sủi bọt';
+          method = 'shaken';
+        } else if (actionId === 'brew_infuse') {
+          soundFile = 'brew_drink.ogg';
+          actionVerb = 'hãm nước sôi nóng hổi';
+          method = 'brewed';
+        }
+
+        await playExternalAudio(soundFile, true);
+
+        // Bảo toàn danh sách nguyên liệu gốc khi thao tác liên tiếp (không lồng thức uống vào thức uống)
+        const isContinuousBeverage = state.stationItems.length === 1 && state.stationItems[0].kind === 'beverage';
+        const sourceItems = isContinuousBeverage && state.stationItems[0].subItems && state.stationItems[0].subItems.length > 0
+          ? state.stationItems[0].subItems
+          : state.stationItems;
+
+        const names = sourceItems.map(i => i.name);
+        const combinedFlavors = { umami: 0, salty: 0, sweet: 0, sour: 0, spicy: 0, fatty: 0, bitter: 0, aroma: 1.0, crunch: 0.0 };
+        const combinedSpices = [];
+        let anyRaw = false;
+
+        state.stationItems.forEach(item => {
+          Object.keys(combinedFlavors).forEach(k => {
+            combinedFlavors[k] += (item.flavors[k] || 0) * 0.9;
+          });
+          if (item.needsCooking && item.cookLevel === 0 && actionId !== 'brew_infuse') anyRaw = true;
+          (item.spicesApplied || []).forEach(sp => combinedSpices.push({ ...sp, cookedIn: true }));
+          if (item.subItems) {
+            item.subItems.forEach(sub => {
+              (sub.spicesApplied || []).forEach(sp => combinedSpices.push({ ...sp, cookedIn: true }));
+            });
+          }
+        });
+
+        // Tác động vật lý cảm quan:
+        if (hasIce) {
+          combinedFlavors.sweet *= 0.88;
+          combinedFlavors.bitter *= 0.88;
+          combinedFlavors.sour *= 0.88;
+          combinedFlavors.aroma += 0.5;
+        } else if (iceMelted) {
+          // Đá viên tan chảy làm loãng nhẹ độ đậm đặc nhưng hòa quyện êm dịu
+          combinedFlavors.sweet *= 0.92;
+          combinedFlavors.bitter *= 0.92;
+          combinedFlavors.aroma += 1.2;
+        }
+        if (actionId === 'brew_infuse') {
+          combinedFlavors.aroma += 1.8;
+          combinedFlavors.bitter += 0.3;
+        }
+        if (actionId === 'shake_shaker') {
+          combinedFlavors.aroma += 1.2;
+          combinedFlavors.fatty *= 1.08;
+        }
+
+        // Tự do ghép tên từ chính các nguyên liệu, kết hợp thao tác liên tiếp
+        let methodLabel = actionId === 'brew_infuse' ? 'hãm nóng' : (actionId === 'shake_shaker' ? 'lắc shaker' : 'khuấy ly');
+        if (isContinuousBeverage) {
+          const prevMethod = state.stationItems[0].cookMethod;
+          if (prevMethod === 'stirred' && actionId === 'shake_shaker') methodLabel = 'khuấy & lắc bọt';
+          else if (prevMethod === 'shaken' && actionId === 'stir_pour') methodLabel = 'lắc & khuấy đều';
+          else if (prevMethod === 'brewed' && actionId === 'shake_shaker') methodLabel = 'hãm nóng & lắc bọt';
+        }
+        const defaultBeverageName = `${names.join(' & ')} (${methodLabel})`;
+
+        // Emoji linh hoạt
+        let beverageEmoji = '🍹';
+        if (hasIce) beverageEmoji = '🧋';
+        else if (actionId === 'brew_infuse') beverageEmoji = '☕';
+        else if (state.stationItems.some(i => i.baseId === 'milk' || i.baseId === 'condensed_milk')) beverageEmoji = '🥛';
+        else if (state.stationItems.some(i => i.baseId === 'green_tea_leaves')) beverageEmoji = '🍵';
+
+        const beverageItem = {
+          uid: state.nextItemUid++,
+          kind: 'beverage',
+          baseId: 'beverage_mix',
+          name: defaultBeverageName,
+          emoji: beverageEmoji,
+          category: 'sweets',
+          color: state.stationItems[0].color,
+          cookedColor: state.stationItems[0].cookedColor,
+          needsCooking: anyRaw,
+          isFreshBalancer: state.stationItems.some(i => i.isFreshBalancer),
+          cutState: 'whole',
+          cookLevel: anyRaw ? 0 : 1,
+          cookMethod: method,
+          texture: 'drink',
+          hasIce: hasIce,
+          iceMelted: iceMelted,
+          outerTexture: null,
+          spicesApplied: combinedSpices,
+          subItems: [...sourceItems],
+          outerItem: null,
+          flavors: combinedFlavors
+        };
+
+        state.stationItems = [beverageItem];
+        state.isCookingBusy = false;
+        let tempPhrase = 'thanh mát';
+        if (iceMelted) {
+          tempPhrase = 'ấm dịu vừa miệng (do nước sôi đã làm tan chảy toàn bộ đá viên)';
+        } else if (hasIce) {
+          tempPhrase = 'mát lạnh sảng khoái';
+        } else if (isBrewing) {
+          tempPhrase = 'nóng hổi bốc khói';
+        }
+
+        if (iceMelted) {
+          announceNVDA(`Nước sôi nóng hổi đã làm tan chảy toàn bộ đá viên! Hòa quyện thành thức uống "${beverageItem.name}" ấm dịu thanh mát.`, 'polite');
+        } else {
+          announceNVDA(`Đã ${actionVerb} thành thức uống "${beverageItem.name}" ${tempPhrase}!`, 'polite');
+        }
         renderAll();
         return;
       }
@@ -3209,6 +3408,9 @@
               if (item.cookLevel >= 1) sub.needsCooking = false;
             });
           }
+
+          // Nhiệt độ cao làm tan chảy đá viên
+          item.hasIce = false;
 
           // Cập nhật thuộc tính texture cảm quan động theo phương pháp nấu nhiệt
           if (heat.method === 'deep_fried') {
@@ -3574,6 +3776,7 @@
       const rolledItem = items.find(it => it.kind === 'rolled');
       const stuffedItem = items.find(it => it.kind === 'stuffed');
       const blendedItem = items.find(it => it.kind === 'blended' || it.cookMethod === 'blended');
+      const beverageItem = items.find(it => it.kind === 'beverage' || it.cookMethod === 'stirred' || it.cookMethod === 'shaken' || it.cookMethod === 'brewed');
 
       const methodToText = (m, level, needsCooking = false) => {
         if (!level || level === 0 || m === 'none') {
@@ -3665,6 +3868,26 @@
         const hasIce = (blendedItem.subItems || items).some(i => i.id === 'ice_cubes' || i.baseId === 'ice_cubes');
         const coldPhrase = hasIce ? 'mát lạnh ' : '';
         structureDesc = `${subject} được xay nhuyễn sánh mịn ${coldPhrase}từ ${ingNames || 'các nguyên liệu'}`;
+      } else if (beverageItem) {
+        const subList = (beverageItem.subItems && beverageItem.subItems.length > 0)
+          ? beverageItem.subItems.filter(i => i.id !== 'ice_cubes')
+          : items.filter(i => i.id !== 'ice_cubes');
+        const ingNames = formatNaturalList(subList.map(i => i.name), 'và');
+        // Đồng bộ 100% với thuộc tính vật lý hasIce của ly thức uống và âm thanh ăn uống
+        const hasIce = !!beverageItem.hasIce;
+        const coldPhrase = hasIce ? 'mát lạnh sảng khoái ' : '';
+
+        if (beverageItem.cookMethod === 'brewed') {
+          if (beverageItem.iceMelted) {
+            structureDesc = `${subject} được hãm nước sôi làm tan chảy hoàn toàn đá viên, tạo nên thức uống ấm dịu thanh mát từ ${ingNames || 'các nguyên liệu'}`;
+          } else {
+            structureDesc = `${subject} được hãm nóng bốc khói thơm nồng từ ${ingNames || 'các nguyên liệu'}`;
+          }
+        } else if (beverageItem.cookMethod === 'shaken') {
+          structureDesc = `${subject} được lắc bình shaker sủi bọt ${coldPhrase}từ ${ingNames || 'các nguyên liệu'}`;
+        } else {
+          structureDesc = `${subject} được pha chế khuấy đều ${coldPhrase}từ ${ingNames || 'các nguyên liệu'}`;
+        }
       } else {
         const ingNames = formatNaturalList(items.map(i => i.name), 'cùng');
         const first = items[0];
@@ -4817,6 +5040,57 @@
         ctx.roundRect(W / 2 - 75, 26, 150, H - 46, 18);
         ctx.fill();
         ctx.stroke();
+      } else if (stId === 'beverage_station') {
+        // Quầy bar gỗ ấm áp & thảm cao su chống trượt
+        ctx.fillStyle = '#291811';
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = '#18181b';
+        ctx.beginPath();
+        ctx.roundRect(40, 26, W - 80, H - 48, 14);
+        ctx.fill();
+        ctx.strokeStyle = '#3f3f46';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // Ly thủy tinh cao / Bình pha chế ở trung tâm
+        const gx = W / 2 - 50;
+        const gy = 32;
+        const gw = 100;
+        const gh = H - 60;
+        ctx.fillStyle = 'rgba(240, 249, 255, 0.2)';
+        ctx.strokeStyle = 'rgba(186, 230, 253, 0.85)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.roundRect(gx, gy, gw, gh, 16);
+        ctx.fill();
+        ctx.stroke();
+
+        // Mực nước bên trong ly
+        if (state.stationItems.length > 0) {
+          const topCol = state.stationItems[0].color || '#d97706';
+          ctx.fillStyle = topCol;
+          ctx.globalAlpha = 0.55;
+          ctx.beginPath();
+          ctx.roundRect(gx + 6, gy + gh * 0.35, gw - 12, gh * 0.65 - 6, [0, 0, 12, 12]);
+          ctx.fill();
+          ctx.globalAlpha = 1.0;
+        }
+
+        // Đá viên nổi bồng bềnh nếu có đá
+        const hasIceInBar = state.stationItems.some(i => itemContainsIce(i));
+        if (hasIceInBar) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+          ctx.strokeStyle = '#38bdf8';
+          ctx.lineWidth = 1.5;
+          for (let i = 0; i < 3; i++) {
+            const ix = W / 2 - 25 + i * 20 + Math.sin(state.animTick * 0.05 + i) * 4;
+            const iy = gy + gh * 0.45 + (i % 2) * 22;
+            ctx.beginPath();
+            ctx.roundRect(ix, iy, 14, 14, 3);
+            ctx.fill();
+            ctx.stroke();
+          }
+        }
       }
 
       // Draw items in station
@@ -4843,6 +5117,7 @@
           ctx.beginPath();
           if (item.kind === 'rolled') ctx.roundRect(cx - 44, cy - 18, 88, 36, 16);
           else if (item.kind === 'stuffed') ctx.ellipse(cx, cy, 48, 24, 0, 0, Math.PI * 2);
+          else if (item.kind === 'beverage') ctx.roundRect(cx - 22, cy - 30, 44, 60, 10);
           else ctx.arc(cx, cy, item.cutState === 'minced' ? 16 : 22, 0, Math.PI * 2);
           ctx.fill();
           ctx.stroke();
@@ -5263,6 +5538,16 @@
             if (st && st.isRollingStation) performStationAction('roll_tight');
             else if (st && st.isStuffingStation) performStationAction('stuff_pack');
             else announceNVDA('Phím R dùng tại Bàn Cuốn hoặc Trạm Nhồi! Hãy chọn dụng cụ số 2 hoặc số 3.', 'polite');
+          } else if (k === 's') {
+            e.preventDefault();
+            const st = STATIONS.find(s => s.id === state.activeStationId);
+            if (st && st.isBeverageStation) performStationAction('shake_shaker');
+            else announceNVDA('Phím S dùng để Lắc bình Shaker tại Trạm Pha Chế Đồ Uống (Dụng cụ số 10)!', 'polite');
+          } else if (k === 'b') {
+            e.preventDefault();
+            const st = STATIONS.find(s => s.id === state.activeStationId);
+            if (st && st.isBeverageStation) performStationAction('brew_infuse');
+            else announceNVDA('Phím B dùng để Hãm trà & cà phê nước nóng tại Trạm Pha Chế Đồ Uống (Dụng cụ số 10)!', 'polite');
           } else if (k === 't') {
             e.preventDefault();
             moveStationToStaging();
