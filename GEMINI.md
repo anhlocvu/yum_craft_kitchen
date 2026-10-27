@@ -12,17 +12,16 @@
 # NHẬT KÝ DỰ ÁN — YUMCRAFT KITCHEN
 
 ## 1. Thông Tin Phiên Làm Việc Mới Nhất
-- **Ngày thực hiện**: 24/10/2026 (Phiên Nâng Cấp Chuỗi Thao Tác Vật Lý & Cảm Quan Đa Tầng)
+- **Ngày thực hiện**: 27/10/2026 (Phiên Nâng Cấp Hệ Thống Lịch Sử Nấu Ăn Nhận Diện Theo Từng Nhóm Nguyên Liệu & Tự Động Bảo Toàn Mẻ Nấu)
 - **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
-- **Mục tiêu**: 
-  1. Khắc phục triệt để lỗi ghi đè thao tác: Khi người chơi khuấy rồi lắc, hệ thống lưu đầy đủ cả 2 công đoạn (thay vì chỉ nhận mỗi bước lắc cuối cùng).
-  2. Khắc phục triệt để lỗi phân nhánh tĩnh: Khi người chơi lắc đồ uống rồi đem chiên ngập dầu/áp chảo/nướng lò, hệ thống nhận diện đầy đủ cả bước lắc và bước chiên ngập dầu (thay vì bị fallback thành "pha chế khuấy đều").
-  3. Xây dựng Kiến Trúc Chuỗi Thao Tác Vật Lý Tự Do (`actionHistory`): Hỗ trợ không giới hạn số lượng công đoạn (1, 2, 3, 4, 5, 6, 7+ bước liên tiếp: khuấy, lắc, xay, luộc, áp chảo, chiên ngập dầu, nướng lò, nướng than...) tuân thủ 100% triết lý Toca Kitchen Sandbox (Zero Hardcoded Recipes).
-  4. Xây dựng Động cơ kết nối tự nhiên tiếng Việt `formatActionHistoryChain`: Nối các bước bằng ngữ pháp chuẩn xác và sống động.
-  5. Đồng bộ chuyển hóa kết cấu vật lý và âm thanh thưởng thức: Món thức uống bị chiên giòn tự động chuyển sang `texture = 'crispy'` và kích hoạt âm thanh nhai giòn `eat_crispy_food.ogg`.
-  6. Bổ sung chuyển hóa nhiệt đường sữa đặc (`condensed_milk`) khi qua nhiệt độ cao trong `analyzeCulinaryChemistry`.
-  7. Tối ưu trợ năng NVDA: Thẻ trạng thái `describeItemStateShort` hiển thị tiến trình chuỗi thao tác bằng ký hiệu mũi tên `➔` trực quan.
-  8. Kiểm thử tự động toàn diện 29 kịch bản trong `test_culinary_engine_comprehensive.js` đạt kết quả tuyệt đối **29/29 TESTS PASS (100%)**.
+- **Mục tiêu**:
+  1. Khắc phục triệt để lỗi gộp chung lịch sử chế biến của toàn bộ nguyên liệu: Khi người chơi làm món nhiều thành phần trên nhiều công cụ khác nhau (ví dụ: món "Bò bít tết" với Khoai tây Đà Lạt đem chiên ngập dầu; Thịt bò thăn tươi, Xúc xích hun khói và Pate gan béo thơm đem áp chảo), hệ thống phân tách rõ ràng từng nhóm nguyên liệu với đúng công cụ đã chế biến nhóm đó, tuyệt đối không gán ghép sai thành tất cả nguyên liệu đều bị "chiên ngập dầu rồi đem áp chảo".
+  2. Xây dựng Cơ Chế Tự Do Điều Phối Mẻ Nấu (`100% Player-Controlled Batch & Multi-Step Mixing` - Phương án A):
+     - Nếu người chơi để nguyên `Khoai tây` đã chiên ngập dầu trên bếp rồi lấy thêm `Thịt bò sống` vào chảo để xào chung: cả hai cùng được áp chảo, trong đó `Khoai tây` mang lịch sử `['deep_fried', 'fried']` (*được chiên ngập dầu rồi đem áp chảo*), còn `Thịt bò` chỉ mang lịch sử `['fried']` (*được đem áp chảo*).
+     - Nếu người chơi muốn nấu riêng từng mẻ (bấm Phím `T` cất `Khoai tây` ra Khay Tạm rồi áp chảo `Thịt bò, Xúc xích, Pate`): `Khoai tây` giữ nguyên lịch sử `['deep_fried']`, nhóm thịt giữ nguyên lịch sử `['fried']`.
+  3. Xây dựng Động Cơ Gom Nhóm Nguyên Liệu Theo Lịch Sử Chế Biến (`groupItemsByCookingHistory`): Tự động gom các nguyên liệu có chung chuỗi thao tác (`actionHistory`) vào cùng một cụm và tách riêng các nguyên liệu nấu trên dụng cụ khác thành các mệnh đề độc lập, tự nhiên trong `generateSensoryTastingReview`.
+  4. Chuẩn hóa `describeItemStateShort` cho NVDA: Bổ sung ánh xạ tiếng Việt cho `sliced` (`thái lát`), `diced` (`thái hạt lựu`), `minced` (`băm nhuyễn`), `rolled` (`cuộn chặt`), `stuffed` (`nhồi nhân`), loại bỏ hoàn toàn hiện tượng lặp từ hoặc lọt chuỗi tiếng Anh.
+  5. Kiểm thử tự động toàn diện 14 kịch bản chuyên sâu (`test_batch_cooking_history.js`) đạt kết quả tuyệt đối **14/14 TESTS PASS (100%)**.
 
 ---
 
@@ -526,3 +525,36 @@
        - NVDA: `"Nước sôi nóng hổi đã làm tan chảy toàn bộ đá viên! Hòa quyện thành thức uống '[Tên món]' ấm dịu thanh mát."`
        - Thực khách nhận xét: `"Món '[Tên món]' được hãm nước sôi làm tan chảy hoàn toàn đá viên, tạo nên thức uống ấm dịu thanh mát từ [100% nguyên liệu]..."`.
      - *Bổ sung Kịch bản 8 vào bộ kiểm thử*: Nâng tổng số bài test lên tuyệt đối **45/45 TESTS PASS (100%)**.
+
+---
+
+## 15. Thông Tin Phiên Làm Việc: Nâng Cấp Hệ Thống Lịch Sử Nấu Ăn Nhận Diện Theo Từng Nhóm Nguyên Liệu & Tự Động Bảo Toàn Mẻ Nấu (27/10/2026)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Bối cảnh & Vấn đề giải quyết**:
+  1. *Lỗi gộp chung lịch sử nấu của mọi nguyên liệu trong món ăn*: Khi người chơi chế biến một món ăn gồm nhiều thành phần trên các dụng cụ khác nhau — ví dụ: làm món **"Bò bít tết"**, lấy Khoai tây đem chiên ngập dầu, sau đó lấy Thịt bò, Xúc xích và Pate đem áp chảo — hệ thống cũ chỉ lấy lịch sử của phần tử đầu tiên hoặc nối gộp tất cả thao tác lại và đọc chung chung: `"Món 'Bò bít tết' được chiên ngập dầu rồi đem áp chảo từ Khoai tây, Thịt bò, Xúc xích và Pate"`. Điều này sai thực tế vì khoai tây không hề được áp chảo và thịt bò/xúc xích/pate không hề bị chiên ngập dầu.
+  2. *Lỗi nấu đè mẻ cũ khi chuyển công cụ mà quên cất vào Khay Tạm*: Khi người chơi chiên khoai tây xong ở Chảo Chiên Ngập Dầu rồi chuyển thẳng sang Chảo Áp Chảo và lấy thêm thịt bò, xúc xích, pate vào áp chảo mà quên bấm nút cất khoai tây sang Khay Tạm, khoai tây bị áp chảo thêm một lần nữa và bị gán thêm `'fried'` vào `actionHistory`.
+  3. *Lỗi hiển thị chuỗi tiếng Anh `'sliced'` trong `describeItemStateShort`*: Khi nguyên liệu được sơ chế trên thớt (`sliced`, `diced`, `minced`) rồi đem nấu nhiệt, `methodMap` trong `describeItemStateShort` thiếu từ điển cho thao tác cắt dẫn đến hiển thị `"thái lát, sliced ➔ áp chảo/xào"`.
+- **Các giải pháp & kiến trúc kỹ thuật đã triển khai**:
+  1. **Cơ Chế Tự Do Điều Phối Mẻ Nấu 100% Theo Ý Đồ Người Chơi (Phương Án A — Chuẩn Toca Kitchen Sandbox)**:
+     - Tuyệt đối không tự ý đẩy ngầm nguyên liệu đang trên bếp sang Khay Tạm khi lấy thêm nguyên liệu sống mới.
+     - **Trường hợp Nấu Chung**: Khi người chơi chiên `Khoai tây` xong, giữ nguyên trên bếp và lấy thêm `Thịt bò sống` vào chảo để áp chảo chung:
+       - `Khoai tây` ghi nhận chuỗi 2 công đoạn `['deep_fried', 'fried']` $\rightarrow$ *"Khoai tây Đà Lạt được chiên ngập dầu rồi đem áp chảo xém cạnh giòn thơm"*.
+       - `Thịt bò` chỉ ghi nhận 1 công đoạn `['fried']` $\rightarrow$ *"Thịt bò thăn tươi được đem áp chảo chín tới vàng ươm"* (không bị gán nhầm là đã chiên ngập dầu).
+     - **Trường hợp Nấu Riêng Từng Mẻ**: Khi người chơi chiên `Khoai tây` xong, bấm **Phím `T`** cất ra **Khay Tạm** rồi lấy `Thịt bò, Xúc xích, Pate` vào áp chảo:
+       - `Khoai tây` giữ nguyên `['deep_fried']`, nhóm `Thịt bò, Xúc xích, Pate` giữ nguyên `['fried']`.
+     - Theo dõi `stationCookSteps` trên từng dụng cụ nhiệt để khi nấu chung nguyên liệu đã chín vàng từ công cụ trước với nguyên liệu sống ở công cụ mới (1–2 lần), nguyên liệu đã chín trước đó không bị cháy khét nhầm; chỉ khi đun quá lửa 3 lần trên cùng một dụng cụ mới kích hoạt cháy khét (`cookLevel = 3`).
+  2. **Động Cơ Gom Nhóm Nguyên Liệu Theo Lịch Sử Chế Biến (`groupItemsByCookingHistory`)**:
+     - Duyệt qua từng nguyên liệu trong món ăn, trích xuất chuỗi thao tác thực tế (`cleanActs`) và câu mô tả `actionDesc` từ `formatActionHistoryChain`.
+     - Các nguyên liệu có **cùng lịch sử chế biến** được gom vào chung 1 nhóm; các nguyên liệu chế biến trên **công cụ khác** được tách thành nhóm riêng theo đúng trình tự thời gian.
+     - Đối với đồ uống/sinh tố/món cuốn/món nhồi (`beverage`, `blended`, `rolled`, `stuffed`): Chỉ kế thừa các thao tác tiền xử lý vào cấp cha nếu **tất cả** nguyên liệu thành phần cùng trải qua thao tác đó; nếu chỉ một nguyên liệu con được nướng/nấu trước (ví dụ: Khoai lang mật nướng than hoa rồi đem lắc shaker cùng Cà phê và Đá viên), nguyên liệu đó giữ mô tả riêng `Khoai Lang Mật Tươi Nguyên Củ (được đem nướng than hoa chín tới thơm lừng)` mà không gán nhầm cho Cà phê.
+     - Ưu tiên chọn đúng vỏ bánh (`banh_mi_vn`, `burger_bun`, `taco_shell`, `croissant`) làm lớp vỏ ngoài (`outerVessel`) trong `stuff_pack` khi người chơi nhồi cùng xúc xích và thịt.
+  3. **Nâng Cấp Câu Cảm Quan Cấu Trúc Trong `generateSensoryTastingReview`**:
+     - Khi món ăn có 1 nhóm chế biến duy nhất: Giữ nguyên cấu trúc câu truyền thống để tương thích 100%.
+     - Khi món ăn có $\ge 2$ nhóm chế biến khác nhau (như món "Bò bít tết"):
+       - 2 nhóm: `Món 'Bò bít tết' kết hợp Khoai tây Đà Lạt được đem chiên ngập dầu vàng ươm giòn rụm, cùng với Thịt bò thăn tươi, Xúc xích hun khói và Pate gan béo thơm được đem áp chảo chín tới vàng ươm, có...`
+       - 3+ nhóm: Ngắt nhịp bằng dấu chấm phẩy `; ` giữa các nhóm và nối nhóm cuối bằng `, cùng với ...` giúp trình đọc màn hình NVDA ngắt nghỉ tự nhiên, rõ nghĩa.
+     - Hỗ trợ mô tả món ăn kèm trên dĩa (`, ăn kèm ...`) đối với các món cuốn/nhồi có kèm món phụ rời (như Bánh mì bít tết ăn kèm Khoai tây chiên ngập dầu).
+  4. **Chuẩn Hóa `describeItemStateShort` Cho Trợ Năng NVDA**:
+     - Bổ sung đầy đủ `sliced: 'thái lát'`, `diced: 'thái hạt lựu'`, `minced: 'băm nhuyễn'`, `rolled: 'cuộn chặt'`, `stuffed: 'nhồi nhân'` vào `methodMap` và loại bỏ việc đẩy trùng trạng thái cắt khi đã có trong chuỗi `➔`.
+  5. **Kiểm Thử Tự Động Toàn Diện (`test_batch_cooking_history.js`)**:
+     - Thực thi 14 bài kiểm thử tự động bao phủ kịch bản Bò bít tết (tự động bảo toàn mẻ & cất Khay Tạm thủ công), Bít tết thập cẩm 4 nhóm công cụ, Chuỗi 7 công đoạn liên hoàn, Cà phê khoai lang nướng lắc đá, Bánh mì nhồi nhân kèm khoai tây chiên, Bánh mì nhồi kép 2 nhóm nhân khác công cụ, và Thực đơn Combo 2 món: đạt kết quả tuyệt đối **14/14 TESTS PASS (100%)**.

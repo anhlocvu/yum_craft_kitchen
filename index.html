@@ -2158,7 +2158,8 @@
       stationActionType: '',
       charAnimState: 'idle',
       charAnimTimer: 0,
-      nextItemUid: 1
+      nextItemUid: 1,
+      nextBatchId: 1
     };
 
     /*************************************************************************
@@ -2524,6 +2525,9 @@
         cookLevel: 0, // 0 = raw/fresh, 1 = cooked, 2 = crispy brown, >=3 = burnt
         cookMethod: 'none',
         actionHistory: [], // Lưu tuần tự chuỗi phương pháp chế biến vật lý tự do (Toca Kitchen Sandbox)
+        lastStationId: null, // Dụng cụ chế biến gần nhất
+        batchId: null, // Mã lượt chế biến (nhận diện các nguyên liệu nấu chung một công cụ)
+        returnedFromStaging: false,
         texture: defTex, // 'soft' | 'crispy' | 'liquid' | 'drink'
         hasIce: ing.id === 'ice_cubes',
         outerTexture: null, // used for rolled and stuffed items
@@ -2536,17 +2540,24 @@
 
     function describeItemStateShort(item) {
       const parts = [];
+      const hasMultiStepHistory = item.actionHistory && item.actionHistory.length > 1;
+      const historyHasCut = hasMultiStepHistory && item.actionHistory.some(a => a === 'sliced' || a === 'diced' || a === 'minced');
       if (item.kind === 'rolled' && item.outerItem) {
         parts.push(`Cuộn trong ${item.outerItem.name}`);
       } else if (item.kind === 'stuffed' && item.outerItem) {
         parts.push(`Nhồi trong ${item.outerItem.name}`);
-      } else {
+      } else if (!historyHasCut) {
         if (item.cutState === 'sliced') parts.push('thái lát');
         else if (item.cutState === 'diced') parts.push('thái hạt lựu');
         else if (item.cutState === 'minced') parts.push('băm nhuyễn');
       }
 
       const methodMap = {
+        sliced: 'thái lát',
+        diced: 'thái hạt lựu',
+        minced: 'băm nhuyễn',
+        rolled: 'cuộn chặt',
+        stuffed: 'nhồi nhân',
         fried: 'áp chảo/xào',
         boiled: 'luộc/hầm',
         deep_fried: 'chiên ngập dầu',
@@ -2928,8 +2939,8 @@
         state.stagingItems.push(newItem);
         announceNVDA(`Đã lấy ${ing.name} bỏ vào Khay Tạm Chờ Sơ Chế.`, 'polite');
       } else {
-        const st = STATIONS.find(s => s.id === state.activeStationId);
         state.stationItems.push(newItem);
+        const st = STATIONS.find(s => s.id === state.activeStationId);
         announceNVDA(`Đã bỏ ${ing.name} vào ${st.name}. Hiện có ${state.stationItems.length} nguyên liệu trong dụng cụ.`, 'polite');
       }
       renderAll();
@@ -3000,11 +3011,14 @@
 
       // 1. Dao thớt (Slice, Dice, Mince) - PHÁT TỨC THÌ BẰNG food_cut.ogg, KHÔNG CẦN PLAY WAIT
       if (actionId === 'slice' || actionId === 'dice' || actionId === 'mince') {
+        const currentBatchId = state.nextBatchId++;
         playExternalAudio('food_cut.ogg', false);
         const cutMap = { slice: 'sliced', dice: 'diced', mince: 'minced' };
         const labelMap = { slice: 'thái lát mỏng', dice: 'thái hạt lựu', mince: 'băm nhuyễn' };
         state.stationItems.forEach(item => {
           item.cutState = cutMap[actionId];
+          item.lastStationId = state.activeStationId;
+          item.batchId = currentBatchId;
           if (!item.actionHistory) item.actionHistory = [];
           if (!item.actionHistory.includes(cutMap[actionId])) {
             item.actionHistory.push(cutMap[actionId]);
@@ -3065,15 +3079,11 @@
         const outerTexture = outerWrapper.texture === 'crispy' ? 'crispy' : 'soft';
 
         const inheritedRollActions = [...(outerWrapper.actionHistory || [])];
-        innerFillings.forEach(f => {
-          (f.actionHistory || []).forEach(act => {
-            if (!inheritedRollActions.includes(act)) inheritedRollActions.push(act);
-          });
-        });
         if (inheritedRollActions.length === 0 || inheritedRollActions[inheritedRollActions.length - 1] !== 'rolled') {
           inheritedRollActions.push('rolled');
         }
 
+        const currentBatchId = state.nextBatchId++;
         const rolledItem = {
           uid: state.nextItemUid++,
           kind: 'rolled',
@@ -3089,6 +3099,9 @@
           cookLevel: anyNeedsCooking ? 0 : Math.max(1, maxCookLevel),
           cookMethod: outerWrapper.cookMethod !== 'none' ? outerWrapper.cookMethod : 'none',
           actionHistory: inheritedRollActions,
+          lastStationId: state.activeStationId,
+          batchId: currentBatchId,
+          returnedFromStaging: false,
           texture: outerTexture,
           outerTexture: outerTexture,
           hasIce: outerWrapper.hasIce || innerFillings.some(i => i.hasIce),
@@ -3118,8 +3131,13 @@
 
         let vesselIdx = state.stationItems.findIndex(i => i.uid === state.selectedVesselUid);
         if (vesselIdx === -1) {
-          const preferred = state.stationItems.findIndex(i => i.canBeVessel || i.baseId === 'banh_mi_vn' || i.baseId === 'sausage' || i.baseId === 'burger_bun' || i.baseId === 'taco_shell' || i.baseId === 'bell_pepper' || i.baseId === 'squid' || i.baseId === 'oreo' || i.baseId === 'croissant' || i.baseId === 'lotus_root' || i.baseId === 'onion');
-          vesselIdx = preferred !== -1 ? preferred : 0;
+          const primaryVessel = state.stationItems.findIndex(i => i.baseId === 'banh_mi_vn' || i.baseId === 'burger_bun' || i.baseId === 'taco_shell' || i.baseId === 'croissant');
+          if (primaryVessel !== -1) {
+            vesselIdx = primaryVessel;
+          } else {
+            const preferred = state.stationItems.findIndex(i => i.canBeVessel || i.baseId === 'bell_pepper' || i.baseId === 'squid' || i.baseId === 'lotus_root' || i.baseId === 'onion' || i.baseId === 'oreo' || i.baseId === 'sausage');
+            vesselIdx = preferred !== -1 ? preferred : 0;
+          }
         }
 
         const [outerVessel] = state.stationItems.splice(vesselIdx, 1);
@@ -3153,15 +3171,11 @@
         const outerTexture = outerVessel.texture === 'crispy' ? 'crispy' : 'soft';
 
         const inheritedStuffActions = [...(outerVessel.actionHistory || [])];
-        innerStuffings.forEach(f => {
-          (f.actionHistory || []).forEach(act => {
-            if (!inheritedStuffActions.includes(act)) inheritedStuffActions.push(act);
-          });
-        });
         if (inheritedStuffActions.length === 0 || inheritedStuffActions[inheritedStuffActions.length - 1] !== 'stuffed') {
           inheritedStuffActions.push('stuffed');
         }
 
+        const currentBatchId = state.nextBatchId++;
         const stuffedItem = {
           uid: state.nextItemUid++,
           kind: 'stuffed',
@@ -3177,6 +3191,9 @@
           cookLevel: anyNeedsCooking ? 0 : 1,
           cookMethod: outerVessel.cookMethod !== 'none' ? outerVessel.cookMethod : 'none',
           actionHistory: inheritedStuffActions,
+          lastStationId: state.activeStationId,
+          batchId: currentBatchId,
+          returnedFromStaging: false,
           texture: outerTexture,
           outerTexture: outerTexture,
           hasIce: outerVessel.hasIce || innerStuffings.some(i => i.hasIce),
@@ -3225,17 +3242,23 @@
         const hasIceInBlender = state.stationItems.some(i => itemContainsIce(i));
 
         const inheritedBlendActions = [];
-        state.stationItems.forEach(item => {
-          (item.actionHistory || []).forEach(act => {
+        const nonIceBlendItems = state.stationItems.filter(i => i.id !== 'ice_cubes' && i.baseId !== 'ice_cubes');
+        const allShareSameBlendHistory = nonIceBlendItems.length > 0 && nonIceBlendItems.every(
+          i => JSON.stringify(i.actionHistory || []) === JSON.stringify(nonIceBlendItems[0].actionHistory || [])
+        );
+        if (state.stationItems.length === 1 || allShareSameBlendHistory) {
+          const refItem = nonIceBlendItems[0] || state.stationItems[0];
+          (refItem.actionHistory || []).forEach(act => {
             if (inheritedBlendActions.length === 0 || inheritedBlendActions[inheritedBlendActions.length - 1] !== act) {
               inheritedBlendActions.push(act);
             }
           });
-        });
+        }
         if (inheritedBlendActions.length === 0 || inheritedBlendActions[inheritedBlendActions.length - 1] !== 'blended') {
           inheritedBlendActions.push('blended');
         }
 
+        const currentBatchId = state.nextBatchId++;
         const blendedItem = {
           uid: state.nextItemUid++,
           kind: 'blended',
@@ -3251,6 +3274,9 @@
           cookLevel: anyRaw ? 0 : 1,
           cookMethod: 'blended',
           actionHistory: inheritedBlendActions,
+          lastStationId: state.activeStationId,
+          batchId: currentBatchId,
+          returnedFromStaging: false,
           texture: 'drink',
           hasIce: hasIceInBlender,
           outerTexture: null,
@@ -3349,13 +3375,18 @@
 
         // Kế thừa và bảo toàn chuỗi phương pháp chế biến liên tục (Toca Kitchen Sandbox)
         const inheritedBevActions = [];
-        state.stationItems.forEach(item => {
-          (item.actionHistory || []).forEach(act => {
+        const nonIceBevItems = state.stationItems.filter(i => i.id !== 'ice_cubes' && i.baseId !== 'ice_cubes');
+        const allShareSameBevHistory = nonIceBevItems.length > 0 && nonIceBevItems.every(
+          i => JSON.stringify(i.actionHistory || []) === JSON.stringify(nonIceBevItems[0].actionHistory || [])
+        );
+        if (state.stationItems.length === 1 || allShareSameBevHistory) {
+          const refItem = nonIceBevItems[0] || state.stationItems[0];
+          (refItem.actionHistory || []).forEach(act => {
             if (inheritedBevActions.length === 0 || inheritedBevActions[inheritedBevActions.length - 1] !== act) {
               inheritedBevActions.push(act);
             }
           });
-        });
+        }
         if (inheritedBevActions.length === 0 || inheritedBevActions[inheritedBevActions.length - 1] !== method) {
           inheritedBevActions.push(method);
         }
@@ -3382,6 +3413,7 @@
         else if (state.stationItems.some(i => i.baseId === 'milk' || i.baseId === 'condensed_milk')) beverageEmoji = '🥛';
         else if (state.stationItems.some(i => i.baseId === 'green_tea_leaves')) beverageEmoji = '🍵';
 
+        const currentBatchId = state.nextBatchId++;
         const beverageItem = {
           uid: state.nextItemUid++,
           kind: 'beverage',
@@ -3397,6 +3429,9 @@
           cookLevel: anyRaw ? 0 : 1,
           cookMethod: method,
           actionHistory: [...inheritedBevActions],
+          lastStationId: state.activeStationId,
+          batchId: currentBatchId,
+          returnedFromStaging: false,
           texture: 'drink',
           hasIce: hasIce,
           iceMelted: iceMelted,
@@ -3438,6 +3473,7 @@
 
       const heat = heatMethods[actionId];
       if (heat) {
+        const currentBatchId = state.nextBatchId++;
         state.isCookingBusy = true;
         state.stationActionFlash = 50;
         state.stationActionType = actionId;
@@ -3448,8 +3484,20 @@
         const descriptions = [];
 
         state.stationItems.forEach(item => {
-          item.cookLevel += 1;
+          const nonHeatMethods = ['none', 'stirred', 'shaken', 'brewed', 'blended', 'rolled', 'stuffed'];
+          if (nonHeatMethods.includes(item.cookMethod) || item.cookLevel === 0) {
+            item.stationCookSteps = 1;
+            item.cookLevel = 1;
+          } else if (item.cookMethod !== heat.method) {
+            item.stationCookSteps = 1;
+            item.cookLevel = Math.min(2, item.cookLevel + 1);
+          } else {
+            item.stationCookSteps = (item.stationCookSteps || item.cookLevel || 1) + 1;
+            item.cookLevel = item.stationCookSteps >= 3 ? 3 : 2;
+          }
           item.cookMethod = heat.method;
+          item.lastStationId = state.activeStationId;
+          item.batchId = currentBatchId;
           if (!item.actionHistory) item.actionHistory = [];
           if (item.actionHistory.length === 0 || item.actionHistory[item.actionHistory.length - 1] !== heat.method) {
             item.actionHistory.push(heat.method);
@@ -3484,10 +3532,8 @@
           if (item.innerItems && item.innerItems.length > 0) {
             item.innerItems.forEach(sub => {
               sub.cookLevel = Math.max(sub.cookLevel || 0, item.cookLevel);
-              sub.cookMethod = heat.method;
-              if (!sub.actionHistory) sub.actionHistory = [];
-              if (sub.actionHistory.length === 0 || sub.actionHistory[sub.actionHistory.length - 1] !== heat.method) {
-                sub.actionHistory.push(heat.method);
+              if (!sub.cookMethod || sub.cookMethod === 'none') {
+                sub.cookMethod = heat.method;
               }
               sub.spicesApplied.forEach(sp => { sp.cookedIn = true; });
               if (item.cookLevel >= 1) sub.needsCooking = false;
@@ -3563,6 +3609,7 @@
       const st = STATIONS.find(s => s.id === state.activeStationId);
       const count = state.stagingItems.length;
       const names = state.stagingItems.map(i => i.name).join(', ');
+      state.stagingItems.forEach(it => { it.returnedFromStaging = true; });
       state.stationItems.push(...state.stagingItems);
       state.stagingItems = [];
       announceNVDA(`Đã lấy ${count} món (${names}) từ Khay Tạm vào ${st.name} để chế biến tiếp!`, 'polite');
@@ -3621,7 +3668,7 @@
 
     function confirmPlatingDish() {
       const nameInput = document.getElementById('input-custom-dish-name');
-      const finishingItems = [...state.stationItems, ...state.stagingItems];
+      const finishingItems = [...state.stagingItems, ...state.stationItems];
       if (finishingItems.length === 0) return;
 
       const analysis = analyzeCulinaryChemistry(finishingItems);
@@ -3850,6 +3897,81 @@
       }
     }
 
+    // GOM NHÓM NGUYÊN LIỆU THEO LỊCH SỬ CHẾ BIẾN THỰC TẾ CỦA TỪNG MẺ NẤU (INGREDIENT-AWARE BATCH GROUPING)
+    function groupItemsByCookingHistory(items) {
+      if (!items || items.length === 0) return [];
+      const nonIceItems = items.filter(i => i.id !== 'ice_cubes' && i.baseId !== 'ice_cubes');
+      const targetItems = nonIceItems.length > 0 ? nonIceItems : items;
+      const anySiblingHasIce = items.some(i => itemContainsIce(i));
+
+      const groups = [];
+      const groupMap = new Map();
+
+      targetItems.forEach(it => {
+        const cleanActs = [];
+        if (it.actionHistory && it.actionHistory.length > 0) {
+          it.actionHistory.forEach(a => {
+            if (cleanActs.length === 0 || cleanActs[cleanActs.length - 1] !== a) cleanActs.push(a);
+          });
+        } else if (it.cookMethod && it.cookMethod !== 'none') {
+          cleanActs.push(it.cookMethod);
+        } else if (it.cutState && it.cutState !== 'whole') {
+          cleanActs.push(it.cutState);
+        }
+
+        const isDrinkOrBlended = it.kind === 'beverage' || it.kind === 'blended' || ['stirred', 'shaken', 'brewed', 'blended'].includes(it.cookMethod);
+        const hasIce = itemContainsIce(it) || (isDrinkOrBlended && anySiblingHasIce);
+        const iceMelted = !!it.iceMelted;
+        const needsCooking = !!it.needsCooking;
+        const cookLevel = it.cookLevel || 0;
+
+        const actionDesc = formatActionHistoryChain(cleanActs, cookLevel, hasIce, iceMelted, needsCooking);
+        const groupKey = `${cleanActs.join('>')}||${actionDesc}`;
+
+        let itemNames = [];
+        if (it.subItems && it.subItems.length > 0) {
+          const subFiltered = it.subItems.filter(s => s.id !== 'ice_cubes' && s.baseId !== 'ice_cubes');
+          const subTarget = subFiltered.length > 0 ? subFiltered : it.subItems;
+          itemNames = subTarget.map(sub => {
+            const subPre = [];
+            if (sub.actionHistory && sub.actionHistory.length > 0) {
+              sub.actionHistory.forEach(a => {
+                if (!cleanActs.includes(a) && (subPre.length === 0 || subPre[subPre.length - 1] !== a)) {
+                  subPre.push(a);
+                }
+              });
+            } else if (sub.cookMethod && sub.cookMethod !== 'none' && !cleanActs.includes(sub.cookMethod)) {
+              subPre.push(sub.cookMethod);
+            }
+            if (subPre.length > 0) {
+              const subPreDesc = formatActionHistoryChain(subPre, sub.cookLevel || 1, false, false, false);
+              return `${sub.name} (${subPreDesc})`;
+            }
+            return sub.name;
+          });
+        } else {
+          itemNames = [it.name];
+        }
+
+        if (!groupMap.has(groupKey)) {
+          const newGroup = {
+            key: groupKey,
+            actions: cleanActs,
+            actionDesc,
+            names: []
+          };
+          groupMap.set(groupKey, newGroup);
+          groups.push(newGroup);
+        }
+        const g = groupMap.get(groupKey);
+        itemNames.forEach(nm => {
+          if (!g.names.includes(nm)) g.names.push(nm);
+        });
+      });
+
+      return groups;
+    }
+
     // DYNAMIC SENSORY TASTING REVIEW (TOCA KITCHEN STYLE - NO HARDCODED RECIPES)
     function generateSensoryTastingReview(items, analysis, character, dishNameOverride = null) {
       if (!items || items.length === 0) {
@@ -3996,9 +4118,16 @@
         const innerList = (rolledItem.innerItems && rolledItem.innerItems.length > 0)
           ? rolledItem.innerItems
           : (rolledItem.subItems || []).filter(s => s !== rolledItem.outerItem && s.uid !== rolledItem.outerItem?.uid);
-        const inners = innerList.length > 0
-          ? formatNaturalList(innerList.map(s => s.name), 'và')
-          : 'nhân béo bùi';
+        const innerGroups = groupItemsByCookingHistory(innerList);
+        const cookedInnerGroups = innerGroups.filter(g => g.actions.length > 0);
+        let inners = 'nhân béo bùi';
+        if (innerList.length > 0) {
+          if (cookedInnerGroups.length >= 2) {
+            inners = innerGroups.map(g => g.actions.length > 0 ? `${formatNaturalList(g.names, 'và')} (${g.actionDesc})` : formatNaturalList(g.names, 'và')).join(' kết hợp cùng ');
+          } else {
+            inners = formatNaturalList(innerList.map(s => s.name), 'và');
+          }
+        }
 
         const outerSpicesList = getUniqueSpices(rolledItem.outerSpices || (rolledItem.outerItem && rolledItem.outerItem.spicesApplied));
         const innerSpicesList = getUniqueSpices(rolledItem.innerSpices || (rolledItem.innerItems && rolledItem.innerItems.flatMap(i => i.spicesApplied || [])));
@@ -4015,6 +4144,13 @@
         } else {
           structureDesc = `${subject} với ${outer} ${rollVerb}, cuộn trọn lớp ${inners} ở bên trong`;
         }
+
+        const extraSideItems = items.filter(it => it !== rolledItem);
+        if (extraSideItems.length > 0) {
+          const sideGroups = groupItemsByCookingHistory(extraSideItems);
+          const sidePhrases = sideGroups.map(g => `${formatNaturalList(g.names, 'và')} ${g.actionDesc}`);
+          structureDesc += `, ăn kèm ${formatNaturalList(sidePhrases, 'và')}`;
+        }
       } else if (stuffedItem) {
         const vessel = stuffedItem.outerItem ? stuffedItem.outerItem.name : stuffedItem.name;
         const vesselCook = methodToText(stuffedItem.cookMethod, stuffedItem.cookLevel, stuffedItem.outerItem?.needsCooking);
@@ -4022,9 +4158,16 @@
         const innerList = (stuffedItem.innerItems && stuffedItem.innerItems.length > 0)
           ? stuffedItem.innerItems
           : (stuffedItem.subItems || []).filter(s => s !== stuffedItem.outerItem && s.uid !== stuffedItem.outerItem?.uid);
-        const inners = innerList.length > 0
-          ? formatNaturalList(innerList.map(s => s.name), 'và')
-          : 'nhân đậm đà';
+        const innerGroups = groupItemsByCookingHistory(innerList);
+        const cookedInnerGroups = innerGroups.filter(g => g.actions.length > 0);
+        let inners = 'nhân đậm đà';
+        if (innerList.length > 0) {
+          if (cookedInnerGroups.length >= 2) {
+            inners = innerGroups.map(g => g.actions.length > 0 ? `${formatNaturalList(g.names, 'và')} (${g.actionDesc})` : formatNaturalList(g.names, 'và')).join(' kết hợp cùng ');
+          } else {
+            inners = formatNaturalList(innerList.map(s => s.name), 'và');
+          }
+        }
 
         const outerSpicesList = getUniqueSpices(stuffedItem.outerSpices || (stuffedItem.outerItem && stuffedItem.outerItem.spicesApplied));
         const innerSpicesList = getUniqueSpices(stuffedItem.innerSpices || (stuffedItem.innerItems && stuffedItem.innerItems.flatMap(i => i.spicesApplied || [])));
@@ -4041,42 +4184,35 @@
         } else {
           structureDesc = `${subject} với lớp vỏ ${vessel} ${cookVerb} bên ngoài, được nhồi đầy đặn nhân ${inners} bên trong`;
         }
-      } else {
-        // TẤT CẢ CÁC MÓN ĂN & ĐỒ UỐNG TỰ DO (TOCA KITCHEN SANDBOX: PHA CHẾ, XAY, NẤU NHIỆT, KẾT HỢP ĐA CÔNG ĐOẠN 1 ĐẾN 7+ BƯỚC)
-        const mainItem = items[0];
-        const subList = (mainItem && mainItem.subItems && mainItem.subItems.length > 0)
-          ? mainItem.subItems.filter(i => i.id !== 'ice_cubes' && i.baseId !== 'ice_cubes')
-          : items.filter(i => i.id !== 'ice_cubes' && i.baseId !== 'ice_cubes');
-        const ingNames = formatNaturalList(subList.map(i => i.name), 'và');
 
-        // Tập hợp toàn bộ lịch sử thao tác vật lý theo đúng thứ tự thời gian
-        let allActions = [];
-        if (mainItem && mainItem.actionHistory && mainItem.actionHistory.length > 0) {
-          allActions = [...mainItem.actionHistory];
-        } else {
-          items.forEach(it => {
-            (it.actionHistory || []).forEach(act => {
-              if (allActions.length === 0 || allActions[allActions.length - 1] !== act) {
-                allActions.push(act);
-              }
-            });
-            if (allActions.length === 0 && it.cookMethod && it.cookMethod !== 'none') {
-              allActions.push(it.cookMethod);
-            }
-          });
+        const extraSideItems = items.filter(it => it !== stuffedItem);
+        if (extraSideItems.length > 0) {
+          const sideGroups = groupItemsByCookingHistory(extraSideItems);
+          const sidePhrases = sideGroups.map(g => `${formatNaturalList(g.names, 'và')} ${g.actionDesc}`);
+          structureDesc += `, ăn kèm ${formatNaturalList(sidePhrases, 'và')}`;
         }
+      } else {
+        // TẤT CẢ CÁC MÓN ĂN & ĐỒ UỐNG TỰ DO (TOCA KITCHEN SANDBOX: GOM NHÓM NGUYÊN LIỆU THEO MẺ NẤU & LỊCH SỬ THAO TÁC 1 ĐẾN 7+ BƯỚC)
+        const groups = groupItemsByCookingHistory(items);
 
-        const maxLevel = Math.max(...items.map(i => i.cookLevel || 0));
-        const hasIce = items.some(i => itemContainsIce(i));
-        const iceMelted = items.some(i => i.iceMelted);
-        const needsCooking = items.some(i => i.needsCooking);
-
-        const actionsDesc = formatActionHistoryChain(allActions, maxLevel, hasIce, iceMelted, needsCooking);
-
-        if (allActions.length === 0) {
-          structureDesc = finalDishName ? `Món '${finalDishName}' (${ingNames}) ${actionsDesc}` : `${ingNames} ${actionsDesc}`;
+        if (groups.length <= 1) {
+          const g = groups[0] || { names: [], actions: [], actionDesc: 'tươi nguyên bản' };
+          const ingNames = formatNaturalList(g.names, 'và');
+          if (g.actions.length === 0) {
+            structureDesc = finalDishName ? `Món '${finalDishName}' (${ingNames}) ${g.actionDesc}` : `${ingNames} ${g.actionDesc}`;
+          } else {
+            structureDesc = `${subject} ${g.actionDesc} từ ${ingNames || 'các nguyên liệu'}`;
+          }
         } else {
-          structureDesc = `${subject} ${actionsDesc} từ ${ingNames || 'các nguyên liệu'}`;
+          const groupPhrases = groups.map(g => {
+            const gIngs = formatNaturalList(g.names, 'và');
+            return `${gIngs} ${g.actionDesc}`;
+          });
+          if (groupPhrases.length === 2) {
+            structureDesc = `${subject} kết hợp ${groupPhrases[0]}, cùng với ${groupPhrases[1]}`;
+          } else {
+            structureDesc = `${subject} kết hợp ${groupPhrases.slice(0, -1).join('; ')}, cùng với ${groupPhrases[groupPhrases.length - 1]}`;
+          }
         }
       }
 
@@ -4889,6 +5025,7 @@
         `;
         row.querySelector(`[data-to-st="${idx}"]`).addEventListener('click', () => {
           const [moved] = state.stagingItems.splice(idx, 1);
+          moved.returnedFromStaging = true;
           state.stationItems.push(moved);
           playSoundEffect('pick');
           announceNVDA(`Đã đưa ${moved.name} từ Khay Tạm vào Bếp.`, 'polite');
