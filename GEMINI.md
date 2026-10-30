@@ -12,6 +12,79 @@
 # NHẬT KÝ DỰ ÁN — YUMCRAFT KITCHEN
 
 ## 1. Thông Tin Phiên Làm Việc Mới Nhất
+- **Ngày thực hiện**: 31/10/2026 (Phiên Nâng Cấp Hệ Thống Bảng Quản Trị Máy Chủ & Thông Báo Trong Ngày - MOTD)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Mục tiêu hoàn thành**:
+  1. **Định danh Root Admin tối cao `lc_boy` (chữ thường 100%, không hoa)**:
+     - Khóa cứng chuỗi chính xác tuyệt đối: `ROOT_ADMIN_USERNAME = "lc_boy"`.
+     - Cơ chế chống mạo danh: Chặn đứng bất kỳ ai cố tình đăng ký biến thể hoa/thường (`LC_Boy`, `Lc_Boy`, `lc_Boy`, `LC_BOY`...).
+     - Bất khả xâm phạm: Không ai (kể cả admin khác) có quyền tước quyền, cấm nick, cấm IP hay xóa tài khoản `lc_boy`.
+  2. **Hiển thị có điều kiện nút `🛡️ Bảng Quản Trị` trên Menu Chính**:
+     - Tích hợp nút `#btn-menu-admin` vào cột căn giữa của `#screen-main-menu`, có huy hiệu `Admin` sang trọng.
+     - Nút chỉ hiển thị khi tài khoản đăng nhập là `lc_boy` hoặc có quyền `isAdmin: true`.
+  3. **Xây dựng module dịch vụ Quản trị `js/admin-service.js`**:
+     - `getAllUsers()`: Tải danh sách người chơi từ Firestore hoặc Mock DB, tự động ưu tiên Root Admin và Quản trị viên lên đầu danh sách.
+     - `toggleAdminRole()`: Thăng chức / Tước quyền Quản trị viên (bảo vệ `lc_boy` tuyệt đối).
+     - `banUser()`: Cấm tài khoản với lý do tùy chỉnh (mặc định "Không có lý do" nếu để trống), hỗ trợ cấm địa chỉ IP (`banIp`).
+     - `unbanUser()`: Gỡ cấm và mở khóa tài khoản.
+     - `adminResetPassword()`: Đổi mật khẩu cho người chơi (kiểm tra tối thiểu 8 ký tự).
+     - `deleteUserAccount()`: Xóa vĩnh viễn tài khoản khỏi Firestore và Mock DB (bảo vệ `lc_boy`).
+     - `getSystemMotd()`, `setSystemMotd()`, `hasUnreadMotd()`, `markMotdAsRead()`: Hệ thống Thông Báo Trong Ngày (MOTD).
+     - `getServerStats()`, `getMaintenanceMode()`, `setMaintenanceMode()`: Thống kê nhanh và Chế độ bảo trì máy chủ.
+  4. **Tích hợp kiểm tra bảo mật khi Đăng nhập (`js/auth-service.js`)**:
+     - Chặn người chơi bị cấm đăng nhập, hiển thị thông báo lý do chi tiết do Admin cung cấp.
+     - Chặn thiết bị có IP bị cấm.
+     - Chặn đăng nhập khi Chế độ bảo trì đang bật (chỉ Admin mới được truy cập).
+     - Tự động thu hồi phiên và đăng xuất ngay lập tức nếu tài khoản đang online bị Admin cấm.
+  5. **Hệ thống 8 Hộp thoại Quản Trị & Thông Báo Chuẩn WCAG 2.2 AAA (`index.html` & `js/main-menu.js`)**:
+     - `#modal-admin-panel`: Bảng điều khiển trung tâm với thống kê nhanh và công tắc bảo trì.
+     - `#modal-admin-users`: Danh sách tài khoản cuộn accessible với thanh tìm kiếm thời gian thực.
+     - `#modal-admin-user-action`: Thẻ chi tiết và bảng nút thao tác cho từng người chơi.
+     - `#modal-admin-ban-user`: Form cấm tài khoản, lý do và cấm IP.
+     - `#modal-admin-reset-pwd`: Form đổi mật khẩu bảo mật.
+     - `#modal-admin-delete-user`: Hộp thoại xác nhận cảnh báo xóa vĩnh viễn.
+     - `#modal-admin-motd`: Form soạn thảo thông báo máy chủ mới (ghi đè bản cũ).
+     - `#modal-motd-broadcast`: Hộp thoại phát thông báo tự động xuất hiện trước khi người chơi vào Menu Chính khi đăng nhập, có nút "Tôi đã đọc" để đánh dấu và không làm phiền lần đăng nhập sau.
+  6. **Kiểm thử tự động toàn diện**:
+     - Tạo file `tests/test_admin_system.js` với 10 bài kiểm thử chuyên sâu, đạt kết quả tuyệt đối **10/10 TESTS PASS (100%)**.
+  7. **Khắc phục lỗi cú pháp chặn đăng nhập & Kiểm thử trực tiếp trên trình duyệt Edge (`tests/test_browser_edge.js`)**:
+     - Phát hiện hàm `checkMockSession` trong `js/auth-service.js` bị thiếu từ khóa `async` khi gọi `await logoutUser()`, dẫn đến lỗi `SyntaxError: Unexpected reserved word` làm crash quá trình parse module của trình duyệt (khiến nút Đăng nhập không nhận sự kiện click).
+     - Đã sửa thành `const checkMockSession = async () => { ... }`.
+     - Chạy mô phỏng đăng nhập thực tế trên Edge Browser với tài khoản `locvuu2105@gmail.com` và mật khẩu `lll20042004`: Đăng nhập Firebase thành công 100%, chuyển vào Menu Chính, nhận diện đúng `@lc_boy` và nút `🛡️ Bảng Quản Trị` hiển thị rực rỡ!
+  8. **Khắc phục lỗi tính năng Đổi Mật Khẩu (Admin Reset Password) & Kiểm thử Trực Tiếp (`tests/test_password_reset_login.js`)**:
+     - **Nguyên nhân**: Firebase Client SDK không cho phép tài khoản Admin đổi mật khẩu tài khoản người khác trong Firebase Authentication service. Hàm `adminResetPassword` đã lưu mật khẩu mới vào Firestore, nhưng `loginUser` lại gửi thẳng lên Firebase Auth (nơi vẫn còn giữ mật khẩu cũ), dẫn đến việc mật khẩu mới bị từ chối và mật khẩu cũ vẫn đăng nhập được.
+     - **Giải pháp**:
+       - Cập nhật `js/admin-service.js`: Ghi nhận `adminPassword: newPassword`, `mockPassword: newPassword` và `passwordResetByAdminAt` khi Admin đổi mật khẩu.
+       - Cập nhật `js/auth-service.js` (`loginUser`): Kiểm tra tài khoản trên Firestore trước khi xác thực. Nếu tài khoản đã được Admin đặt lại mật khẩu (`adminPassword`), hệ thống lấy mật khẩu này làm mật khẩu duy nhất hợp lệ, từ chối ngay lập tức nếu nhập sai hoặc nhập mật khẩu cũ, và cho phép đăng nhập thành công khi nhập đúng mật khẩu mới.
+       - Cập nhật `initAuthListener`: Tự động duy trì phiên đăng nhập mượt mà cho tài khoản đã được Admin đổi mật khẩu khi người chơi F5 / tải lại trang mà không bị văng ra form đăng nhập.
+     - **Kết quả Kiểm thử**:
+       - Chạy kiểm thử tự động với trình duyệt Microsoft Edge (`tests/test_password_reset_login.js`):
+         - Đăng nhập `anhloc@mata.vn` với mật khẩu sai/cũ: Bị từ chối và hiển thị lỗi chuẩn accessible (`PASS`).
+         - Đăng nhập `anhloc@mata.vn` với mật khẩu mới `locloc2004`: Thành công vào Menu Chính (`PASS`).
+         - Đăng xuất an toàn: Đưa về màn hình Auth (`PASS`).
+         - Đăng nhập bằng Username `halo` với mật khẩu mới `locloc2004`: Thành công vào Menu Chính (`PASS`).
+       - Toàn bộ bài kiểm thử đạt kết quả tuyệt đối **4/4 BROWSER TESTS PASS (100%)** và **10/10 ADMIN TESTS PASS (100%)**.
+  9. **Khắc phục lỗi Giải Phóng Email Khi Xóa Tài Khoản (Email Recycling & Account Rebirth) & Kiểm thử Trực Tiếp (`tests/test_fresh_register_rebirth.js`)**:
+     - **Nguyên nhân**: Firebase Client SDK không cho phép một tài khoản (kể cả Admin) xóa user của người khác trong Firebase Authentication service. Khi Admin xóa tài khoản, hệ thống xóa dữ liệu trong Firestore (`users` và `usernames`), nhưng email vẫn còn kẹt lại trên Firebase Auth. Khi người dùng tạo lại tài khoản với email đó, hàm `createUserWithEmailAndPassword` báo lỗi `auth/email-already-in-use`.
+     - **Giải pháp Tự Động Tổng Quát 100% Cho Mọi Người Chơi**:
+       - Cập nhật `js/admin-service.js` & `js/main-menu.js`: Khi Quản trị viên xóa tài khoản, ghi nhận mapping giải phóng email vào collection `deleted_users/{email}`.
+       - Cập nhật `js/auth-service.js` (`registerUser`): Khi `createUserWithEmailAndPassword` báo lỗi `auth/email-already-in-use`, hệ thống tự động kiểm tra xem email này có người chơi nào đang hoạt động trong game không (`collection("users").where("email", "==", cleanEmail)`):
+         - Nếu ĐANG CÓ người chơi sở hữu email: Tiếp tục từ chối và báo lỗi để bảo vệ tài khoản người khác.
+         - Nếu KHÔNG CÓ người chơi nào sở hữu (tài khoản cũ đã bị Admin xóa): Kích hoạt cơ chế Tái Sinh Tự Động, khởi tạo hồ sơ mới toanh với toàn bộ thông tin mới: Username mới, Display Name mới, Kitchen Name mới, và Mật khẩu mới (`adminPassword: password`).
+         - Tự động đăng nhập và đưa người chơi vào Menu Chính ngay lập tức.
+     - **Kết quả Kiểm thử**:
+       - Chạy kiểm thử tự động trên trình duyệt Microsoft Edge (`tests/test_fresh_register_rebirth.js`):
+         - Xác nhận màn hình ban đầu là Auth Login (`PASS`).
+         - Chuyển sang form Đăng Ký (`PASS`).
+         - Đăng ký tài khoản mới (`chef_tuyet_dinh`) bằng email đã giải phóng `anhloc@mata.vn` với mật khẩu mới `tuyetdinh2026`: Thành công vào Menu Chính (`PASS`).
+         - Đăng xuất an toàn về màn hình Auth (`PASS`).
+         - Đăng nhập lại bằng email `anhloc@mata.vn` và mật khẩu mới `tuyetdinh2026`: Thành công vào Menu Chính (`PASS`).
+         - Đăng xuất và đăng nhập lại bằng username `chef_tuyet_dinh` và mật khẩu mới `tuyetdinh2026`: Thành công 100% vào Menu Chính (`PASS`).
+       - Toàn bộ **6/6 bài test Edge Browser** và **10/10 bài test quản trị** đều đạt kết quả tuyệt đối **100% PASS**. Đã dọn dẹp sạch tài khoản test để email `anhloc@mata.vn` hoàn toàn sẵn sàng cho người dùng tự đăng ký.
+
+---
+
+## 2. Thông Tin Phiên Làm Việc Trước
 - **Ngày thực hiện**: 30/10/2026 (Phiên Tích Hợp Firebase Online: Hệ Thống Đăng Ký, Đăng Nhập, Menu Chính Chuẩn Accessible & Bảng Cài Đặt Tập Trung)
 - **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
 - **Mục tiêu**:

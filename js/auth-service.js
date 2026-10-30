@@ -19,8 +19,20 @@ import {
   doc,
   setDoc,
   getDoc,
+  deleteDoc,
+  collection,
+  query,
+  where,
+  getDocs,
   serverTimestamp
 } from "./firebase-config.js";
+
+import {
+  ROOT_ADMIN_USERNAME,
+  isRootAdmin,
+  isAdmin,
+  getMaintenanceConfig
+} from "./admin-service.js";
 
 // Khóa lưu trữ cục bộ cho Mock Mode
 const MOCK_USERS_KEY = "yumcraft_mock_users_db";
@@ -201,15 +213,23 @@ export async function registerUser({
   const cleanKitchenName = validKitchen.sanitized;
   const cleanEmail = validEmail.sanitized;
 
+  // BẢO VỆ ĐỊNH DANH QUẢN TRỊ VIÊN TỐI CAO lc_boy:
+  // Nếu có người nhập LC_Boy, Lc_Boy hay bất kỳ biến thể hoa/thường nào khác -> Chặn ngay lập tức
+  if (usernameLower === ROOT_ADMIN_USERNAME && cleanUsername !== ROOT_ADMIN_USERNAME) {
+    throw new Error(`Tên người dùng '${cleanUsername}' không khả dụng. Tên quản trị viên chỉ dành riêng cho 'lc_boy' viết thường.`);
+  }
+
+  const isDefaultAdmin = cleanUsername === ROOT_ADMIN_USERNAME;
+
   // 2. Chế độ Firebase Thực Tế
   if (isFirebaseConfigured() && auth && db) {
+    const usernameDocRef = doc(db, "usernames", usernameLower);
     try {
       // Thiết lập persistence trước khi tạo tài khoản
       const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
       await setPersistence(auth, persistence);
 
       // Kiểm tra username đã tồn tại chưa trên Firestore
-      const usernameDocRef = doc(db, "usernames", usernameLower);
       const usernameSnap = await getDoc(usernameDocRef);
       if (usernameSnap.exists()) {
         throw new Error(`Tên người dùng '${cleanUsername}' đã có người sử dụng. Vui lòng chọn tên khác.`);
@@ -230,6 +250,8 @@ export async function registerUser({
         displayName: cleanDisplayName,
         kitchenName: cleanKitchenName,
         email: cleanEmail,
+        isAdmin: isDefaultAdmin,
+        isBanned: false,
         createdAt: new Date().toISOString(),
         lastLoginAt: new Date().toISOString()
       };
@@ -241,10 +263,91 @@ export async function registerUser({
         username: cleanUsername
       });
 
+      // Kiểm tra trạng thái cấm & bảo trì
+      validateLoginAccountStatus(userProfile);
+
       setActiveProfileCache(userProfile);
       return userProfile;
     } catch (err) {
       if (err.code === "auth/email-already-in-use") {
+        // KIỂM TRA TỔNG QUÁT: Email này có người chơi nào đang hoạt động trong game không?
+        const qEmail = query(collection(db, "users"), where("email", "==", cleanEmail));
+        const emailSnap = await getDocs(qEmail);
+
+        if (emailSnap.empty) {
+          // TÀI KHOẢN CŨ GẮN VỚI EMAIL NÀY ĐÃ BỊ QUẢN TRỊ VIÊN XÓA SẠCH KHỎI GAME!
+          // Tự động giải phóng email và tái sinh tài khoản mới toanh cho người chơi:
+
+          // 1. Kiểm tra UID đã lưu trong 'deleted_users' nếu có
+          let rebornUid = null;
+          try {
+            const delSnap = await getDoc(doc(db, "deleted_users", cleanEmail.toLowerCase()));
+            if (delSnap.exists() && delSnap.data().uid) {
+              rebornUid = delSnap.data().uid;
+            }
+          } catch (e) {
+            console.warn("Lỗi đọc deleted_users:", e);
+          }
+
+          // 2. Nếu chưa có UID, thử đăng nhập Firebase Auth để lấy UID gốc
+          if (!rebornUid) {
+            try {
+              const oldCred = await signInWithEmailAndPassword(auth, cleanEmail, password);
+              if (oldCred && oldCred.user) {
+                rebornUid = oldCred.user.uid;
+              }
+            } catch (e) {
+              // Mật khẩu mới khác mật khẩu cũ, không sao
+            }
+          }
+
+          // 3. Fallback UID ngẫu nhiên nếu không lấy được UID từ 2 bước trên
+          if (!rebornUid) {
+            rebornUid = "reborn_" + Date.now() + "_" + Math.random().toString(36).substring(2, 8);
+          }
+
+          const rebornProfile = {
+            uid: rebornUid,
+            username: cleanUsername,
+            usernameLower: usernameLower,
+            displayName: cleanDisplayName,
+            kitchenName: cleanKitchenName,
+            email: cleanEmail,
+            adminPassword: password, // Mật khẩu mới người chơi vừa đặt khi tạo tài khoản
+            mockPassword: password,
+            isAdmin: isDefaultAdmin,
+            isBanned: false,
+            createdAt: new Date().toISOString(),
+            lastLoginAt: new Date().toISOString()
+          };
+
+          // Lưu hồ sơ mới vào Firestore
+          await setDoc(doc(db, "users", rebornUid), rebornProfile);
+          await setDoc(usernameDocRef, {
+            uid: rebornUid,
+            email: cleanEmail,
+            username: cleanUsername
+          });
+
+          // Dọn dẹp bản ghi trong deleted_users nếu có
+          try {
+            await deleteDoc(doc(db, "deleted_users", cleanEmail.toLowerCase()));
+          } catch (e) {}
+
+          // Kiểm tra trạng thái cấm & bảo trì
+          validateLoginAccountStatus(rebornProfile);
+
+          setActiveProfileCache(rebornProfile);
+
+          if (rememberMe) {
+            localStorage.setItem(MOCK_SESSION_KEY, JSON.stringify({ uid: rebornUid, rememberMe: true, isFirebase: true }));
+          } else {
+            sessionStorage.setItem(MOCK_SESSION_KEY, JSON.stringify({ uid: rebornUid, rememberMe: false, isFirebase: true }));
+          }
+
+          return rebornProfile;
+        }
+
         throw new Error("Địa chỉ email này đã được đăng ký. Vui lòng sử dụng email khác hoặc đăng nhập.");
       } else if (err.code === "auth/invalid-email") {
         throw new Error("Địa chỉ email không hợp lệ.");
@@ -272,6 +375,8 @@ export async function registerUser({
     kitchenName: cleanKitchenName,
     email: cleanEmail,
     password: password, // Chỉ dùng trong mock mode nội bộ
+    isAdmin: isDefaultAdmin,
+    isBanned: false,
     createdAt: new Date().toISOString(),
     lastLoginAt: new Date().toISOString()
   };
@@ -289,6 +394,38 @@ export async function registerUser({
   delete profile.password;
   setActiveProfileCache(profile);
   return profile;
+}
+
+/**
+ * Kiểm tra trạng thái tài khoản khi đăng nhập: Cấm, Cấm IP, Bảo trì máy chủ
+ */
+function validateLoginAccountStatus(profile) {
+  if (!profile) return;
+  
+  // Root Admin lc_boy là tối cao, không bao giờ bị cấm hay bảo trì
+  if (profile.username === ROOT_ADMIN_USERNAME) {
+    profile.isAdmin = true;
+    profile.isBanned = false;
+    profile.isIpBanned = false;
+    return;
+  }
+
+  // Kiểm tra tài khoản bị cấm
+  if (profile.isBanned) {
+    const reason = profile.banReason || "Không có lý do";
+    throw new Error(`Tài khoản của bạn đã bị khóa bởi Quản trị viên. Lý do: ${reason}`);
+  }
+
+  // Kiểm tra cấm IP
+  if (profile.isIpBanned) {
+    throw new Error("Địa chỉ IP hoặc thiết bị này đã bị cấm truy cập hệ thống.");
+  }
+
+  // Kiểm tra Chế độ bảo trì máy chủ
+  const maintenance = getMaintenanceConfig();
+  if (maintenance && maintenance.enabled && !isAdmin(profile)) {
+    throw new Error(`Máy chủ đang bảo trì: ${maintenance.reason || "Vui lòng quay lại sau ít phút."}`);
+  }
 }
 
 /**
@@ -313,40 +450,88 @@ export async function loginUser({
   // 1. Chế độ Firebase Thực Tế
   if (isFirebaseConfigured() && auth && db) {
     try {
-      const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
-      await setPersistence(auth, persistence);
-
       let targetEmail = cleanId;
+      let userProfile = null;
 
-      // Nếu người chơi nhập username, tra cứu email trong Firestore
+      // Nếu người chơi nhập username, tra cứu email & uid trong Firestore collection 'usernames'
       if (!isEmail) {
         const usernameSnap = await getDoc(doc(db, "usernames", cleanId.toLowerCase()));
         if (!usernameSnap.exists()) {
           throw new Error(`Tên người dùng '${cleanId}' không tồn tại.`);
         }
-        targetEmail = usernameSnap.data().email;
+        const uData = usernameSnap.data();
+        targetEmail = uData.email;
+        if (uData.uid) {
+          const uDocSnap = await getDoc(doc(db, "users", uData.uid));
+          if (uDocSnap.exists()) {
+            userProfile = uDocSnap.data();
+          }
+        }
+      } else {
+        // Tra cứu profile bằng email qua query
+        const q = query(collection(db, "users"), where("email", "==", targetEmail.toLowerCase()));
+        const qSnap = await getDocs(q);
+        if (!qSnap.empty) {
+          userProfile = qSnap.docs[0].data();
+        }
       }
+
+      // KIỂM TRA MẬT KHẨU DO QUẢN TRỊ VIÊN ĐẶT LẠI (ADMIN RESET PASSWORD)
+      const adminPass = userProfile?.adminPassword || userProfile?.mockPassword;
+      if (adminPass) {
+        // Tài khoản đã có mật khẩu mới do Admin đặt lại: BẮT BUỘC dùng mật khẩu mới này!
+        if (password !== adminPass) {
+          throw new Error("Thông tin đăng nhập hoặc mật khẩu không chính xác.");
+        }
+
+        // Cập nhật lastLoginAt
+        await setDoc(doc(db, "users", userProfile.uid), { 
+          lastLoginAt: new Date().toISOString() 
+        }, { merge: true });
+
+        // Kiểm tra trạng thái cấm & bảo trì
+        validateLoginAccountStatus(userProfile);
+
+        setActiveProfileCache(userProfile);
+
+        if (rememberMe) {
+          localStorage.setItem(MOCK_SESSION_KEY, JSON.stringify({ uid: userProfile.uid, rememberMe: true, isFirebase: true }));
+        } else {
+          sessionStorage.setItem(MOCK_SESSION_KEY, JSON.stringify({ uid: userProfile.uid, rememberMe: false, isFirebase: true }));
+        }
+
+        return userProfile;
+      }
+
+      // Nếu tài khoản chưa từng bị Admin đổi mật khẩu, xác thực qua Firebase Auth
+      const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
+      await setPersistence(auth, persistence);
 
       const userCredential = await signInWithEmailAndPassword(auth, targetEmail, password);
       const user = userCredential.user;
 
-      // Lấy profile từ Firestore
-      const userDocSnap = await getDoc(doc(db, "users", user.uid));
-      let userProfile = null;
-      if (userDocSnap.exists()) {
-        userProfile = userDocSnap.data();
-        // Cập nhật lastLoginAt
-        await setDoc(doc(db, "users", user.uid), { lastLoginAt: new Date().toISOString() }, { merge: true });
-      } else {
-        userProfile = {
-          uid: user.uid,
-          username: user.email.split("@")[0],
-          displayName: user.displayName || user.email.split("@")[0],
-          kitchenName: "Nhà Bếp " + (user.displayName || "Sáng Tạo"),
-          email: user.email,
-          lastLoginAt: new Date().toISOString()
-        };
+      // Lấy profile từ Firestore nếu chưa có
+      if (!userProfile) {
+        const userDocSnap = await getDoc(doc(db, "users", user.uid));
+        if (userDocSnap.exists()) {
+          userProfile = userDocSnap.data();
+        } else {
+          userProfile = {
+            uid: user.uid,
+            username: user.email.split("@")[0],
+            displayName: user.displayName || user.email.split("@")[0],
+            kitchenName: "Nhà Bếp " + (user.displayName || "Sáng Tạo"),
+            email: user.email,
+            lastLoginAt: new Date().toISOString()
+          };
+        }
       }
+
+      // Cập nhật lastLoginAt
+      await setDoc(doc(db, "users", user.uid), { lastLoginAt: new Date().toISOString() }, { merge: true });
+
+      // Kiểm tra trạng thái cấm & bảo trì
+      validateLoginAccountStatus(userProfile);
 
       setActiveProfileCache(userProfile);
       return userProfile;
@@ -386,6 +571,10 @@ export async function loginUser({
 
   const profile = { ...user };
   delete profile.password;
+  
+  // Kiểm tra trạng thái cấm & bảo trì cho mock user
+  validateLoginAccountStatus(profile);
+
   setActiveProfileCache(profile);
   return profile;
 }
@@ -420,6 +609,15 @@ export function initAuthListener(onAuthChangedCallback) {
           const userDocSnap = await getDoc(doc(db, "users", user.uid));
           if (userDocSnap.exists()) {
             const profile = userDocSnap.data();
+            // Nếu tài khoản bị cấm thì đăng xuất ngay lập tức
+            if (profile.isBanned && profile.username !== ROOT_ADMIN_USERNAME) {
+              await logoutUser();
+              onAuthChangedCallback(null);
+              return;
+            }
+            if (profile.username === ROOT_ADMIN_USERNAME) {
+              profile.isAdmin = true;
+            }
             setActiveProfileCache(profile);
             onAuthChangedCallback(profile);
             return;
@@ -438,6 +636,31 @@ export function initAuthListener(onAuthChangedCallback) {
         setActiveProfileCache(fallbackProfile);
         onAuthChangedCallback(fallbackProfile);
       } else {
+        // Kiểm tra xem có phiên đăng nhập của tài khoản đã được Admin đặt lại mật khẩu không
+        const cached = getActiveProfileCache();
+        if (cached && (cached.adminPassword || cached.mockPassword) && cached.uid) {
+          try {
+            const checkDoc = await getDoc(doc(db, "users", cached.uid));
+            if (checkDoc.exists()) {
+              const freshProfile = checkDoc.data();
+              if (freshProfile.isBanned && freshProfile.username !== ROOT_ADMIN_USERNAME) {
+                await logoutUser();
+                onAuthChangedCallback(null);
+                return;
+              }
+              if (freshProfile.username === ROOT_ADMIN_USERNAME) {
+                freshProfile.isAdmin = true;
+              }
+              setActiveProfileCache(freshProfile);
+              onAuthChangedCallback(freshProfile);
+              return;
+            }
+          } catch (e) {
+            console.warn("Lỗi xác minh phiên admin-reset:", e);
+            onAuthChangedCallback(cached);
+            return;
+          }
+        }
         setActiveProfileCache(null);
         onAuthChangedCallback(null);
       }
@@ -445,7 +668,7 @@ export function initAuthListener(onAuthChangedCallback) {
   }
 
   // 2. Chế độ Mock Mode
-  const checkMockSession = () => {
+  const checkMockSession = async () => {
     let sessionRaw = localStorage.getItem(MOCK_SESSION_KEY);
     if (!sessionRaw) {
       sessionRaw = sessionStorage.getItem(MOCK_SESSION_KEY);
@@ -456,7 +679,16 @@ export function initAuthListener(onAuthChangedCallback) {
         const mockUsers = getMockUsers();
         const found = mockUsers.find(u => u.uid === session.uid);
         if (found) {
+          // Nếu tài khoản bị cấm thì đăng xuất ngay
+          if (found.isBanned && found.username !== ROOT_ADMIN_USERNAME) {
+            await logoutUser();
+            onAuthChangedCallback(null);
+            return;
+          }
           const profile = { ...found };
+          if (profile.username === ROOT_ADMIN_USERNAME) {
+            profile.isAdmin = true;
+          }
           delete profile.password;
           setActiveProfileCache(profile);
           onAuthChangedCallback(profile);
@@ -476,3 +708,9 @@ export function initAuthListener(onAuthChangedCallback) {
   // Trả về hàm dọn dẹp
   return () => {};
 }
+
+export {
+  ROOT_ADMIN_USERNAME,
+  isRootAdmin,
+  isAdmin
+};

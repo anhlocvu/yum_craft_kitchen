@@ -12,6 +12,25 @@ import {
   getActiveProfileCache
 } from "./auth-service.js";
 
+import {
+  ROOT_ADMIN_USERNAME,
+  isRootAdmin,
+  isAdmin,
+  getAllUsers,
+  toggleAdminRole,
+  banUser,
+  unbanUser,
+  adminResetPassword,
+  deleteUserAccount,
+  getSystemMotd,
+  setSystemMotd,
+  hasUnreadMotd,
+  markMotdAsRead,
+  getServerStats,
+  getMaintenanceConfig,
+  setMaintenanceMode
+} from "./admin-service.js";
+
 // Khóa lưu cài đặt
 const SETTINGS_STORAGE_KEY = "yumcraft_game_settings";
 
@@ -170,6 +189,16 @@ export function updateMainMenuUserProfile(profile) {
   if (nameEl) nameEl.textContent = profile.displayName || "Bếp Trưởng";
   if (usernameEl) usernameEl.textContent = profile.username ? `(@${profile.username})` : "";
   if (kitchenEl) kitchenEl.textContent = profile.kitchenName || "Nhà Bếp Sáng Tạo";
+
+  // Hiển thị nút Bảng Quản Trị nếu tài khoản là Quản trị viên
+  const btnAdmin = document.getElementById("btn-menu-admin");
+  if (btnAdmin) {
+    if (isAdmin(profile)) {
+      btnAdmin.classList.remove("hidden");
+    } else {
+      btnAdmin.classList.add("hidden");
+    }
+  }
 }
 
 /**
@@ -179,6 +208,649 @@ function applySettingsToGameState(settings) {
   if (window.state) {
     window.state.sfxEnabled = settings.sfxEnabled;
     window.state.sfxVolume = settings.sfxVolume / 100;
+  }
+}
+
+/**
+ * =========================================================================
+ * BỘ ĐIỀU PHỐI THÔNG BÁO TRONG NGÀY (MOTD BROADCAST CONTROLLER)
+ * =========================================================================
+ */
+export async function checkAndShowMotdBroadcast(profile) {
+  if (!profile) return false;
+  try {
+    const currentMotd = await getSystemMotd();
+    if (currentMotd && hasUnreadMotd(profile, currentMotd)) {
+      const modalBroadcast = document.getElementById("modal-motd-broadcast");
+      const headlineEl = document.getElementById("motd-broadcast-headline");
+      const contentEl = document.getElementById("motd-broadcast-content");
+      const authorEl = document.getElementById("motd-broadcast-author");
+      const timeEl = document.getElementById("motd-broadcast-time");
+
+      if (headlineEl) headlineEl.textContent = currentMotd.title || "Thông Báo Máy Chủ";
+      if (contentEl) contentEl.textContent = currentMotd.content || "";
+      if (authorEl) authorEl.textContent = "Đăng bởi: " + (currentMotd.authorName || ROOT_ADMIN_USERNAME);
+      if (timeEl) {
+        const d = currentMotd.updatedAt ? new Date(currentMotd.updatedAt) : new Date();
+        timeEl.textContent = d.toLocaleDateString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+      }
+
+      if (modalBroadcast && !modalBroadcast.open) {
+        modalBroadcast.showModal();
+        announceToScreenReader(`Thông báo trong ngày từ Quản trị viên: ${currentMotd.title}. Nhấn Tab để duyệt nội dung và bấm nút đã đọc.`);
+        return true;
+      }
+    }
+  } catch (e) {
+    console.warn("Lỗi kiểm tra MOTD:", e);
+  }
+  return false;
+}
+
+/**
+ * =========================================================================
+ * BỘ ĐIỀU PHỐI BẢNG QUẢN TRỊ VIÊN (ADMIN PANEL CONTROLLER)
+ * =========================================================================
+ */
+export function initAdminPanelController() {
+  let currentSelectedUser = null;
+  let cachedUsersList = [];
+
+  // --- 1. Mở & Đóng Bảng Quản Trị Trung Tâm ---
+  const btnMenuAdmin = document.getElementById("btn-menu-admin");
+  const modalAdminPanel = document.getElementById("modal-admin-panel");
+  const btnCloseAdminPanel = document.getElementById("btn-close-admin-panel");
+  const btnCloseAdminPanelBottom = document.getElementById("btn-close-admin-panel-bottom");
+
+  const refreshAdminPanelStats = async () => {
+    try {
+      const stats = await getServerStats();
+      const statTotal = document.getElementById("admin-stat-total-users");
+      const statAdmins = document.getElementById("admin-stat-admins");
+      const statBanned = document.getElementById("admin-stat-banned");
+      if (statTotal) statTotal.textContent = stats.totalUsers;
+      if (statAdmins) statAdmins.textContent = stats.adminCount;
+      if (statBanned) statBanned.textContent = stats.bannedCount;
+
+      const maint = getMaintenanceConfig();
+      const maintText = document.getElementById("admin-maintenance-status-text");
+      const maintBadge = document.getElementById("admin-maintenance-status-badge");
+      if (maintText) {
+        maintText.textContent = `Chế độ bảo trì máy chủ: ${maint.enabled ? 'ĐANG BẬT' : 'Đang Tắt'}`;
+      }
+      if (maintBadge) {
+        maintBadge.textContent = maint.enabled ? "BẢO TRÌ" : "Bình Thường";
+        maintBadge.className = maint.enabled 
+          ? "text-xs font-bold bg-amber-500 text-white px-3 py-1 rounded-full animate-pulse" 
+          : "text-xs font-bold bg-stone-200 text-stone-800 px-3 py-1 rounded-full";
+      }
+    } catch (e) {
+      console.warn("Lỗi nạp thống kê admin:", e);
+    }
+  };
+
+  if (btnMenuAdmin && modalAdminPanel) {
+    btnMenuAdmin.addEventListener("click", async () => {
+      const profile = getActiveProfileCache();
+      if (!profile || !isAdmin(profile)) {
+        alert("Bạn không có quyền truy cập Bảng Quản Trị.");
+        return;
+      }
+      await refreshAdminPanelStats();
+      modalAdminPanel.showModal();
+      announceToScreenReader("Bảng Quản Trị Máy Chủ. Dùng phím Tab để điều hướng các tùy chọn.");
+    });
+  }
+
+  const closeAdminPanel = () => {
+    if (modalAdminPanel && modalAdminPanel.open) {
+      modalAdminPanel.close();
+      if (btnMenuAdmin) btnMenuAdmin.focus();
+    }
+  };
+  if (btnCloseAdminPanel) btnCloseAdminPanel.addEventListener("click", closeAdminPanel);
+  if (btnCloseAdminPanelBottom) btnCloseAdminPanelBottom.addEventListener("click", closeAdminPanel);
+
+  // --- 2. Bật / Tắt Chế Độ Bảo Trì Máy Chủ ---
+  const btnToggleMaintenance = document.getElementById("btn-admin-toggle-maintenance");
+  if (btnToggleMaintenance) {
+    btnToggleMaintenance.addEventListener("click", async () => {
+      const current = getMaintenanceConfig();
+      if (current.enabled) {
+        const confirmTurnOff = window.confirm("Bạn có chắc chắn muốn TẮT chế độ bảo trì máy chủ? Người chơi sẽ có thể đăng nhập bình thường.");
+        if (confirmTurnOff) {
+          await setMaintenanceMode(false);
+          await refreshAdminPanelStats();
+          announceToScreenReader("Đã tắt chế độ bảo trì máy chủ thành công.");
+        }
+      } else {
+        const reasonInput = window.prompt("Nhập thông báo lý do bảo trì gửi đến người chơi (hoặc để trống dùng mặc định):", "Máy chủ đang tạm dừng ít phút để bảo trì và nâng cấp gian bếp. Vui lòng quay lại sau!");
+        if (reasonInput !== null) {
+          await setMaintenanceMode(true, reasonInput);
+          await refreshAdminPanelStats();
+          announceToScreenReader("Đã bật chế độ bảo trì máy chủ thành công.");
+        }
+      }
+    });
+  }
+
+  // --- 3. Danh Sách Tài Khoản Trên Máy Chủ ---
+  const btnAdminViewUsers = document.getElementById("btn-admin-view-users");
+  const modalAdminUsers = document.getElementById("modal-admin-users");
+  const btnCloseAdminUsers = document.getElementById("btn-close-admin-users");
+  const btnBackToAdminPanel = document.getElementById("btn-back-to-admin-panel");
+  const usersListContainer = document.getElementById("admin-users-list");
+  const searchUsersInput = document.getElementById("admin-search-users");
+  const usersCountEl = document.getElementById("admin-users-count");
+
+  const renderUsersList = (users) => {
+    if (!usersListContainer) return;
+    usersListContainer.innerHTML = "";
+
+    if (!users || users.length === 0) {
+      usersListContainer.innerHTML = `
+        <div class="p-6 text-center text-stone-500 font-semibold text-sm">
+          Không tìm thấy tài khoản người chơi nào phù hợp.
+        </div>
+      `;
+      if (usersCountEl) usersCountEl.textContent = "Hiển thị 0 tài khoản";
+      return;
+    }
+
+    if (usersCountEl) {
+      usersCountEl.textContent = `Hiển thị ${users.length} tài khoản người chơi trên máy chủ`;
+    }
+
+    users.forEach(u => {
+      const itemBtn = document.createElement("button");
+      itemBtn.type = "button";
+      itemBtn.className = "w-full text-left p-3.5 bg-stone-50 hover:bg-purple-50 rounded-2xl border border-stone-200 hover:border-purple-300 transition flex items-center justify-between gap-3 cursor-pointer focus:ring-2 focus:ring-purple-400";
+      
+      const isRoot = u.username === ROOT_ADMIN_USERNAME;
+      const isStaffAdmin = !isRoot && u.isAdmin;
+      const avatarIcon = isRoot ? "👑" : (isStaffAdmin ? "🛡️" : "👨‍🍳");
+
+      let badgesHtml = "";
+      if (isRoot) {
+        badgesHtml += `<span class="px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-400 text-purple-950 font-sans shadow-sm">👑 ROOT ADMIN</span>`;
+      } else if (isStaffAdmin) {
+        badgesHtml += `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-200 text-purple-900 font-sans">🛡️ QUẢN TRỊ</span>`;
+      }
+      if (u.isBanned) {
+        badgesHtml += `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-300 font-sans ml-1.5">🚫 BỊ KHÓA</span>`;
+      }
+
+      itemBtn.innerHTML = `
+        <div class="flex items-center gap-3 min-w-0">
+          <span class="text-2xl flex-shrink-0" aria-hidden="true">${avatarIcon}</span>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-extrabold text-stone-900 font-game truncate text-sm sm:text-base">${u.displayName || "Bếp Trưởng"}</span>
+              <span class="text-xs text-stone-500 font-mono">(@${u.username})</span>
+              ${badgesHtml}
+            </div>
+            <div class="text-xs text-stone-500 truncate mt-0.5">
+              <span>${u.email || "Không có email"}</span> &bull; 
+              <span class="text-orange-700 font-semibold">${u.kitchenName || "Nhà bếp"}</span>
+            </div>
+          </div>
+        </div>
+        <span class="text-xs font-bold text-purple-700 bg-white px-3 py-1.5 rounded-xl border border-purple-200 shadow-sm flex-shrink-0">
+          Chi tiết ➔
+        </span>
+      `;
+
+      itemBtn.addEventListener("click", () => {
+        openUserActionModal(u);
+      });
+
+      usersListContainer.appendChild(itemBtn);
+    });
+  };
+
+  const loadAndShowUsers = async () => {
+    if (modalAdminPanel) modalAdminPanel.close();
+    if (modalAdminUsers) modalAdminUsers.showModal();
+    if (usersCountEl) usersCountEl.textContent = "Đang tải danh sách người chơi...";
+    if (searchUsersInput) searchUsersInput.value = "";
+
+    try {
+      cachedUsersList = await getAllUsers();
+      renderUsersList(cachedUsersList);
+      announceToScreenReader(`Đã tải danh sách gồm ${cachedUsersList.length} tài khoản người chơi. Sử dụng ô tìm kiếm hoặc Tab để duyệt.`);
+    } catch (e) {
+      console.error("Lỗi tải users:", e);
+      if (usersCountEl) usersCountEl.textContent = "Lỗi nạp danh sách tài khoản.";
+    }
+  };
+
+  if (btnAdminViewUsers) {
+    btnAdminViewUsers.addEventListener("click", loadAndShowUsers);
+  }
+
+  if (searchUsersInput) {
+    searchUsersInput.addEventListener("input", (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      if (!q) {
+        renderUsersList(cachedUsersList);
+        return;
+      }
+      const filtered = cachedUsersList.filter(u => 
+        (u.username && u.username.toLowerCase().includes(q)) ||
+        (u.displayName && u.displayName.toLowerCase().includes(q)) ||
+        (u.email && u.email.toLowerCase().includes(q)) ||
+        (u.kitchenName && u.kitchenName.toLowerCase().includes(q))
+      );
+      renderUsersList(filtered);
+    });
+  }
+
+  const returnToAdminPanel = () => {
+    if (modalAdminUsers) modalAdminUsers.close();
+    if (modalAdminPanel) modalAdminPanel.showModal();
+  };
+  if (btnCloseAdminUsers) btnCloseAdminUsers.addEventListener("click", returnToAdminPanel);
+  if (btnBackToAdminPanel) btnBackToAdminPanel.addEventListener("click", returnToAdminPanel);
+
+  // --- 4. Chi Tiết Người Chơi & Menu Hành Động ---
+  const modalUserAction = document.getElementById("modal-admin-user-action");
+  const btnCloseUserAction = document.getElementById("btn-close-user-action");
+  const btnBackToUsersList = document.getElementById("btn-back-to-users-list");
+  const userActionTitle = document.getElementById("admin-user-action-title");
+  const userActionSubtitle = document.getElementById("admin-user-action-subtitle");
+  const userDetailsBox = document.getElementById("admin-user-details-box");
+
+  const btnUserActionRole = document.getElementById("btn-user-action-role");
+  const btnUserActionRoleText = document.getElementById("btn-user-action-role-text");
+  const btnUserActionBan = document.getElementById("btn-user-action-ban");
+  const btnUserActionBanIcon = document.getElementById("btn-user-action-ban-icon");
+  const btnUserActionBanText = document.getElementById("btn-user-action-ban-text");
+  const btnUserActionResetPwd = document.getElementById("btn-user-action-reset-pwd");
+  const btnUserActionDelete = document.getElementById("btn-user-action-delete");
+
+  const openUserActionModal = (u) => {
+    currentSelectedUser = u;
+    if (modalAdminUsers) modalAdminUsers.close();
+
+    const isRoot = u.username === ROOT_ADMIN_USERNAME;
+    if (userActionTitle) userActionTitle.textContent = u.displayName || "Bếp Trưởng";
+    if (userActionSubtitle) userActionSubtitle.textContent = `@${u.username}`;
+
+    if (userDetailsBox) {
+      userDetailsBox.innerHTML = `
+        <div class="flex items-center justify-between pb-1 border-b border-stone-200">
+          <span class="text-stone-500 font-semibold">Tên đăng nhập:</span>
+          <span class="font-bold text-stone-900 font-mono">@${u.username}</span>
+        </div>
+        <div class="flex items-center justify-between py-1 border-b border-stone-200">
+          <span class="text-stone-500 font-semibold">Email:</span>
+          <span class="font-bold text-stone-900">${u.email || "Chưa thiết lập"}</span>
+        </div>
+        <div class="flex items-center justify-between py-1 border-b border-stone-200">
+          <span class="text-stone-500 font-semibold">Gian bếp:</span>
+          <span class="font-bold text-orange-700">${u.kitchenName || "Nhà bếp sáng tạo"}</span>
+        </div>
+        <div class="flex items-center justify-between py-1 border-b border-stone-200">
+          <span class="text-stone-500 font-semibold">Quyền hạn:</span>
+          <span class="font-bold ${isRoot ? 'text-amber-800' : (u.isAdmin ? 'text-purple-800' : 'text-stone-700')}">
+            ${isRoot ? '👑 Quản Trị Viên Tối Cao' : (u.isAdmin ? '🛡️ Quản Trị Viên' : '🍳 Bếp Trưởng Thường')}
+          </span>
+        </div>
+        <div class="flex items-center justify-between pt-1">
+          <span class="text-stone-500 font-semibold">Trạng thái tài khoản:</span>
+          <span class="font-bold ${u.isBanned ? 'text-red-700' : 'text-emerald-700'}">
+            ${u.isBanned ? `🚫 Đang bị cấm (${u.banReason || 'Không có lý do'})` : '🟢 Hoạt động bình thường'}
+          </span>
+        </div>
+        ${u.isIpBanned ? '<div class="text-xs text-red-600 font-bold mt-1">⚠️ Địa chỉ IP của tài khoản này đã bị cấm.</div>' : ''}
+        ${isRoot ? '<div class="mt-2 p-2 bg-amber-100/80 rounded-xl text-amber-900 font-bold text-xs">⭐ Quản trị viên tối cao lc_boy là bất khả xâm phạm. Không ai có quyền tước quyền, cấm hay xóa.</div>' : ''}
+      `;
+    }
+
+    // Điều chỉnh các nút thao tác
+    if (isRoot) {
+      if (btnUserActionRole) btnUserActionRole.classList.add("hidden");
+      if (btnUserActionBan) btnUserActionBan.classList.add("hidden");
+      if (btnUserActionDelete) btnUserActionDelete.classList.add("hidden");
+    } else {
+      if (btnUserActionRole) {
+        btnUserActionRole.classList.remove("hidden");
+        if (btnUserActionRoleText) {
+          btnUserActionRoleText.textContent = u.isAdmin ? "🔻 Tước Quyền Quản Trị Viên" : "👑 Thăng Chức Lên Quản Trị Viên";
+        }
+      }
+      if (btnUserActionBan) {
+        btnUserActionBan.classList.remove("hidden");
+        if (btnUserActionBanIcon && btnUserActionBanText) {
+          btnUserActionBanIcon.textContent = u.isBanned ? "🔓" : "🚫";
+          btnUserActionBanText.textContent = u.isBanned ? "Mở Khóa / Gỡ Cấm Tài Khoản" : "Cấm Tài Khoản Này";
+        }
+      }
+      if (btnUserActionDelete) {
+        btnUserActionDelete.classList.remove("hidden");
+      }
+    }
+
+    if (modalUserAction) modalUserAction.showModal();
+    announceToScreenReader(`Chi tiết tài khoản ${u.displayName} @${u.username}. Dùng Tab để chọn thao tác.`);
+  };
+
+  const returnToUsersList = () => {
+    if (modalUserAction) modalUserAction.close();
+    if (modalAdminUsers) modalAdminUsers.showModal();
+  };
+  if (btnCloseUserAction) btnCloseUserAction.addEventListener("click", returnToUsersList);
+  if (btnBackToUsersList) btnBackToUsersList.addEventListener("click", returnToUsersList);
+
+  // --- 5. Đổi Quyền Quản Trị Viên ---
+  if (btnUserActionRole) {
+    btnUserActionRole.addEventListener("click", async () => {
+      if (!currentSelectedUser) return;
+      const target = currentSelectedUser;
+      const willBeAdmin = !target.isAdmin;
+      const actionText = willBeAdmin ? "thăng chức lên Quản trị viên" : "tước quyền Quản trị viên";
+      const confirmAction = window.confirm(`Bạn có chắc muốn ${actionText} cho tài khoản @${target.username}?`);
+      if (!confirmAction) return;
+
+      try {
+        await toggleAdminRole(target.uid, willBeAdmin, target.username);
+        target.isAdmin = willBeAdmin;
+        openUserActionModal(target);
+        announceToScreenReader(`Đã ${actionText} cho tài khoản @${target.username} thành công.`);
+      } catch (err) {
+        alert(err.message || "Thao tác thất bại.");
+      }
+    });
+  }
+
+  // --- 6. Cấm Tài Khoản / Mở Khóa ---
+  const modalAdminBan = document.getElementById("modal-admin-ban-user");
+  const btnCancelBan = document.getElementById("btn-cancel-ban");
+  const formAdminBan = document.getElementById("form-admin-ban");
+  const banTargetName = document.getElementById("admin-ban-target-name");
+
+  if (btnUserActionBan) {
+    btnUserActionBan.addEventListener("click", async () => {
+      if (!currentSelectedUser) return;
+      const target = currentSelectedUser;
+      
+      // Nếu đang bị cấm -> Thực hiện Mở khóa (Unban)
+      if (target.isBanned) {
+        const confirmUnban = window.confirm(`Bạn có chắc muốn MỞ KHÓA / GỠ CẤM cho tài khoản @${target.username}?`);
+        if (!confirmUnban) return;
+        try {
+          await unbanUser(target.uid);
+          target.isBanned = false;
+          target.banReason = "";
+          target.isIpBanned = false;
+          openUserActionModal(target);
+          announceToScreenReader(`Đã mở khóa tài khoản @${target.username} thành công.`);
+        } catch (e) {
+          alert(e.message || "Lỗi khi mở khóa tài khoản.");
+        }
+        return;
+      }
+
+      // Nếu chưa bị cấm -> Mở modal Cấm
+      if (modalUserAction) modalUserAction.close();
+      if (banTargetName) banTargetName.textContent = `Bạn đang chuẩn bị cấm tài khoản: @${target.username}`;
+      const reasonInput = document.getElementById("ban-reason");
+      const banIpBox = document.getElementById("ban-ip-checkbox");
+      if (reasonInput) reasonInput.value = "";
+      if (banIpBox) banIpBox.checked = false;
+
+      if (modalAdminBan) {
+        modalAdminBan.showModal();
+        if (reasonInput) reasonInput.focus();
+        announceToScreenReader(`Hộp thoại cấm tài khoản @${target.username}. Nhập lý do cấm.`);
+      }
+    });
+  }
+
+  if (btnCancelBan && modalAdminBan) {
+    btnCancelBan.addEventListener("click", () => {
+      modalAdminBan.close();
+      if (modalUserAction) modalUserAction.showModal();
+    });
+  }
+
+  if (formAdminBan && modalAdminBan) {
+    formAdminBan.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!currentSelectedUser) return;
+      const target = currentSelectedUser;
+      const reason = document.getElementById("ban-reason").value.trim();
+      const banIp = document.getElementById("ban-ip-checkbox").checked;
+
+      try {
+        await banUser(target.uid, target.username, reason, banIp);
+        target.isBanned = true;
+        target.banReason = reason || "Không có lý do";
+        target.isIpBanned = banIp;
+
+        modalAdminBan.close();
+        openUserActionModal(target);
+        announceToScreenReader(`Đã cấm tài khoản @${target.username} thành công.`);
+      } catch (err) {
+        alert(err.message || "Lỗi cấm tài khoản.");
+      }
+    });
+  }
+
+  // --- 7. Đổi Mật Khẩu Người Chơi ---
+  const modalAdminResetPwd = document.getElementById("modal-admin-reset-pwd");
+  const btnCancelResetPwd = document.getElementById("btn-cancel-reset-pwd");
+  const formAdminResetPwd = document.getElementById("form-admin-reset-pwd");
+  const resetPwdTargetName = document.getElementById("admin-reset-pwd-target-name");
+  const resetPwdAlert = document.getElementById("admin-reset-pwd-alert");
+
+  if (btnUserActionResetPwd) {
+    btnUserActionResetPwd.addEventListener("click", () => {
+      if (!currentSelectedUser) return;
+      const target = currentSelectedUser;
+      if (modalUserAction) modalUserAction.close();
+
+      if (resetPwdTargetName) resetPwdTargetName.textContent = `Đổi mật khẩu cho: @${target.username}`;
+      const p1 = document.getElementById("admin-new-password");
+      const p2 = document.getElementById("admin-confirm-password");
+      if (p1) p1.value = "";
+      if (p2) p2.value = "";
+      if (resetPwdAlert) resetPwdAlert.classList.add("hidden");
+
+      if (modalAdminResetPwd) {
+        modalAdminResetPwd.showModal();
+        if (p1) p1.focus();
+        announceToScreenReader(`Hộp thoại đổi mật khẩu cho tài khoản @${target.username}.`);
+      }
+    });
+  }
+
+  if (btnCancelResetPwd && modalAdminResetPwd) {
+    btnCancelResetPwd.addEventListener("click", () => {
+      modalAdminResetPwd.close();
+      if (modalUserAction) modalUserAction.showModal();
+    });
+  }
+
+  if (formAdminResetPwd && modalAdminResetPwd) {
+    formAdminResetPwd.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!currentSelectedUser) return;
+      const target = currentSelectedUser;
+      const p1 = document.getElementById("admin-new-password").value;
+      const p2 = document.getElementById("admin-confirm-password").value;
+
+      if (!p1 || p1.length < 8) {
+        if (resetPwdAlert) {
+          resetPwdAlert.textContent = "Mật khẩu mới phải có tối thiểu 8 ký tự.";
+          resetPwdAlert.className = "text-xs p-3 rounded-xl font-bold bg-red-100 text-red-800 border border-red-300";
+          resetPwdAlert.classList.remove("hidden");
+        }
+        return;
+      }
+      if (p1 !== p2) {
+        if (resetPwdAlert) {
+          resetPwdAlert.textContent = "Mật khẩu xác nhận không trùng khớp.";
+          resetPwdAlert.className = "text-xs p-3 rounded-xl font-bold bg-red-100 text-red-800 border border-red-300";
+          resetPwdAlert.classList.remove("hidden");
+        }
+        return;
+      }
+
+      try {
+        await adminResetPassword(target.uid, p1);
+        modalAdminResetPwd.close();
+        if (modalUserAction) modalUserAction.showModal();
+        announceToScreenReader(`Đã đổi mật khẩu cho tài khoản @${target.username} thành công.`);
+        alert(`Đổi mật khẩu cho tài khoản @${target.username} thành công!`);
+      } catch (err) {
+        if (resetPwdAlert) {
+          resetPwdAlert.textContent = err.message || "Lỗi khi đổi mật khẩu.";
+          resetPwdAlert.className = "text-xs p-3 rounded-xl font-bold bg-red-100 text-red-800 border border-red-300";
+          resetPwdAlert.classList.remove("hidden");
+        }
+      }
+    });
+  }
+
+  // --- 8. Xóa Tài Khoản Vĩnh Viễn ---
+  const modalAdminDelete = document.getElementById("modal-admin-delete-user");
+  const btnCancelDelete = document.getElementById("btn-cancel-delete-user");
+  const btnConfirmDelete = document.getElementById("btn-confirm-delete-user");
+  const deleteTargetText = document.getElementById("admin-delete-target-text");
+
+  if (btnUserActionDelete) {
+    btnUserActionDelete.addEventListener("click", () => {
+      if (!currentSelectedUser) return;
+      const target = currentSelectedUser;
+      if (modalUserAction) modalUserAction.close();
+
+      if (deleteTargetText) {
+        deleteTargetText.innerHTML = `Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản <strong>"${target.displayName}" (@${target.username})</strong>? Toàn bộ dữ liệu hồ sơ sẽ bị xóa khỏi cơ sở dữ liệu và không thể hoàn tác!`;
+      }
+      if (modalAdminDelete) {
+        modalAdminDelete.showModal();
+        if (btnCancelDelete) btnCancelDelete.focus();
+        announceToScreenReader(`Cảnh báo: Bạn có chắc chắn muốn xóa tài khoản @${target.username} vĩnh viễn không?`);
+      }
+    });
+  }
+
+  if (btnCancelDelete && modalAdminDelete) {
+    btnCancelDelete.addEventListener("click", () => {
+      modalAdminDelete.close();
+      if (modalUserAction) modalUserAction.showModal();
+    });
+  }
+
+  if (btnConfirmDelete && modalAdminDelete) {
+    btnConfirmDelete.addEventListener("click", async () => {
+      if (!currentSelectedUser) return;
+      const target = currentSelectedUser;
+      try {
+        await deleteUserAccount(target.uid, target.username, target.email);
+        modalAdminDelete.close();
+        announceToScreenReader(`Đã xóa vĩnh viễn tài khoản @${target.username}.`);
+        alert(`Đã xóa tài khoản @${target.username} thành công.`);
+        await loadAndShowUsers();
+      } catch (err) {
+        alert(err.message || "Lỗi khi xóa tài khoản.");
+      }
+    });
+  }
+
+  // --- 9. Đặt Thông Báo Trong Ngày (MOTD) ---
+  const btnAdminOpenMotd = document.getElementById("btn-admin-open-motd");
+  const modalAdminMotd = document.getElementById("modal-admin-motd");
+  const btnCloseAdminMotd = document.getElementById("btn-close-admin-motd");
+  const btnCancelMotd = document.getElementById("btn-cancel-motd");
+  const formAdminMotd = document.getElementById("form-admin-motd");
+  const motdTitleInput = document.getElementById("admin-motd-title-input");
+  const motdContentInput = document.getElementById("admin-motd-content-input");
+  const motdAlert = document.getElementById("admin-motd-alert");
+
+  if (btnAdminOpenMotd && modalAdminMotd) {
+    btnAdminOpenMotd.addEventListener("click", async () => {
+      if (modalAdminPanel) modalAdminPanel.close();
+      if (motdAlert) motdAlert.classList.add("hidden");
+
+      // Nạp thông báo hiện tại nếu có
+      try {
+        const existingMotd = await getSystemMotd();
+        if (existingMotd) {
+          if (motdTitleInput) motdTitleInput.value = existingMotd.title || "";
+          if (motdContentInput) motdContentInput.value = existingMotd.content || "";
+        } else {
+          if (motdTitleInput) motdTitleInput.value = "";
+          if (motdContentInput) motdContentInput.value = "";
+        }
+      } catch (e) {}
+
+      modalAdminMotd.showModal();
+      if (motdTitleInput) motdTitleInput.focus();
+      announceToScreenReader("Hộp thoại đặt thông báo trong ngày (MOTD). Nhập tiêu đề và nội dung.");
+    });
+  }
+
+  const closeMotdModal = () => {
+    if (modalAdminMotd) modalAdminMotd.close();
+    if (modalAdminPanel) modalAdminPanel.showModal();
+  };
+  if (btnCloseAdminMotd) btnCloseAdminMotd.addEventListener("click", closeMotdModal);
+  if (btnCancelMotd) btnCancelMotd.addEventListener("click", closeMotdModal);
+
+  if (formAdminMotd && modalAdminMotd) {
+    formAdminMotd.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const title = motdTitleInput.value.trim();
+      const content = motdContentInput.value.trim();
+      const profile = getActiveProfileCache();
+
+      if (!title || !content) {
+        if (motdAlert) {
+          motdAlert.textContent = "Vui lòng nhập đầy đủ tiêu đề và nội dung thông báo.";
+          motdAlert.className = "text-xs p-3 rounded-xl font-bold bg-red-100 text-red-800 border border-red-300";
+          motdAlert.classList.remove("hidden");
+        }
+        return;
+      }
+
+      try {
+        await setSystemMotd({
+          title,
+          content,
+          authorName: profile ? (profile.displayName || profile.username) : ROOT_ADMIN_USERNAME
+        });
+
+        modalAdminMotd.close();
+        if (modalAdminPanel) modalAdminPanel.showModal();
+        announceToScreenReader("Đã đăng thông báo trong ngày mới thành công. Thông báo cũ đã được ghi đè.");
+        alert("Đã đăng thông báo trong ngày mới thành công! Tất cả người chơi sẽ nhìn thấy khi đăng nhập.");
+      } catch (err) {
+        if (motdAlert) {
+          motdAlert.textContent = err.message || "Lỗi khi lưu thông báo.";
+          motdAlert.className = "text-xs p-3 rounded-xl font-bold bg-red-100 text-red-800 border border-red-300";
+          motdAlert.classList.remove("hidden");
+        }
+      }
+    });
+  }
+
+  // --- 10. Đóng Thông Báo Trong Ngày Broadcast Khi Người Chơi Nhấn Đã Đọc ---
+  const btnCloseMotdBroadcast = document.getElementById("btn-close-motd-broadcast");
+  const modalBroadcast = document.getElementById("modal-motd-broadcast");
+  if (btnCloseMotdBroadcast && modalBroadcast) {
+    btnCloseMotdBroadcast.addEventListener("click", async () => {
+      const activeProfile = getActiveProfileCache();
+      const currentMotd = await getSystemMotd();
+      if (activeProfile && currentMotd) {
+        await markMotdAsRead(activeProfile, currentMotd.id);
+      }
+      modalBroadcast.close();
+      const btnEnter = document.getElementById("btn-menu-enter-kitchen");
+      if (btnEnter) btnEnter.focus();
+      announceToScreenReader("Đã đọc thông báo trong ngày. Chuyển về Menu Chính.");
+    });
   }
 }
 
@@ -235,6 +907,7 @@ export function initMainMenuController() {
         updateMainMenuUserProfile(profile);
         showScreen("main-menu");
         announceToScreenReader(`Đăng nhập thành công! Chào mừng Bếp Trưởng ${profile.displayName} đến với YumCraft Kitchen.`);
+        await checkAndShowMotdBroadcast(profile);
       } catch (err) {
         showAlert("login-alert-box", err.message || "Đăng nhập thất bại. Vui lòng thử lại.");
       } finally {
@@ -278,6 +951,7 @@ export function initMainMenuController() {
         updateMainMenuUserProfile(profile);
         showScreen("main-menu");
         announceToScreenReader(`Đăng ký tài khoản thành công! Chào mừng Bếp Trưởng ${profile.displayName} cùng gian bếp ${profile.kitchenName}.`);
+        await checkAndShowMotdBroadcast(profile);
       } catch (err) {
         showAlert("reg-alert-box", err.message || "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.");
       } finally {
@@ -387,8 +1061,11 @@ export function initMainMenuController() {
     });
   }
 
+  // 6.5. Khởi tạo Bảng Quản Trị Viên & Hệ Thống Thông Báo Máy Chủ
+  initAdminPanelController();
+
   // 7. Lắng nghe Session ban đầu (Tự động đăng nhập nếu có duy trì đăng nhập)
-  initAuthListener((profile) => {
+  initAuthListener(async (profile) => {
     if (profile) {
       updateMainMenuUserProfile(profile);
       // Nếu đang ở màn hình auth thì chuyển vào main-menu
@@ -396,6 +1073,7 @@ export function initMainMenuController() {
       if (screenAuth && !screenAuth.classList.contains("hidden")) {
         showScreen("main-menu");
         announceToScreenReader(`Chào mừng Bếp Trưởng ${profile.displayName} đã trở lại YumCraft Kitchen.`);
+        await checkAndShowMotdBroadcast(profile);
       }
     } else {
       // Chưa đăng nhập: hiển thị màn hình Auth
