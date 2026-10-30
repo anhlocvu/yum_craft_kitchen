@@ -1,0 +1,14 @@
+# Hệ điều hành & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Cấu hình Firebase nhạy cảm chứa API Key thực tế của tác giả
+# (Người khác khi clone về sẽ dùng js/firebase-config.example.js để tự cấu hình riêng)
+js/firebase-config.js
+
+# Logs & tạm thời
+*.log
+npm-debug.log*
+node_modules/

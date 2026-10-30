@@ -12,6 +12,96 @@
 # NHẬT KÝ DỰ ÁN — YUMCRAFT KITCHEN
 
 ## 1. Thông Tin Phiên Làm Việc Mới Nhất
+- **Ngày thực hiện**: 30/10/2026 (Phiên Tích Hợp Firebase Online: Hệ Thống Đăng Ký, Đăng Nhập, Menu Chính Chuẩn Accessible & Bảng Cài Đặt Tập Trung)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Mục tiêu**:
+  1. **Chuyển đổi YumCraft Kitchen thành trò chơi Online** với Firebase SDK v10 Modular (`js/firebase-config.js`):
+     - Tích hợp Firebase Auth và Cloud Firestore để quản lý hồ sơ Bếp Trưởng, đảm bảo tên người dùng định danh không bị trùng lặp.
+     - Hỗ trợ cơ chế linh hoạt kép: Kết nối trực tiếp Firebase Project thực tế qua CDN của Google và tự động kích hoạt **Chế độ Giả lập Cục bộ (Local Mock Mode)** khi chưa điền API Key, giúp việc phát triển và trải nghiệm không bị gián đoạn.
+  2. **Xây dựng Màn hình Xác thực Hoàn chỉnh (`#screen-auth`)**:
+     - **Form Đăng Nhập (`#view-login`)**:
+       - Cho phép đăng nhập bằng **Email HOẶC Tên người dùng (Username)**. Nếu nhập Username, hệ thống tự động tra cứu email liên kết trong Firestore.
+       - Ô Mật khẩu có nút bấm Ẩn/Hiện mật khẩu trực quan chuẩn trợ năng.
+       - Checkbox "Duy trì đăng nhập cho thiết bị này": Mặc định được **TÍCH CHỌN**, tự động lưu phiên vĩnh viễn (`browserLocalPersistence`) hoặc hủy phiên khi đóng tab (`browserSessionPersistence`).
+       - Nút chuyển đổi nhanh sang màn hình Đăng ký.
+     - **Form Đăng Ký (`#view-register`)**:
+       - Nút Quay lại / Đóng ở góc trên bên trái (`#btn-back-to-login`) đưa về Đăng nhập nhanh chóng.
+       - Trường **Tên người dùng (Username)**: Viết liền không dấu, không dấu cách, chỉ gồm chữ, số và ký tự `_ . -` (regex `^[a-zA-Z0-9_.-]+# NGUYÊN TẮC THIẾT KẾ CỐT LÕI — YUMCRAFT KITCHEN
+
+> [!IMPORTANT]
+> **TRIẾT LÝ NẤU BẾP TỰ DO (TOCA KITCHEN SANDBOX PHILOSOPHY)**
+> 1. **Hoàn Toàn Không Có Công Thức Cố Định (Zero Hardcoded Recipes)**: YumCraft Kitchen là trò chơi nấu ăn mô phỏng tự do theo phong cách Toca Kitchen. Người chơi là bếp trưởng sáng tạo tuyệt đối, được quyền kết hợp bất kỳ nguyên liệu, dụng cụ và gia vị nào với nhau mà không bị trói buộc bởi bất kỳ công thức sách giáo khoa cứng nhắc nào.
+> 2. **Hóa Học Vị Giác Cảm Quan Động (Dynamic Sensory Chemistry)**: Hệ thống đánh giá dựa trên các định luật vật lý và hóa học vị giác thực tế (Umami, Mặn, Ngọt, Chua, Cay, Béo, Đắng, Thơm, Giòn), phản ánh trung thực những gì người chơi vừa thực sự chế biến và nêm nếm. Tuyệt đối không gán ghép các nhãn hương vị tĩnh hoặc tự ý suy đoán nguyên liệu không có trong món ăn.
+> 3. **Nhận Xét Của Thực Khách Sinh Động & Chân Thực (Living Character Critique)**: Khi thưởng thức, nhân vật sẽ miêu tả chi tiết cảm giác vị giác, kết cấu món ăn (nướng, luộc, chiên, cuộn, nhồi...) và mùi vị của các loại gia vị người chơi đã nêm, phản ánh đúng gu thưởng thức và biểu cảm của từng thực khách.
+> 4. **Trợ Năng Toàn Diện Chuẩn Quốc Tế (WCAG AA/AAA & NVDA First)**: Mọi tương tác, cảm giác vị giác và diễn biến nấu nướng đều phải được truyền tải hoàn hảo, tự nhiên và liền mạch đến người chơi khiếm thị thông qua NVDA và bàn phím.
+>5 ** không được đưa vào bất kỳ công thức cứng nhắt nào trong code, vì đây là game nấu ăn tự gio, không phải game nấu ăn theo công thức xách giáo khoa
+---
+
+), kiểm tra tính duy nhất trên Firestore collection `usernames`.
+       - Trường **Tên hiển thị (Display Name)**: Cho phép có dấu tiếng Việt và dấu cách (ví dụ: "Bếp Trưởng Anh Lộc"), hoàn toàn độc lập với username.
+       - Trường **Email**: Lưu trữ liên kết để hỗ trợ quản trị viên khôi phục tài khoản khi cần.
+       - Hai trường **Mật khẩu** & **Nhập lại mật khẩu**: Kiểm tra tối thiểu 8 ký tự và trùng khớp 100%.
+       - Trường **Tên nhà bếp (Kitchen Name)**: Thương hiệu gian bếp của người chơi (ví dụ: "Nhà Bếp Anh Lộc"), sẵn sàng để gắn nhãn nguồn gốc món ăn chia sẻ ra cộng đồng (*Được sản xuất tại: [Tên nhà bếp]*).
+       - Checkbox "Duy trì đăng nhập cho thiết bị này" (mặc định tích chọn).
+       - Nút Đăng ký: Tự động khởi tạo tài khoản, lưu hồ sơ, đăng nhập và đưa thẳng vào Menu Chính.
+  3. **Xây dựng Menu Chính Chuẩn UI/UX Hiện Đại (`#screen-main-menu`)**:
+     - Thiết kế theo ý tưởng của anh Lộc: **Các nút căn giữa màn hình, xếp dọc từ trên xuống dưới, không đánh số thứ tự** để tối ưu hóa sự mượt mà và tự nhiên cho trình đọc màn hình NVDA:
+       1. 🍳 **Đi vào nhà bếp**: Chuyển vào màn hình Chọn Thực Khách (`screen-character-select`), chọn 1 trong 4 nhân vật rồi vào bếp nấu ăn bình thường với 100% logic gốc.
+       2. ⚙️ **Cài đặt**: Mở hộp thoại **Bảng Cài Đặt Tập Trung** (`#modal-settings`) để tinh chỉnh âm thanh hiệu ứng bếp (SFX), thanh trượt âm lượng (Volume Slider), và giọng nói Live Region NVDA; giải phóng không gian nhà bếp khỏi các nút cài đặt rườm rà.
+       3. 📖 **Hướng dẫn**: Mở cẩm nang luật chơi tự do và bảng phím tắt (`#modal-help`).
+       4. 🚪 **Đăng xuất**: Hộp thoại xác nhận đăng xuất tài khoản an toàn, dọn dẹp phiên và đưa về màn hình Đăng nhập.
+     - Thẻ thông tin Bếp Trưởng trên Menu: Hiển thị tên hiển thị, `@username`, gian bếp và trạng thái trực tuyến (Online).
+     - Bổ sung nút "⬅️ Quay lại Menu Chính" tại màn hình Chọn Thực Khách, tạo vòng lặp trải nghiệm mượt mà, liền mạch.
+  4. **Kiểm thử tự động toàn diện**: 33 bài test cấu trúc giao diện, form đăng nhập, form đăng ký, menu chính và trợ năng WCAG 2.2 AAA đạt kết quả tuyệt đối **33/33 TESTS PASS (100%)**.
+
+---
+
+## 2. Thông Tin Phiên Làm Việc Trước
+- **Ngày thực hiện**: 30/10/2026 (Phiên Tích Hợp Firebase Online: Hệ Thống Đăng Ký, Đăng Nhập, Menu Chính Chuẩn Accessible & Bảng Cài Đặt Tập Trung)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Mục tiêu**:
+  1. **Chuyển đổi YumCraft Kitchen thành trò chơi Online** với Firebase SDK v10 Modular (`js/firebase-config.js`):
+     - Tích hợp Firebase Auth và Cloud Firestore để quản lý hồ sơ Bếp Trưởng, đảm bảo tên người dùng định danh không bị trùng lặp.
+     - Hỗ trợ cơ chế linh hoạt kép: Kết nối trực tiếp Firebase Project thực tế qua CDN của Google và tự động kích hoạt **Chế độ Giả lập Cục bộ (Local Mock Mode)** khi chưa điền API Key, giúp việc phát triển và trải nghiệm không bị gián đoạn.
+  2. **Xây dựng Màn hình Xác thực Hoàn chỉnh (`#screen-auth`)**:
+     - **Form Đăng Nhập (`#view-login`)**:
+       - Cho phép đăng nhập bằng **Email HOẶC Tên người dùng (Username)**. Nếu nhập Username, hệ thống tự động tra cứu email liên kết trong Firestore.
+       - Ô Mật khẩu có nút bấm Ẩn/Hiện mật khẩu trực quan chuẩn trợ năng.
+       - Checkbox "Duy trì đăng nhập cho thiết bị này": Mặc định được **TÍCH CHỌN**, tự động lưu phiên vĩnh viễn (`browserLocalPersistence`) hoặc hủy phiên khi đóng tab (`browserSessionPersistence`).
+       - Nút chuyển đổi nhanh sang màn hình Đăng ký.
+     - **Form Đăng Ký (`#view-register`)**:
+       - Nút Quay lại / Đóng ở góc trên bên trái (`#btn-back-to-login`) đưa về Đăng nhập nhanh chóng.
+       - Trường **Tên người dùng (Username)**: Viết liền không dấu, không dấu cách, chỉ gồm chữ, số và ký tự `_ . -` (regex `^[a-zA-Z0-9_.-]+# NGUYÊN TẮC THIẾT KẾ CỐT LÕI — YUMCRAFT KITCHEN
+
+> [!IMPORTANT]
+> **TRIẾT LÝ NẤU BẾP TỰ DO (TOCA KITCHEN SANDBOX PHILOSOPHY)**
+> 1. **Hoàn Toàn Không Có Công Thức Cố Định (Zero Hardcoded Recipes)**: YumCraft Kitchen là trò chơi nấu ăn mô phỏng tự do theo phong cách Toca Kitchen. Người chơi là bếp trưởng sáng tạo tuyệt đối, được quyền kết hợp bất kỳ nguyên liệu, dụng cụ và gia vị nào với nhau mà không bị trói buộc bởi bất kỳ công thức sách giáo khoa cứng nhắc nào.
+> 2. **Hóa Học Vị Giác Cảm Quan Động (Dynamic Sensory Chemistry)**: Hệ thống đánh giá dựa trên các định luật vật lý và hóa học vị giác thực tế (Umami, Mặn, Ngọt, Chua, Cay, Béo, Đắng, Thơm, Giòn), phản ánh trung thực những gì người chơi vừa thực sự chế biến và nêm nếm. Tuyệt đối không gán ghép các nhãn hương vị tĩnh hoặc tự ý suy đoán nguyên liệu không có trong món ăn.
+> 3. **Nhận Xét Của Thực Khách Sinh Động & Chân Thực (Living Character Critique)**: Khi thưởng thức, nhân vật sẽ miêu tả chi tiết cảm giác vị giác, kết cấu món ăn (nướng, luộc, chiên, cuộn, nhồi...) và mùi vị của các loại gia vị người chơi đã nêm, phản ánh đúng gu thưởng thức và biểu cảm của từng thực khách.
+> 4. **Trợ Năng Toàn Diện Chuẩn Quốc Tế (WCAG AA/AAA & NVDA First)**: Mọi tương tác, cảm giác vị giác và diễn biến nấu nướng đều phải được truyền tải hoàn hảo, tự nhiên và liền mạch đến người chơi khiếm thị thông qua NVDA và bàn phím.
+>5 ** không được đưa vào bất kỳ công thức cứng nhắt nào trong code, vì đây là game nấu ăn tự gio, không phải game nấu ăn theo công thức xách giáo khoa
+---
+
+), kiểm tra tính duy nhất trên Firestore collection `usernames`.
+       - Trường **Tên hiển thị (Display Name)**: Cho phép có dấu tiếng Việt và dấu cách (ví dụ: "Bếp Trưởng Anh Lộc"), hoàn toàn độc lập với username.
+       - Trường **Email**: Lưu trữ liên kết để hỗ trợ quản trị viên khôi phục tài khoản khi cần.
+       - Hai trường **Mật khẩu** & **Nhập lại mật khẩu**: Kiểm tra tối thiểu 8 ký tự và trùng khớp 100%.
+       - Trường **Tên nhà bếp (Kitchen Name)**: Thương hiệu gian bếp của người chơi (ví dụ: "Nhà Bếp Anh Lộc"), sẵn sàng để gắn nhãn nguồn gốc món ăn chia sẻ ra cộng đồng (*Được sản xuất tại: [Tên nhà bếp]*).
+       - Checkbox "Duy trì đăng nhập cho thiết bị này" (mặc định tích chọn).
+       - Nút Đăng ký: Tự động khởi tạo tài khoản, lưu hồ sơ, đăng nhập và đưa thẳng vào Menu Chính.
+  3. **Xây dựng Menu Chính Chuẩn UI/UX Hiện Đại (`#screen-main-menu`)**:
+     - Thiết kế theo ý tưởng của anh Lộc: **Các nút căn giữa màn hình, xếp dọc từ trên xuống dưới, không đánh số thứ tự** để tối ưu hóa sự mượt mà và tự nhiên cho trình đọc màn hình NVDA:
+       1. 🍳 **Đi vào nhà bếp**: Chuyển vào màn hình Chọn Thực Khách (`screen-character-select`), chọn 1 trong 4 nhân vật rồi vào bếp nấu ăn bình thường với 100% logic gốc.
+       2. ⚙️ **Cài đặt**: Mở hộp thoại **Bảng Cài Đặt Tập Trung** (`#modal-settings`) để tinh chỉnh âm thanh hiệu ứng bếp (SFX), thanh trượt âm lượng (Volume Slider), và giọng nói Live Region NVDA; giải phóng không gian nhà bếp khỏi các nút cài đặt rườm rà.
+       3. 📖 **Hướng dẫn**: Mở cẩm nang luật chơi tự do và bảng phím tắt (`#modal-help`).
+       4. 🚪 **Đăng xuất**: Hộp thoại xác nhận đăng xuất tài khoản an toàn, dọn dẹp phiên và đưa về màn hình Đăng nhập.
+     - Thẻ thông tin Bếp Trưởng trên Menu: Hiển thị tên hiển thị, `@username`, gian bếp và trạng thái trực tuyến (Online).
+     - Bổ sung nút "⬅️ Quay lại Menu Chính" tại màn hình Chọn Thực Khách, tạo vòng lặp trải nghiệm mượt mà, liền mạch.
+  4. **Kiểm thử tự động toàn diện**: 33 bài test cấu trúc giao diện, form đăng nhập, form đăng ký, menu chính và trợ năng WCAG 2.2 AAA đạt kết quả tuyệt đối **33/33 TESTS PASS (100%)**.
+
+---
+
+## 2. Thông Tin Phiên Làm Việc Trước
 - **Ngày thực hiện**: 27/10/2026 (Phiên Nâng Cấp Hệ Thống Lịch Sử Nấu Ăn Nhận Diện Theo Từng Nhóm Nguyên Liệu & Tự Động Bảo Toàn Mẻ Nấu)
 - **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
 - **Mục tiêu**:
