@@ -11,7 +11,39 @@
 
 # NHẬT KÝ DỰ ÁN — YUMCRAFT KITCHEN
 
-## 1. Thông Tin Phiên Làm Việc Mới Nhất (07/11/2026 - Rà Soát, Sửa Lỗi Lịch Sử Cooking & Nâng Cấp Bản Sắc 17 Dụng Cụ Bếp Sau PR #4 Của Hoàng Long)
+## 1. Thông Tin Phiên Làm Việc Mới Nhất (07/11/2026 - Bản Sắc Thực Khách Chàng Cáo & Thỏ Trắng, Trợ Năng Bàn Phím WAI-ARIA Radio Group & Kiểm Thử Toàn Diện Mặn Ngọt Chua Cay Đắng Béo)
+- **Ngày thực hiện**: 07/11/2026 (Phiên Rà Soát Sâu Toàn Bộ PR #4, Khắc Phục Lời Thoại Nhân Vật, Trợ Năng Bàn Phím WCAG 2.2 AAA & Kiểm Thử Vị Giác Cảm Quan)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Mục tiêu hoàn thành**:
+  1. **Khắc phục triệt để lỗi mất bản sắc của 2 thực khách mới (Chàng Cáo `fox_gourmet` & Thỏ Trắng `rabbit_gardener`)**:
+     - Bổ sung nhánh thoại cảm quan và biểu cảm cá tính độc nhất trong [`generateSensoryTastingReview`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html#L6945) và [`generateMultiDishTastingReview`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html#L7320) cho tất cả các tình huống:
+       - **Thịt sống tanh (`hasRawMeat`)**:
+         - Chàng Cáo: *"Trời đất! Món còn thịt sống tanh lòm chưa qua lửa kìa! Một người sành ăn như tôi tuyệt đối không nuốt nổi miếng thịt sống ẩu tả thế này đâu!"*
+         - Thỏ Trắng: *"Ôi trời đất ơi! Món còn thịt sống tanh lòm làm tôi hoảng hồn quá! Tôi chỉ thích ăn rau củ thanh mát thôi, đầu bếp mau mang đi nấu chín lại đi nhé!"*
+       - **Cháy khét đen (`hasBurnt`)**:
+         - Chàng Cáo: *"Khụ khụ... Đắng ngắt cả họng! Món ăn bị quá lửa cháy đen thui làm bốc hơi sạch vị ngọt tự nhiên tinh túy rồi, thật đáng tiếc!"*
+         - Thỏ Trắng: *"Khói khét quá đi mất! Món ăn bị cháy đen đắng nghét thế này thì hỏng hết vị ngọt lành của nguyên liệu rồi đầu bếp ơi!"*
+       - **Mặn chát (`f.salty > 7.0`)**:
+         - Chàng Cáo: *"Chát chúa quá! Lượng muối trong món làm tê liệt hết gai vị giác tinh tế của tôi rồi, cho tôi một ly nước thanh mát gấp!"*
+         - Thỏ Trắng: *"Eo ôi mặn quá! Tôi ăn thanh đạm quen rồi, nếm phải món mặn chát này làm lưỡi tê rần rần luôn, cho tôi xin nước với!"*
+       - **Cay xè bốc khói (`f.spicy > character.maxSpiceTolerance`)**:
+         - Cân chỉnh `maxSpiceTolerance` của Rồng Lửa `dragon_long` xuống 8.5 (vẫn cao nhất gian bếp nhưng khi nêm ớt cực đại 9.5-10/10 thì Rồng Lửa cũng có phản ứng hài hước "Lửa bốc tận đỉnh đầu").
+         - Chàng Cáo: *"Nóng rát cả họng! Vị cay nồng lấn át hết hương vị tự nhiên của món ăn rồi, tôi không chịu nổi đâu!"*
+         - Thỏ Trắng (ngưỡng 2.5): *"Hàààà! Cay xè lưỡi luôn rồi! Món ăn làm tôi chảy cả nước mắt, tôi chỉ quen ăn rau củ thanh ngọt thôi hu hu!"*
+       - **Tuyệt phẩm 5 sao (`score >= 82`) & Đại tiệc đa món (`avgScore >= 80`)**:
+         - Chàng Cáo: *"Chẹp chẹp... QUÁ ĐỖI TINH TẾ! ..., một tuyệt tác vị giác thanh nhã làm say đắm lòng người, xứng tầm nhà hàng cao cấp!"*
+         - Thỏ Trắng: *"Chóp chép... ÔI NGON LÀNH QUÁ! ..., từng tầng hương vị ngọt mát tươi lành như mang cả khu vườn vào món ăn vậy!"*
+  2. **Nâng cấp Trợ năng Bàn phím WAI-ARIA Radio Group & Giao diện Chọn Thực Khách (`#char-cards-list`)**:
+     - Cài đặt sự kiện `keydown` đầy đủ cho các thẻ radio thực khách: Phím `ArrowRight`/`ArrowDown` chuyển chọn nhân vật kế tiếp (xoay vòng), `ArrowLeft`/`ArrowUp` chuyển chọn nhân vật trước (xoay vòng), phím `Home` về nhân vật đầu, `End` đến nhân vật cuối, phím `Enter`/`Space` kích hoạt chọn ngay lập tức.
+     - Tự động di chuyển focus (`autoFocusSelected`) và phát âm thanh `pick`, thông báo NVDA `announceNVDA` sống động.
+     - Cập nhật layout lưới CSS `#char-cards-list` thành `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4`, giúp 6 thực khách hiển thị cân xứng 2 hàng x 3 cột hoàn hảo trên màn hình lớn.
+  3. **Bộ Kiểm Thử Tự Động Toàn Diện Đa Kịch Bản (`tests/test_sensory_and_a11y_scenarios.js`)**:
+     - Kiểm thử 18 kịch bản bao quát: WAI-ARIA radio group keyboard navigation, Mặn chát, Cay xè bốc khói, Thịt sống tanh, Cháy khét, Tuyệt phẩm 5 sao, Chua thanh, Ngọt đậm, Béo ngậy thơm lừng, Đắng nhẹ tinh tế, Thực đơn combo 2 món & Đại tiệc 3+ món, 17 dụng cụ bếp và 29 gia vị.
+     - Kết quả kiểm thử: **18/18 BÀI TEST ĐẠT (100% PASS)**.
+
+---
+
+## 2. Thông Tin Phiên Làm Việc Trước (07/11/2026 - Rà Soát, Sửa Lỗi Lịch Sử Cooking & Nâng Cấp Bản Sắc 17 Dụng Cụ Bếp Sau PR #4 Của Hoàng Long)
 - **Ngày thực hiện**: 07/11/2026 (Phiên Rà Soát Chuyên Sâu, Sửa Lỗi Lịch Sử Nấu Nướng, Bản Địa Hóa Tiếng Việt & Chuẩn Hóa Bản Sắc 17 Dụng Cụ Bếp)
 - **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
 - **Mục tiêu hoàn thành**:

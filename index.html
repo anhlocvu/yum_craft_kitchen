@@ -643,7 +643,7 @@
         </span>
       </div>
 
-      <div id="char-cards-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" role="radiogroup" aria-label="Chọn nhân vật thực khách để bắt đầu">
+      <div id="char-cards-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" role="radiogroup" aria-label="Chọn nhân vật thực khách để bắt đầu">
         <!-- Rendered by JS -->
       </div>
     </main>
@@ -2162,7 +2162,7 @@
         ],
         likes: ['spicy', 'aroma', 'umami', 'salty'],
         lovesStructures: ['stuffed', 'loose'],
-        maxSpiceTolerance: 10.0,
+        maxSpiceTolerance: 8.5,
         hatesRawMeat: true
       },
       {
@@ -6951,6 +6951,10 @@
           gagSpeech = `"Meo meo... Thịt còn sống tanh lòm thế này Miu không dám cắn đâu, sợ đau bụng lắm!"`;
         } else if (character.id === 'dragon_long') {
           gagSpeech = `"Gừừừ! Thịt còn sống nhăn răng! Đưa đây ta khè một búng lửa nướng chín lại ngay bây giờ!"`;
+        } else if (character.id === 'fox_gourmet') {
+          gagSpeech = `"Trời đất! Món '${finalDishName}' còn thịt sống tanh lòm chưa qua lửa kìa! Một người sành ăn như tôi tuyệt đối không nuốt nổi miếng thịt sống ẩu tả thế này đâu!"`;
+        } else if (character.id === 'rabbit_gardener') {
+          gagSpeech = `"Ôi trời đất ơi! Món '${finalDishName}' còn thịt sống tanh lòm làm tôi hoảng hồn quá! Tôi chỉ thích ăn rau củ thanh mát thôi, đầu bếp mau mang đi nấu chín lại đi nhé!"`;
         } else {
           gagSpeech = `"Kỳ cục quá! Thịt chưa qua xử lý nhiệt chín tới, còn mùi tanh sống thế này thì vi khuẩn sinh sôi, không thể ăn được!"`;
         }
@@ -6972,6 +6976,10 @@
           burntSpeech = `"Khụ... Đắng quá đi mất! Món bị cháy khét đắng ngắt cả lưỡi rồi Miu không thích đâu!"`;
         } else if (character.id === 'dragon_long') {
           burntSpeech = `"Ha ha! Khét lẹt như cục than vậy! Dù ta là rồng lửa nhưng ăn món cháy đen này cũng thấy nghẹn họng!"`;
+        } else if (character.id === 'fox_gourmet') {
+          burntSpeech = `"Khụ khụ... Đắng ngắt cả họng! Món '${finalDishName}' bị quá lửa cháy đen thui làm bốc hơi sạch vị ngọt tự nhiên tinh túy rồi, thật đáng tiếc!"`;
+        } else if (character.id === 'rabbit_gardener') {
+          burntSpeech = `"Khói khét quá đi mất! Món '${finalDishName}' bị cháy đen đắng nghét thế này thì hỏng hết vị ngọt lành của nguyên liệu rồi đầu bếp ơi!"`;
         } else {
           burntSpeech = `"Đắng ngắt! Quá trình nhiệt phân quá đà làm cháy thành than carbon rồi, mất sạch dinh dưỡng và vị ngon!"`;
         }
@@ -6993,6 +7001,10 @@
           saltySpeech = `"Eo ôi mặn quá! Lưỡi Miu tê rần rần rồi, mau cho Miu uống nước lọc với!"`;
         } else if (character.id === 'dragon_long') {
           saltySpeech = `"Mặn như nước biển sâu vậy! Đầu bếp tính ướp muối ta thành xác ướp luôn à?!"`;
+        } else if (character.id === 'fox_gourmet') {
+          saltySpeech = `"Chát chúa quá! Lượng muối trong món '${finalDishName}' làm tê liệt hết gai vị giác tinh tế của tôi rồi, cho tôi một ly nước thanh mát gấp!"`;
+        } else if (character.id === 'rabbit_gardener') {
+          saltySpeech = `"Eo ôi mặn quá! Tôi ăn thanh đạm quen rồi, nếm phải món '${finalDishName}' mặn chát này làm lưỡi tê rần rần luôn, cho tôi xin nước với!"`;
         } else {
           saltySpeech = `"Nồng độ muối natri vượt ngưỡng báo động! Vị mặn lấn át toàn bộ hương vị khác, không hề có tính cân bằng!"`;
         }
@@ -7010,10 +7022,16 @@
         let spicySpeech = '';
         if (character.id === 'cat_miu') {
           spicySpeech = `"Hàààà! Cay xé họng luôn rồi! Miu bốc khói hai tai rồi nè, cay cấp độ ${f.spicy}/10 Miu không chịu nổi đâu hu hu!"`;
-        } else if (character.id === 'owl_prof') {
-          spicySpeech = `"Hắt xì... Nồng độ capsaicin cay cấp độ ${f.spicy}/10 vượt xa ngưỡng chịu đựng của tôi rồi, cay cháy cả họng!"`;
+        } else if (character.id === 'dragon_long') {
+          spicySpeech = `"Oa oa! Lửa bốc tận đỉnh đầu rồi! Món '${finalDishName}' cay cấp độ ${f.spicy}/10 vượt cả sức chịu đựng của rồng ta, đầu bếp cho ta một thùng nước dập lửa mau!"`;
+        } else if (character.id === 'fox_gourmet') {
+          spicySpeech = `"Nóng rát cả họng! Món '${finalDishName}' cay cấp độ ${f.spicy}/10 lấn át hết hương vị tự nhiên của món ăn rồi, tôi không chịu nổi độ cay này đâu!"`;
+        } else if (character.id === 'rabbit_gardener') {
+          spicySpeech = `"Hàààà! Cay xè lưỡi luôn rồi! Món '${finalDishName}' cay cấp độ ${f.spicy}/10 làm tôi chảy cả nước mắt, tôi chỉ quen ăn rau củ thanh ngọt thôi hu hu!"`;
+        } else if (character.id === 'chef_bear') {
+          spicySpeech = `"Hàààà! Cay bốc hỏa hai mang tai rồi! Món '${finalDishName}' cay cấp độ ${f.spicy}/10 xé lưỡi bốc khói, cho tôi xô nước đá gấp!"`;
         } else {
-          spicySpeech = `"Hàààà! Nóng bừng cả mặt! Món '${finalDishName}' cay cấp độ ${f.spicy}/10 xé lưỡi bốc khói, vượt quá giới hạn chịu đựng của tôi rồi!"`;
+          spicySpeech = `"Hắt xì... Nồng độ capsaicin cay cấp độ ${f.spicy}/10 vượt xa ngưỡng chịu đựng của tôi rồi, cay cháy cả họng!"`;
         }
         playSoundEffect('react_bad');
         return {
@@ -7244,6 +7262,10 @@
           speech = `"Măm măm... ÔI THÍCH QUÁ! ${sensorySentence}, vị ngon hòa quyện tan ngay trong miệng làm Miu mê tít luôn!"`;
         } else if (character.id === 'dragon_long') {
           speech = `"Khà khà... ĐÃ MIỆNG THẬT! ${sensorySentence}, hương vị đậm đà bùng nổ đúng gu của ta rồi!"`;
+        } else if (character.id === 'fox_gourmet') {
+          speech = `"Chẹp chẹp... QUÁ ĐỖI TINH TẾ! ${sensorySentence}, một tuyệt tác vị giác thanh nhã làm say đắm lòng người, xứng tầm nhà hàng cao cấp!"`;
+        } else if (character.id === 'rabbit_gardener') {
+          speech = `"Chóp chép... ÔI NGON LÀNH QUÁ! ${sensorySentence}, từng tầng hương vị ngọt mát tươi lành như mang cả khu vườn vào món ăn vậy!"`;
         } else {
           speech = `"Chà... XUẤT SẮC! ${sensorySentence}, sự phối hợp ẩm thực này đạt độ hài hòa cân bằng đỉnh cao!"`;
         }
@@ -7308,6 +7330,10 @@
           gagSpeech = `"Meo meo... Món ${badNames} thịt còn sống tanh lòm Miu sợ lắm! ${goodNames ? `Cho Miu ăn ${goodNames} thôi được không?` : ''}"`;
         } else if (character.id === 'dragon_long') {
           gagSpeech = `"Gừừừ! Món ${badNames} thịt sống nhăn răng! Đưa đây ta khè một búng lửa nướng chín lại ngay!"`;
+        } else if (character.id === 'fox_gourmet') {
+          gagSpeech = `"Trời đất! Món ${badNames} còn thịt sống tanh lòm chưa nấu chín kìa! ${goodNames ? `Dù ${goodNames} có hấp dẫn đến mấy thì ` : ''}một người sành ăn như tôi cũng không thể nuốt nổi miếng thịt sống ẩu tả này!"`;
+        } else if (character.id === 'rabbit_gardener') {
+          gagSpeech = `"Ôi trời ơi! Món ${badNames} thịt sống tanh quá! ${goodNames ? `Để tôi thưởng thức ${goodNames} thôi nhé, ` : ''}tôi sợ thịt sống lắm, mau đem nấu chín đi đầu bếp ơi!"`;
         } else {
           gagSpeech = `"Báo động an toàn thực phẩm! Món ${badNames} chưa qua xử lý nhiệt chín tới, vi khuẩn sinh sôi không thể ăn được!"`;
         }
@@ -7332,6 +7358,10 @@
           burntSpeech = `"Khụ... Đắng ngắt! Món ${badNames} cháy khét lẹt rồi Miu không thích đâu!"`;
         } else if (character.id === 'dragon_long') {
           burntSpeech = `"Ha ha! Khét như cục than vậy! Món ${badNames} cháy đen rồi, dù là rồng ta ăn cũng nghẹn họng!"`;
+        } else if (character.id === 'fox_gourmet') {
+          burntSpeech = `"Khụ khụ... Món ${badNames} bị quá lửa cháy đen thui rồi! Cắn vào đắng ngắt cuống họng làm mất hết cảm hứng thưởng thức bàn ăn tinh tế này!"`;
+        } else if (character.id === 'rabbit_gardener') {
+          burntSpeech = `"Khói khét quá đi! Món ${badNames} bị cháy đen đắng nghét rồi, làm bay mất hết hương thơm thanh mát của cả bàn ăn rồi đầu bếp ơi!"`;
         } else {
           burntSpeech = `"Món ${badNames} đã bị than hóa nghiêm trọng, nồng độ hợp chất đắng quá cao làm hỏng cả bàn ăn!"`;
         }
@@ -7349,10 +7379,23 @@
       // Có món bị nêm mặn chát
       if (superSaltyDishes.length > 0) {
         const badNames = superSaltyDishes.map(dr => `'${dr.dish.name}'`).join(', ');
-        const speech = `"Úi chà chà! Món ${badNames} nêm mặn chát cả lưỡi rồi! Mau cho tôi xin xô nước lọc gấp kẻo quéo thận mất!"`;
+        let saltySpeech = '';
+        if (character.id === 'chef_bear') {
+          saltySpeech = `"Úi chà chà! Món ${badNames} nêm mặn chát cả lưỡi rồi! Mau cho tôi xin xô nước lọc gấp kẻo quéo thận mất!"`;
+        } else if (character.id === 'cat_miu') {
+          saltySpeech = `"Eo ôi mặn quá! Món ${badNames} làm lưỡi Miu tê rần rần rồi, mau cho Miu uống nước lọc với!"`;
+        } else if (character.id === 'dragon_long') {
+          saltySpeech = `"Mặn như nước biển sâu! Món ${badNames} mặn thế này thì rồng ta cũng phải đầu hàng, cần một hồ nước ngọt ngay!"`;
+        } else if (character.id === 'fox_gourmet') {
+          saltySpeech = `"Chát chúa quá! Món ${badNames} mặn chát làm tê liệt hết gai vị giác của tôi rồi, cho tôi ly nước thanh mát gấp!"`;
+        } else if (character.id === 'rabbit_gardener') {
+          saltySpeech = `"Eo ôi mặn quá! Tôi ăn thanh đạm quen rồi, món ${badNames} mặn thế này làm hỏng cả bữa ăn của tôi rồi hu hu!"`;
+        } else {
+          saltySpeech = `"Nồng độ muối natri trong món ${badNames} vượt ngưỡng an toàn! Vị mặn phá vỡ hoàn toàn sự cân bằng của cả thực đơn!"`;
+        }
         playSoundEffect('react_bad');
         return {
-          speech,
+          speech: saltySpeech,
           moodTag: 'Có món mặn chát! 🧂💦',
           reactionType: 'bad',
           score: 35,
@@ -7364,10 +7407,23 @@
       // Có món cay xè vượt quá sức chịu đựng
       if (superSpicyDishes.length > 0) {
         const badNames = superSpicyDishes.map(dr => `'${dr.dish.name}'`).join(', ');
-        const speech = `"Hàààà! Món ${badNames} cay cấp độ xé lưỡi bốc khói hai tai rồi, cay cháy cả họng!"`;
+        let spicySpeech = '';
+        if (character.id === 'cat_miu') {
+          spicySpeech = `"Hàààà! Món ${badNames} cay xé họng luôn rồi! Miu bốc khói hai tai rồi nè, cay quá Miu không chịu nổi đâu hu hu!"`;
+        } else if (character.id === 'dragon_long') {
+          spicySpeech = `"Oa oa! Lửa bốc tận trời rồi! Món ${badNames} cay bùng nổ vượt cả giới hạn rồng lửa ta, đầu bếp cho ta xô nước dập lửa mau!"`;
+        } else if (character.id === 'fox_gourmet') {
+          spicySpeech = `"Nóng rát cả họng! Món ${badNames} cay xè này thiêu rụi hết vị giác tinh tế rồi, tôi cần nước đá ngay!"`;
+        } else if (character.id === 'rabbit_gardener') {
+          spicySpeech = `"Hàààà! Cay xè lưỡi luôn rồi! Món ${badNames} cay quá làm tôi chảy cả nước mắt, tôi chỉ quen ăn rau củ thanh ngọt thôi!"`;
+        } else if (character.id === 'chef_bear') {
+          spicySpeech = `"Hàààà! Món ${badNames} cay bốc hỏa hai mang tai rồi! Xé lưỡi bốc khói, cho tôi xô nước đá gấp đầu bếp ơi!"`;
+        } else {
+          spicySpeech = `"Capsaicin trong món ${badNames} đạt nồng độ cực đại! Vị cay nồng thiêu đốt làm tê liệt toàn bộ khả năng cảm vị!"`;
+        }
         playSoundEffect('react_bad');
         return {
-          speech,
+          speech: spicySpeech,
           moodTag: 'Có món cay xè! 🔥🌶️',
           reactionType: 'bad',
           score: 42,
@@ -7420,6 +7476,10 @@
             speech = `"Măm măm... ÔI THÍCH QUÁ ĐI! Món '${d1.name}' thì ${d1.desc}, lại có thêm '${d2.name}' ${d2.desc}! Vị ngon hòa quyện tan ngay trong miệng làm Miu mê tít luôn!"`;
           } else if (character.id === 'dragon_long') {
             speech = `"Khà khà... ĐÃ MIỆNG VÀ ĐÃ KHÁT THẬT! Món '${d1.name}' ${d1.desc}, rồi lại được nhấp '${d2.name}' ${d2.desc}! Hương vị bùng nổ đúng gu của ta rồi!"`;
+          } else if (character.id === 'fox_gourmet') {
+            speech = `"Chẹp chẹp... THỰC ĐƠN PHỐI HỢP CỰC KỲ TINH TẾ! Món '${d1.name}' (${d1.desc}) đi cùng '${d2.name}' (${d2.desc}) tạo nên một bản hòa tấu vị giác thanh nhã tuyệt đỉnh, xứng tầm ẩm thực cao cấp!"`;
+          } else if (character.id === 'rabbit_gardener') {
+            speech = `"Chóp chép... ÔI BỮA ĂN THANH LÀNH NGON MIỆNG QUÁ! Sự kết hợp giữa '${d1.name}' (${d1.desc}) và '${d2.name}' (${d2.desc}) ngọt mát tươi lành như cả khu vườn trù phú vậy!"`;
           } else {
             speech = `"Chà... XUẤT SẮC! Sự phối hợp giữa món '${d1.name}' (${d1.desc}) và món '${d2.name}' (${d2.desc}) đạt độ cân bằng ẩm thực đỉnh cao!"`;
           }
@@ -7448,6 +7508,10 @@
             speech = `"Măm măm... ÔI MÂM CỖ NHIỀU MÓN QUÁ! Có tận ${dishes.length} món thơm lừng bày đầy trên bàn: ${dishListNames}! Món nào cũng ngon tuyệt làm Miu no căng bụng luôn nè!"`;
           } else if (character.id === 'dragon_long') {
             speech = `"Khà khà... ĐẠI TIỆC VUA CHÚA! ${dishes.length} món phong phú từ ${dishListNames}, ăn uống ngập tràn thế này mới xứng tầm rồng lửa ta chứ!"`;
+          } else if (character.id === 'fox_gourmet') {
+            speech = `"Trầm trồ thực sự! Một đại tiệc ${dishes.length} món đỉnh cao: ${formatNaturalList(dishDetails.map(d => `'${d.name}' (${d.desc})`), 'và')}! Sự am hiểu và phối vị tài tình của đầu bếp khiến một người sành ăn như tôi vô cùng thán phục!"`;
+          } else if (character.id === 'rabbit_gardener') {
+            speech = `"Chóp chép... ÔI ĐẠI TIỆC VƯỜN HOA RỰC RỠ! Tận ${dishes.length} món thơm lành bày ngập tràn trên bàn: ${dishListNames}! Bữa ăn tươi mát ngon lành này làm tôi vui sướng vô cùng!"`;
           } else {
             speech = `"Kinh ngạc thực sự! Một thực đơn ${dishes.length} món được xây dựng công phu và đa dạng: ${dishDetails.map(d => `'${d.name}' (${d.desc})`).join(', ')}! Sự phối hợp ẩm thực này đạt cấp độ đỉnh cao!"`;
           }
@@ -7689,19 +7753,21 @@
      * 7. RENDER GIAO DIỆN DOM CHI TIẾT
      *************************************************************************/
 
-    // RENDER START SCREEN CHARACTERS
-    function renderStartScreenCharacters() {
+    // RENDER START SCREEN CHARACTERS (ACCESSIBLE WAI-ARIA RADIO GROUP WITH KEYBOARD NAVIGATION)
+    function renderStartScreenCharacters(autoFocusSelected = false) {
       const container = document.getElementById('char-cards-list');
       if (!container) return;
       container.innerHTML = '';
 
-      CHARACTERS.forEach(c => {
+      CHARACTERS.forEach((c, idx) => {
         const isSel = c.id === state.activeCharacterId;
         const card = document.createElement('div');
+        card.id = `char-card-${c.id}`;
         card.setAttribute('role', 'radio');
         card.setAttribute('aria-checked', isSel ? 'true' : 'false');
         card.setAttribute('tabindex', isSel ? '0' : '-1');
-        card.className = `p-4 sm:p-5 rounded-3xl border-3 transition cursor-pointer flex flex-col justify-between gap-3 text-left ${
+        card.setAttribute('aria-label', `${c.name}, ${c.title}. ${c.desc}. Món khoái khẩu: ${c.cravings[0]}. ${isSel ? 'Đang được chọn.' : 'Nhấn phím Cách, Enter hoặc mũi tên để chọn.'}`);
+        card.className = `p-4 sm:p-5 rounded-3xl border-3 transition cursor-pointer flex flex-col justify-between gap-3 text-left focus:outline-hidden focus:ring-4 focus:ring-orange-400 ${
           isSel
             ? 'bg-amber-50 border-orange-500 shadow-xl ring-4 ring-orange-200'
             : 'bg-white border-stone-200 hover:border-amber-400 hover:shadow-md'
@@ -7723,16 +7789,60 @@
             ${c.cravings[0]}
           </div>
         `;
-        card.addEventListener('click', () => {
+
+        const selectThisChar = (focusAfter = false) => {
           state.activeCharacterId = c.id;
           playSoundEffect('pick');
           announceNVDA(`Đã chọn thực khách: ${c.name}. ${c.desc}`, 'polite');
-          renderStartScreenCharacters();
+          renderStartScreenCharacters(focusAfter);
           updateStartBtnLabel();
+        };
+
+        card.addEventListener('click', () => {
+          selectThisChar(false);
         });
+
+        card.addEventListener('keydown', (e) => {
+          let targetIndex = -1;
+          if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            targetIndex = (idx + 1) % CHARACTERS.length;
+          } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            targetIndex = (idx - 1 + CHARACTERS.length) % CHARACTERS.length;
+          } else if (e.key === 'Home') {
+            e.preventDefault();
+            targetIndex = 0;
+          } else if (e.key === 'End') {
+            e.preventDefault();
+            targetIndex = CHARACTERS.length - 1;
+          } else if (e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault();
+            selectThisChar(true);
+            return;
+          }
+
+          if (targetIndex !== -1) {
+            const nextChar = CHARACTERS[targetIndex];
+            state.activeCharacterId = nextChar.id;
+            playSoundEffect('pick');
+            announceNVDA(`Đã chọn thực khách: ${nextChar.name}. ${nextChar.desc}`, 'polite');
+            renderStartScreenCharacters(true);
+            updateStartBtnLabel();
+          }
+        });
+
         container.appendChild(card);
       });
+
       updateStartBtnLabel();
+
+      if (autoFocusSelected) {
+        const activeCard = document.getElementById(`char-card-${state.activeCharacterId}`);
+        if (activeCard) {
+          activeCard.focus();
+        }
+      }
     }
 
     function updateStartBtnLabel() {
