@@ -4780,7 +4780,7 @@
         temp: '200°C (Lửa lớn)',
         desc: 'Đảo nhanh rau củ, mì và thịt trên lửa lớn theo kiểu Á Đông',
         actions: [
-          { id: 'fry_step', label: '🥘 Đảo Wok Lửa Lớn (C)', desc: 'Đảo nhanh tay để món ăn thơm nóng và chín đều' }
+          { id: 'wok_fry_step', label: '🥘 Đảo Wok Lửa Lớn (C)', desc: 'Đảo nhanh tay trên lửa lớn bốc khói để món ăn thơm giòn chín đều' }
         ]
       },
       {
@@ -4791,7 +4791,7 @@
         temp: '220°C (Gang nóng)',
         desc: 'Nướng áp mặt tạo vân xém thơm cho thịt, cá và rau củ',
         actions: [
-          { id: 'grill_step', label: '🍖 Nướng Trên Chảo Gang (C)', desc: 'Làm xém mặt nguyên liệu với vân nướng đậm đà' }
+          { id: 'grill_pan_step', label: '🍖 Nướng Trên Chảo Gang (C)', desc: 'Làm xém mặt nguyên liệu với vân nướng đậm đà' }
         ]
       },
       {
@@ -4802,7 +4802,7 @@
         temp: '115°C (Áp suất cao)',
         desc: 'Ninh mềm thịt, đậu và củ quả nhanh chóng trong hơi nóng áp suất',
         actions: [
-          { id: 'boil_step', label: '♨️ Ninh Áp Suất (C)', desc: 'Ninh mềm nguyên liệu và làm nước dùng đậm vị' }
+          { id: 'pressure_cook_step', label: '♨️ Ninh Áp Suất (C)', desc: 'Ninh mềm nguyên liệu trong hơi nóng áp suất cao đậm vị ngọt nước' }
         ]
       },
       {
@@ -5366,7 +5366,10 @@
         steamed: 'hấp cách thủy',
         air_fried: 'chiên giòn bằng khí nóng',
         rice_cooked: 'nấu chín bằng nồi cơm điện',
-        microwaved: 'làm nóng bằng vi sóng'
+        microwaved: 'làm nóng bằng vi sóng',
+        wok_fried: 'đảo Wok lửa lớn',
+        pan_grilled: 'nướng chảo gang',
+        pressure_cooked: 'ninh áp suất'
       };
 
       if (item.actionHistory && item.actionHistory.length > 1) {
@@ -5471,31 +5474,35 @@
         else allStructures.add('loose');
 
         if (it.isFreshBalancer && it.cookLevel <= 1) hasFreshBalancer = true;
-        if (it.cookMethod === 'boiled' && it.cookLevel >= 1) hasBoiledSoup = true;
+        if ((it.cookMethod === 'boiled' || it.cookMethod === 'pressure_cooked') && it.cookLevel >= 1) hasBoiledSoup = true;
         if (it.cookLevel >= 3) hasBurnt = true;
         if (it.needsCooking && it.cookLevel === 0) hasRawMeat = true;
+
+        const highHeatMethods = ['fried', 'deep_fried', 'baked', 'grilled', 'air_fried', 'wok_fried', 'pan_grilled'];
+        const allHeatMethods = ['fried', 'deep_fried', 'baked', 'grilled', 'boiled', 'brewed', 'steamed', 'air_fried', 'rice_cooked', 'microwaved', 'wok_fried', 'pan_grilled', 'pressure_cooked'];
+        const starchCookingMethods = ['boiled', 'fried', 'baked', 'deep_fried', 'grilled', 'steamed', 'rice_cooked', 'air_fried', 'microwaved', 'wok_fried', 'pan_grilled', 'pressure_cooked'];
 
         if (it.category === 'sweets' || it.id === 'chocolate' || it.id === 'milk' || it.id === 'oreo') hasSweets = true;
         if (it.category === 'meat' || it.category === 'seafood' || it.id === 'egg' || it.id === 'pate') hasMeatOrSavory = true;
         if (it.id === 'cheese_stick' || it.id === 'cheese_slice' || it.id === 'mozzarella' || it.id === 'parmesan_cheese' || it.id === 'cheese_foam' || it.id === 'cream_cheese' || it.baseId === 'cheese_slice' || it.baseId === 'mozzarella' || it.baseId === 'parmesan_cheese' || it.baseId === 'cheese_foam' || it.baseId === 'cream_cheese') hasCheese = true;
         if (it.baseId === 'white_sugar' || it.baseId === 'brown_sugar' || it.baseId === 'palm_sugar' || it.baseId === 'rock_sugar' || it.baseId === 'malt_syrup' || it.baseId === 'condensed_milk' || it.id === 'condensed_milk') {
-          if (it.cookLevel >= 1 && (it.cookMethod === 'fried' || it.cookMethod === 'deep_fried' || it.cookMethod === 'baked' || it.cookMethod === 'grilled' || (it.actionHistory && it.actionHistory.some(a => ['fried', 'deep_fried', 'baked', 'grilled'].includes(a))))) {
+          if (it.cookLevel >= 1 && (highHeatMethods.includes(it.cookMethod) || (it.actionHistory && it.actionHistory.some(a => highHeatMethods.includes(a))))) {
             hasCaramelizedSugar = true;
           }
         }
         if (it.baseId === 'fried_shallots' || it.baseId === 'scallion_oil' || it.id === 'fried_shallots' || it.id === 'scallion_oil') hasShallotOrScallionOil = true;
         if (it.category === 'beans_seeds' || it.baseId === 'mung_bean' || it.baseId === 'black_bean' || it.baseId === 'white_bean' || it.baseId === 'red_bean' || it.baseId === 'lotus_seed' || it.baseId === 'lotus_root') {
-          if (it.cookLevel >= 1 || it.cookMethod === 'boiled') hasBeansOrLotus = true;
+          if (it.cookLevel >= 1 || ['boiled', 'pressure_cooked', 'steamed', 'rice_cooked'].includes(it.cookMethod)) hasBeansOrLotus = true;
         }
         if (it.baseId === 'onion' && it.cookLevel >= 1) hasCaramelizedOnion = true;
         if (it.category === 'starch' || it.category === 'noodles_flour' || it.baseId === 'rice_paper' || it.baseId === 'sweet_corn') hasStarchOrGrains = true;
         if (alcoholIds.includes(it.baseId) || alcoholIds.includes(it.id)) {
-          if (it.cookLevel >= 1 || ['fried', 'deep_fried', 'baked', 'grilled', 'boiled', 'brewed', 'steamed'].includes(it.cookMethod) || (it.actionHistory && it.actionHistory.some(a => ['fried', 'deep_fried', 'baked', 'grilled', 'boiled', 'brewed'].includes(a)))) {
+          if (it.cookLevel >= 1 || allHeatMethods.includes(it.cookMethod) || (it.actionHistory && it.actionHistory.some(a => allHeatMethods.includes(a)))) {
             hasHeatedAlcohol = true;
           }
         }
         if (gelatinStarchIds.includes(it.baseId) || gelatinStarchIds.includes(it.id)) {
-          if (it.cookLevel >= 1 || ['boiled', 'fried', 'baked', 'deep_fried', 'grilled', 'steamed'].includes(it.cookMethod)) {
+          if (it.cookLevel >= 1 || starchCookingMethods.includes(it.cookMethod) || (it.actionHistory && it.actionHistory.some(a => starchCookingMethods.includes(a)))) {
             hasGelatinizedStarch = true;
           }
         }
@@ -5522,17 +5529,17 @@
             }
             if (sub.baseId === 'fried_shallots' || sub.baseId === 'scallion_oil' || sub.id === 'fried_shallots' || sub.id === 'scallion_oil') hasShallotOrScallionOil = true;
             if (sub.category === 'beans_seeds' || sub.baseId === 'mung_bean' || sub.baseId === 'black_bean' || sub.baseId === 'white_bean' || sub.baseId === 'red_bean' || sub.baseId === 'lotus_seed' || sub.baseId === 'lotus_root') {
-              if (sub.cookLevel >= 1 || it.cookLevel >= 1 || it.cookMethod === 'boiled') hasBeansOrLotus = true;
+              if (sub.cookLevel >= 1 || it.cookLevel >= 1 || ['boiled', 'pressure_cooked', 'steamed', 'rice_cooked'].includes(it.cookMethod)) hasBeansOrLotus = true;
             }
             if (sub.baseId === 'onion' && (sub.cookLevel >= 1 || it.cookLevel >= 1)) hasCaramelizedOnion = true;
             if (sub.category === 'starch' || sub.category === 'noodles_flour' || sub.baseId === 'rice_paper' || sub.baseId === 'sweet_corn') hasStarchOrGrains = true;
             if (alcoholIds.includes(sub.baseId) || alcoholIds.includes(sub.id)) {
-              if (sub.cookLevel >= 1 || it.cookLevel >= 1 || ['fried', 'deep_fried', 'baked', 'grilled', 'boiled', 'brewed'].includes(it.cookMethod)) {
+              if (sub.cookLevel >= 1 || it.cookLevel >= 1 || allHeatMethods.includes(it.cookMethod) || (sub.actionHistory && sub.actionHistory.some(a => allHeatMethods.includes(a)))) {
                 hasHeatedAlcohol = true;
               }
             }
             if (gelatinStarchIds.includes(sub.baseId) || gelatinStarchIds.includes(sub.id)) {
-              if (sub.cookLevel >= 1 || it.cookLevel >= 1) {
+              if (sub.cookLevel >= 1 || it.cookLevel >= 1 || starchCookingMethods.includes(it.cookMethod) || (sub.actionHistory && sub.actionHistory.some(a => starchCookingMethods.includes(a)))) {
                 hasGelatinizedStarch = true;
               }
             }
@@ -6306,7 +6313,7 @@
         return;
       }
 
-      // 5. Heat-based cooking (Fry, Boil, Deep Fry, Bake, Grill) - PLAY WAIT VỚI TỪNG ÂM THANH BẾP RIÊNG BIỆT
+      // 5. Heat-based cooking (Fry, Boil, Deep Fry, Bake, Grill, Steam, Wok, Grill Pan, Pressure Cook, Rice Cook, Air Fry, Microwave)
       const heatMethods = {
         fry_step: { method: 'fried', soundFile: 'frying_pan.ogg', verb: 'Áp chảo / Xào' },
         boil_step: { method: 'boiled', soundFile: 'pot_of_boiling_water.ogg', verb: 'Luộc / Hầm' },
@@ -6314,6 +6321,9 @@
         bake_step: { method: 'baked', soundFile: 'oven.ogg', verb: 'Nướng lò' },
         grill_step: { method: 'grilled', soundFile: 'grill rack.ogg', verb: 'Nướng vỉ than hoa' },
         steam_step: { method: 'steamed', soundFile: 'pot_of_boiling_water.ogg', verb: 'Hấp cách thủy' },
+        wok_fry_step: { method: 'wok_fried', soundFile: 'frying_pan.ogg', verb: 'Đảo Wok lửa lớn' },
+        grill_pan_step: { method: 'pan_grilled', soundFile: 'grill rack.ogg', verb: 'Nướng chảo gang' },
+        pressure_cook_step: { method: 'pressure_cooked', soundFile: 'pot_of_boiling_water.ogg', verb: 'Ninh áp suất' },
         air_fry_step: { method: 'air_fried', soundEffect: 'deep_fry', verb: 'Chiên bằng khí nóng' },
         rice_cook_step: { method: 'rice_cooked', soundEffect: 'boil', verb: 'Nấu bằng nồi cơm điện' },
         microwave_step: { method: 'microwaved', soundEffect: 'microwave', verb: 'Làm nóng bằng vi sóng' }
@@ -6388,6 +6398,10 @@
               if (!sub.cookMethod || sub.cookMethod === 'none') {
                 sub.cookMethod = heat.method;
               }
+              if (!sub.actionHistory) sub.actionHistory = [];
+              if (sub.actionHistory.length === 0 || sub.actionHistory[sub.actionHistory.length - 1] !== heat.method) {
+                sub.actionHistory.push(heat.method);
+              }
               sub.spicesApplied.forEach(sp => { sp.cookedIn = true; });
               if (item.cookLevel >= 1) sub.needsCooking = false;
             });
@@ -6400,7 +6414,7 @@
           if (heat.method === 'deep_fried' || heat.method === 'air_fried') {
             item.texture = 'crispy';
             if (item.kind === 'rolled' || item.kind === 'stuffed') item.outerTexture = 'crispy';
-          } else if (heat.method === 'boiled') {
+          } else if (heat.method === 'boiled' || heat.method === 'pressure_cooked') {
             item.texture = 'liquid';
             if (item.kind === 'rolled' || item.kind === 'stuffed') item.outerTexture = 'soft';
           } else if (heat.method === 'steamed') {
@@ -6409,9 +6423,9 @@
           } else if (heat.method === 'rice_cooked' || heat.method === 'microwaved') {
             item.texture = 'soft';
             if (item.kind === 'rolled' || item.kind === 'stuffed') item.outerTexture = 'soft';
-          } else if (heat.method === 'fried') {
+          } else if (heat.method === 'fried' || heat.method === 'wok_fried') {
             item.texture = item.cookLevel >= 2 ? 'crispy' : 'soft';
-          } else if (heat.method === 'baked' || heat.method === 'grilled') {
+          } else if (heat.method === 'baked' || heat.method === 'grilled' || heat.method === 'pan_grilled') {
             if (item.cookLevel >= 2) {
               item.texture = 'crispy';
               if (item.kind === 'rolled' || item.kind === 'stuffed') item.outerTexture = 'crispy';
@@ -6433,23 +6447,41 @@
               item.flavors.umami += 0.3;
             }
             if (heat.method === 'microwaved') item.flavors.aroma += 0.3;
+            if (heat.method === 'wok_fried') {
+              item.flavors.aroma += 1.8;
+              item.flavors.crunch += 1.0;
+            }
+            if (heat.method === 'pan_grilled') {
+              item.flavors.aroma += 1.6;
+              item.flavors.crunch += 0.8;
+            }
+            if (heat.method === 'pressure_cooked') {
+              item.flavors.umami += 1.2;
+              item.flavors.sweet += 0.5;
+            }
             const firstCookDescriptions = {
               steamed: 'hấp chín mọng nước ngọt thanh',
               air_fried: 'chiên khí nóng vàng giòn mà không ngập dầu',
               rice_cooked: 'nấu chín dẻo bằng hơi nước trong nồi cơm điện',
               microwaved: 'làm nóng nhanh bằng vi sóng',
+              wok_fried: 'đảo Wok lửa lớn thơm lừng mùi khói chảo',
+              pan_grilled: 'nướng xém vân chảo gang thơm phức',
+              pressure_cooked: 'ninh mềm ngọt nước bằng áp suất cao'
             };
             descriptions.push(`${item.name} đã ${firstCookDescriptions[heat.method] || 'chín tới thơm lừng'}`);
           } else if (item.cookLevel === 2) {
             item.needsCooking = false;
             item.flavors.aroma += 1.5;
-            if (['fried', 'deep_fried', 'air_fried', 'baked', 'grilled'].includes(heat.method)) {
+            if (['fried', 'deep_fried', 'air_fried', 'baked', 'grilled', 'wok_fried', 'pan_grilled'].includes(heat.method)) {
               item.flavors.crunch += heat.method === 'air_fried' ? 1.2 : 1.8;
             }
             const secondCookDescriptions = {
               air_fried: 'đã vàng giòn hơn nhờ luồng khí nóng',
-              rice_cooked: 'đã nấu mềm kỹ trong nồi cơm điện',
-              microwaved: 'đã nóng kỹ bằng vi sóng'
+              rice_cooked: 'đã nấu mềm dẻo kỹ trong nồi cơm điện',
+              microwaved: 'đã nóng hổi kỹ càng bằng vi sóng',
+              wok_fried: 'đã xém cạnh thơm phức giòn rụm trên chảo Wok',
+              pan_grilled: 'đã đậm đà ngập tràn vân nướng chảo gang',
+              pressure_cooked: 'đã ninh nhừ rục xương ngọt đậm đà'
             };
             descriptions.push(`${item.name} ${secondCookDescriptions[heat.method] || 'đã chín vàng giòn rụm'}`);
           } else {
@@ -6711,6 +6743,10 @@
         deep_fried: 'chiên ngập dầu',
         baked: 'đút lò nướng',
         grilled: 'nướng than hoa',
+        steamed: 'hấp cách thủy',
+        wok_fried: 'đảo Wok lửa lớn',
+        pan_grilled: 'nướng chảo gang',
+        pressure_cooked: 'ninh áp suất',
         air_fried: 'chiên bằng khí nóng',
         rice_cooked: 'nấu bằng nồi cơm điện',
         microwaved: 'làm nóng bằng vi sóng'
@@ -6741,15 +6777,39 @@
           if (cookLevel >= 2) return 'đem ninh hầm nhừ mềm ngọt nước';
           return 'đem luộc chín mềm ngọt nước';
         }
+        if (act === 'steamed') {
+          if (cookLevel >= 3) return 'đem hấp quá lửa làm nhũn nhừ';
+          if (cookLevel >= 2) return 'đem hấp cách thủy chín mềm mọng nước';
+          return 'đem hấp cách thủy giữ trọn vị ngọt thanh';
+        }
+        if (act === 'wok_fried') {
+          if (cookLevel >= 3) return 'đem đảo Wok quá lửa cháy xém';
+          if (cookLevel >= 2) return 'đem đảo Wok lửa lớn xém cạnh giòn thơm bốc khói';
+          return 'đem đảo Wok lửa lớn chín tới thơm lừng mùi khói chảo';
+        }
+        if (act === 'pan_grilled') {
+          if (cookLevel >= 3) return 'đem nướng chảo gang cháy khét đen';
+          if (cookLevel >= 2) return 'đem nướng chảo gang xém cạnh thơm phức';
+          return 'đem nướng xém vân chảo gang thơm lừng đậm đà';
+        }
+        if (act === 'pressure_cooked') {
+          if (cookLevel >= 3) return 'ninh áp suất quá lâu đến nát nhừ';
+          if (cookLevel >= 2) return 'đem ninh nhừ đậm đà bằng nồi áp suất cao';
+          return 'đem ninh mềm ngọt nước bằng nồi áp suất';
+        }
         if (act === 'air_fried') {
           if (cookLevel >= 3) return 'đem chiên khí nóng cháy khét';
           return cookLevel >= 2 ? 'đem chiên khí nóng vàng giòn' : 'đem chiên khí nóng chín tới';
         }
         if (act === 'rice_cooked') {
-          return cookLevel >= 3 ? 'nấu nồi cơm điện quá lâu đến khô khét' : 'nấu chín dẻo bằng nồi cơm điện';
+          if (cookLevel >= 3) return 'nấu nồi cơm điện quá lâu đến khô khét';
+          if (cookLevel >= 2) return 'nấu chín mềm dẻo kỹ trong nồi cơm điện';
+          return 'nấu chín dẻo bằng nồi cơm điện';
         }
         if (act === 'microwaved') {
-          return cookLevel >= 3 ? 'quay vi sóng quá lâu đến khô khét' : 'làm nóng nhanh bằng vi sóng';
+          if (cookLevel >= 3) return 'quay vi sóng quá lâu đến khô khét';
+          if (cookLevel >= 2) return 'quay vi sóng nóng hổi kỹ càng';
+          return 'làm nóng nhanh bằng vi sóng';
         }
         if (act === 'blended') {
           return hasIce ? 'xay nhuyễn sánh mịn mát lạnh' : 'xay nhuyễn sánh mịn';
@@ -6992,14 +7052,26 @@
         if (m === 'boiled') {
           return level >= 2 ? 'ninh hầm nhừ mềm ngọt nước' : 'luộc chín mềm ngọt nước';
         }
+        if (m === 'steamed') {
+          return level >= 2 ? 'hấp cách thủy chín mềm mọng nước' : 'hấp cách thủy giữ trọn vị ngọt thanh';
+        }
+        if (m === 'wok_fried') {
+          return level >= 2 ? 'đảo Wok lửa lớn xém cạnh thơm phức' : 'đảo Wok lửa lớn chín tới thơm lừng';
+        }
+        if (m === 'pan_grilled') {
+          return level >= 2 ? 'nướng xém vân chảo gang thơm phức' : 'nướng trên chảo gang chín tới';
+        }
+        if (m === 'pressure_cooked') {
+          return level >= 2 ? 'ninh nhừ bằng hơi nóng áp suất cao' : 'ninh mềm bằng nồi áp suất';
+        }
         if (m === 'air_fried') {
           return level >= 2 ? 'chiên khí nóng vàng giòn' : 'chiên khí nóng chín tới';
         }
         if (m === 'rice_cooked') {
-          return 'nấu chín dẻo bằng nồi cơm điện';
+          return level >= 2 ? 'nấu chín mềm dẻo kỹ trong nồi cơm điện' : 'nấu chín dẻo bằng nồi cơm điện';
         }
         if (m === 'microwaved') {
-          return 'làm nóng nhanh bằng vi sóng';
+          return level >= 2 ? 'quay vi sóng nóng hổi kỹ càng' : 'làm nóng nhanh bằng vi sóng';
         }
         return level >= 2 ? 'chế biến chín kỹ thơm lừng' : 'chế biến chín tới thơm ngon';
       };

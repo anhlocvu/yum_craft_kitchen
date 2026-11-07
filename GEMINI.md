@@ -11,7 +11,31 @@
 
 # NHẬT KÝ DỰ ÁN — YUMCRAFT KITCHEN
 
-## 1. Thông Tin Phiên Làm Việc Mới Nhất (04/11/2026 - Bổ Sung 26 Nguyên Liệu: Rượu, Xi-rô, Sữa Chua, Pha Chế & Các Loại Bột)
+## 1. Thông Tin Phiên Làm Việc Mới Nhất (07/11/2026 - Rà Soát, Sửa Lỗi Lịch Sử Cooking & Nâng Cấp Bản Sắc 17 Dụng Cụ Bếp Sau PR #4 Của Hoàng Long)
+- **Ngày thực hiện**: 07/11/2026 (Phiên Rà Soát Chuyên Sâu, Sửa Lỗi Lịch Sử Nấu Nướng, Bản Địa Hóa Tiếng Việt & Chuẩn Hóa Bản Sắc 17 Dụng Cụ Bếp)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Mục tiêu hoàn thành**:
+  1. **Khắc phục triệt để lỗi lọt chuỗi Tiếng Anh `'steamed'` trong Lời Nhận Xét Của Khách & Lịch Sử Thao Tác**:
+     - Bổ sung `'steamed': 'hấp cách thủy'` vào từ điển `interMap` của [`formatActionHistoryChain`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html#L6716).
+     - Bổ sung nhánh xử lý `act === 'steamed'` trong `getFinalActionText` với đầy đủ 3 cấp độ: chín tới ("đem hấp cách thủy giữ trọn vị ngọt thanh"), chín mềm ("đem hấp cách thủy chín mềm mọng nước") và quá lửa ("đem hấp quá lửa làm nhũn nhừ").
+     - Cập nhật [`methodToText`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html#L7036) cho món cuốn và món nhồi khi được hấp chín, loại bỏ hoàn toàn câu nhận xét chung chung mờ nhạt.
+  2. **Tách Biệt Bản Sắc Riêng Cho 3 Dụng Cụ Bị Gán Chung Method Cũ (Chảo Wok, Chảo Gang & Nồi Áp Suất)**:
+     - **Chảo Wok Đáy Sâu (`wok`)**: Tách thành `actionId: 'wok_fry_step'`, `method: 'wok_fried'`, mô tả chuỗi hành động: *"đem đảo Wok lửa lớn chín tới thơm lừng mùi khói chảo"* và *"đảo Wok lửa lớn xém cạnh giòn thơm bốc khói"* khi chín vàng.
+     - **Chảo Gang Vân Nướng (`grill_pan`)**: Tách thành `actionId: 'grill_pan_step'`, `method: 'pan_grilled'`, thông báo NVDA chuẩn *"Nướng chảo gang"* và mô tả: *"đem nướng xém vân chảo gang thơm lừng đậm đà"*, chấm dứt tình trạng bị nhầm lẫn sang "nướng vỉ than hoa".
+     - **Nồi Áp Suất (`pressure_cooker`)**: Tách thành `actionId: 'pressure_cook_step'`, `method: 'pressure_cooked'`, mô tả *"đem ninh nhừ đậm đà bằng nồi áp suất cao"* thay vì chỉ bị coi là luộc nước lã thông thường.
+  3. **Phân Cấp Rõ Rệt Cook Level 1 & Level 2 Cho Nồi Cơm Điện & Lò Vi Sóng**:
+     - `rice_cooked`: Phân biệt giữa Level 1 (*"nấu chín dẻo bằng nồi cơm điện"*) và Level 2 (*"nấu chín mềm dẻo kỹ trong nồi cơm điện"*).
+     - `microwaved`: Phân biệt giữa Level 1 (*"làm nóng nhanh bằng vi sóng"*) và Level 2 (*"quay vi sóng nóng hổi kỹ càng"*).
+  4. **Nâng Cấp Động Cơ Hóa Học Vị Giác Cảm Quan (Dynamic Sensory Chemistry)**:
+     - Bổ sung các phương pháp mới (`air_fried`, `wok_fried`, `pan_grilled`, `pressure_cooked`, `steamed`, `rice_cooked`, `microwaved`) vào điều kiện phản ứng: Caramel hóa đường (`hasCaramelizedSugar`), Rượu dậy hương men cồn (`hasHeatedAlcohol`), Tinh bột hồ hóa (`hasGelatinizedStarch`) và Nước súp hầm ngọt nước (`hasBoiledSoup`).
+     - Sửa lỗi bỏ quên ghi nhận `actionHistory` cho phần nhân `innerItems` của món nhồi khi nấu nhiệt.
+  5. **Bộ Kiểm Thử Tự Động Toàn Diện (`tests/test_cooking_history_appliances.js`)**:
+     - Kiểm thử 17 dụng cụ bếp, kiểm tra không còn bất kỳ từ tiếng Anh thô nào lọt vào mô tả, kiểm tra chuỗi đa bước, kiểm tra phản ứng hóa học vị giác và lời nhận xét thực khách.
+     - Kết quả kiểm thử: **102/102 BÀI TEST ĐẠT (100% PASS)**.
+
+---
+
+## 2. Thông Tin Phiên Làm Việc Trước (04/11/2026 - Bổ Sung 26 Nguyên Liệu: Rượu, Xi-rô, Sữa Chua, Pha Chế & Các Loại Bột)
 - **Ngày thực hiện**: 04/11/2026 (Phiên Mở Rộng Kho Nguyên Liệu Lên 113 Món: Các Loại Rượu, Xi-rô, Sữa Chua, Nguyên Liệu Pha Chế & Các Loại Bột Đa Dụng)
 - **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
 - **Mục tiêu hoàn thành**:
