@@ -11,7 +11,40 @@
 
 # NHẬT KÝ DỰ ÁN — YUMCRAFT KITCHEN
 
-## 1. Thông Tin Phiên Làm Việc Mới Nhất (07/11/2026 - Bản Sắc Thực Khách Chàng Cáo & Thỏ Trắng, Trợ Năng Bàn Phím WAI-ARIA Radio Group & Kiểm Thử Toàn Diện Mặn Ngọt Chua Cay Đắng Béo)
+## 1. Thông Tin Phiên Làm Việc Mới Nhất (07/11/2026 - Nâng Cấp Toàn Diện Hệ Thống Cảm Quan, Miêu Tả 100% Hương Vị & Định Lượng Gia Vị Cho Mọi Món Ăn / Đồ Uống)
+- **Ngày thực hiện**: 07/11/2026 (Phiên Đại Nâng Cấp Hệ Thống Cảm Quan Vị Giác, Bảo Toàn 100% Vị Nguyên Liệu Tự Nhiên & Gia Vị, Định Lượng Số Phần Gia Vị & Trợ Năng NVDA)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Mục tiêu hoàn thành**:
+  1. **Xóa bỏ hoàn toàn nút thắt cắt cụt `.slice(0, 3)` và tả trọn vẹn 100% mọi hương vị hiện diện trong [`generateSensoryTastingReview`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html#L7028)**:
+     - Trước đây, hệ thống gộp chung `aroma` (hương thơm) cùng 7 vị vào mảng `candidates`, sắp xếp giảm dần rồi cắt `.slice(0, 3)`. Khi nướng thịt bò (vốn có sẵn `aroma`, `umami`, `fatty`/`sweet` cao), 3 vị này chiếm trọn 3 suất đầu, làm vị **Chua** (2 trái chanh) và vị **Cay** (2–3 trái ớt, đạt 5–6 điểm trên bản đồ vị giác) bị cắt bỏ hoàn toàn khỏi lời nhận xét.
+     - Nay hệ thống tách bạch **7 vị giác đầu lưỡi** (`sweet`, `sour`, `salty`, `spicy`, `bitter`, `umami`, `fatty`), **kết cấu độ giòn** (`crunch`) và **khứu giác hương thơm** (`aroma`), sắp xếp từ vị chủ đạo (đậm nhất) đến vị thoang thoảng (từ `>= 0.1/10`) và **miêu tả ra hết 100% các vị có mặt** mà không bỏ sót bất kỳ vị nào.
+     - Ngay cả khi món ăn bị quá mặn (`f.salty > 7.0`) hoặc quá cay vượt ngưỡng chịu cay của thực khách (`f.spicy > character.maxSpiceTolerance`), lời thoại hài hước của nhân vật vẫn đính kèm trọn vẹn `sensorySentence` để đầu bếp nắm bắt được toàn bộ bức tranh hương vị của món.
+  2. **Bảo toàn 100% hương vị tự nhiên của nguyên liệu & gia vị (Loại bỏ triệt tiêu âm & Pha loãng kép)**:
+     - Trong bảng [`SPICES`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html#L4843): Xóa toàn bộ các chỉ số âm triệt tiêu vị giác (như Đường mía từng có `sour: -0.3, spicy: -0.2`, Chanh có `fatty: -0.6`, Sốt Mayonnaise có `spicy: -0.6`, v.v.). Mọi gia vị chỉ cộng thêm đúng bản chất vị giác của mình.
+     - Xây dựng công thức **Hòa quyện Đỉnh Vị & Cộng hưởng Căn bậc hai** trong [`combineFlavorProfiles`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html#L5436) và [`getSpiceDistributionShare`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html#L5432):
+       - Trên từng chiều hương vị, giữ nguyên 100% đỉnh vị cao nhất ($v_1$) và cộng hưởng các nguyên liệu đồng vị tiếp theo theo tỷ lệ $\frac{v_i}{\sqrt{i}}$. Nhờ đó, **mọi hương vị tự nhiên có sẵn trong nguyên liệu** (như vị đắng của Khổ qua/Matcha, vị chua/cay của Kim chi, vị chua ngọt của Kiwi/Dứa, vị béo của Kem tươi/Phô mai) đều phát huy 100% tác dụng và được thực khách miêu tả đầy đủ dù không cần nêm thêm gia vị, và không bao giờ bị các nguyên liệu khác làm loãng mất.
+       - Loại bỏ lỗi "pha loãng kép" (chia `countFactor` 2 lần) khi thực hiện Cuốn (`roll_tight`), Nhồi (`stuff_pack`), Xay sinh tố (`blend_smooth`) và Pha chế đồ uống (`stir_pour`, `shake_shaker`, `brew_infuse`).
+       - Trong [`analyzeCulinaryChemistry`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html#L5463), giữ nguyên số đo trung thực của từng vị, xóa bỏ các phép nhân cắt giảm ngầm (`sour *= 0.82`, `spicy *= 0.78`, `bitter *= 0.82`), chỉ cộng điểm hài lòng thông qua `synergyBonus`.
+  3. **Định lượng số phần gia vị (`formatSpiceListWithQuantities`) & Ngữ cảnh chế biến cho mọi loại hình món ăn/thức uống**:
+     - Gắn `batchId` cho mỗi lần nêm gia vị trong [`applySpice`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html#L5833) và xây dựng hàm [`formatSpiceListWithQuantities`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html#L6717):
+       - Nêm 1 lần: `"Chanh tươi"`
+       - Nêm 2 lần: `"2 phần Chanh tươi"`
+       - Nêm $\ge 3$ lần: `"đẫm 3 phần Ớt hiểm cay"`
+     - Phân biệt ngữ cảnh nêm gia vị rõ ràng cho cả 5 nhóm món:
+       - Món nấu nhiệt đã ướp: *"thấm đẫm gia vị ướp từ 2 phần Chanh tươi và 2 phần Đường mía"*
+       - Món vừa ướp nấu chín vừa rắc thêm gia vị sống: *"thấm gia vị ướp ... và nêm thêm ..."*
+       - Món đồ cuốn (`rolled`) & đồ nhồi (`stuffed`): Mô tả rõ định lượng gia vị ở phần nhân bên trong và lớp vỏ bên ngoài (loại bỏ trùng lặp nếu gia vị được nêm chung trước khi cuốn/nhồi).
+       - Đồ uống pha chế (`beverage`) & Sinh tố (`blended`): *"hòa quyện cùng Gừng tươi sợi và 2 phần Mật ong rừng"*.
+  4. **Nâng cấp Trợ năng NVDA (WCAG 2.2 AA/AAA)**:
+     - Cập nhật [`readDishSummary`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html#L7745) (Phím tắt `I`): Khi dọn nhiều món trên bàn tiệc, đọc đầy đủ cả 8 chiều hương vị bao gồm `Chua`, `Cay`, `Đắng` (trước đây bị thiếu 3 vị này ở chế độ đa món).
+     - Cập nhật [`renderServingPlate`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html#L8288): Bổ sung `aria-label` và `aria-valuetext` kèm từ khóa cảm quan (ví dụ: `"6.1 trên 10, vị cay xé lưỡi bùng nổ"`) trên từng thanh `role="progressbar"` của Bản đồ Hương vị.
+  5. **Bộ Kiểm Thử Tự Động Toàn Diện (`tests/test_full_flavor_and_spice_critique.js`)**:
+     - Kiểm thử 6 kịch bản lớn với 20 tiêu chí khắt khe (Bò nướng 2 chanh 2 đường; Bò nướng muối tiêu chanh 2–3 ớt đường; Món cuốn đa vị; Nguyên liệu tự nhiên đắng/chua/cay/ngọt/mặn/béo/giòn không gia vị; Đồ uống lắc shaker đa tầng vị; Trợ năng NVDA phím `I` & `aria-valuetext`).
+     - Kết quả kiểm thử: **20/20 BÀI TEST ĐẠT (100% PASS)**.
+
+---
+
+## 2. Thông Tin Phiên Làm Việc Trước (07/11/2026 - Bản Sắc Thực Khách Chàng Cáo & Thỏ Trắng, Trợ Năng Bàn Phím WAI-ARIA Radio Group & Kiểm Thử Toàn Diện Mặn Ngọt Chua Cay Đắng Béo)
 - **Ngày thực hiện**: 07/11/2026 (Phiên Rà Soát Sâu Toàn Bộ PR #4, Khắc Phục Lời Thoại Nhân Vật, Trợ Năng Bàn Phím WCAG 2.2 AAA & Kiểm Thử Vị Giác Cảm Quan)
 - **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
 - **Mục tiêu hoàn thành**:
