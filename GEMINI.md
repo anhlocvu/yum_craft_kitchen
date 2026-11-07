@@ -11,7 +11,20 @@
 
 # NHẬT KÝ DỰ ÁN — YUMCRAFT KITCHEN
 
-## 1. Thông Tin Phiên Làm Việc Mới Nhất (07/11/2026 - Nâng Cấp Toàn Diện Hệ Thống Cảm Quan, Miêu Tả 100% Hương Vị & Định Lượng Gia Vị Cho Mọi Món Ăn / Đồ Uống)
+## 1. Thông Tin Phiên Làm Việc Mới Nhất (08/11/2026 - Khôi Phục Từ Vựng Vị Đượm Trung Tính & Chuẩn Hóa Ngữ Cảnh Thưởng Thức Đồ Uống)
+- **Ngày thực hiện**: 08/11/2026 (Phiên Khôi Phục Từ Điển Cảm Quan `describePureFlavorDescriptor` Từ Lịch Sử GitHub & Tách Biệt Ngữ Cảnh Thưởng Thức Đồ Uống `isDrinkOrSmoothie`)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Mục tiêu hoàn thành**:
+  1. **Khôi phục từ điển cảm quan [`describePureFlavorDescriptor`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html#L6653-L6722) về chuẩn GitHub (`commit c7a03c8` / `3954ece`)**:
+     - Khôi phục mô tả trung tính cho chiều `umami` ở các cấp độ vừa và nhẹ: `"vị đượm nhẹ nhàng"`, `"chút vị đượm thoang thoảng"` (`>= 1.2`), `"chiều sâu đượm đà thanh tao"`, `"vị đượm êm dịu"` (`>= 2.6`), `"vị đượm đà sâu lắng"` (`>= 4.6`), chỉ dùng nhãn `"vị Umami cực kỳ đậm đà và sâu lắng"` khi đạt ngưỡng cao (`>= 7.1`).
+     - Khôi phục ngưỡng lọc nhiễu vi lượng chuẩn (`sweet >= 0.8`, `fatty >= 1.2`, `umami >= 1.2`, `salty >= 0.8`, `sour >= 0.8`, `spicy >= 0.6`, `bitter >= 1.0`, `aroma >= 1.5`, `crunch >= 0.8`) để loại bỏ tình trạng đọc nhầm chỉ số nền vi lượng (như `fatty: 0.6` trong cà phê đen) trong khi vẫn giữ nguyên cơ chế cộng hưởng độ đắng và bảo toàn 100% các vị gia vị đã nêm.
+  2. **Chuẩn hóa từ vựng "Thức uống / Uống" cho `isDrinkOrSmoothie` trong [`generateSensoryTastingReview`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html#L7049-L7370) và [`feedCharacter`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html#L7675-L7707)**:
+     - Khi món trên dĩa là đồ uống từ Trạm Pha Chế (`kind === 'beverage'`), Sinh tố (`kind === 'blended'`) hoặc nguyên liệu dạng nước (`texture === 'drink'`), tự động chuyển chủ ngữ thành `Thức uống '${finalDishName}'` thay vì `Món '${finalDishName}'`.
+     - Chuyển lời thoại nhân vật và thông báo NVDA sang ngữ cảnh thưởng thức đồ uống: `"Ực ực... Khà! ..., uống rất thơm ngon và vừa vị"`, `"thưởng thức thức uống"` thay vì `"Măm măm! ..., ăn rất ngon miệng và vừa vị"`.
+
+---
+
+## 2. Thông Tin Phiên Làm Việc Trước (07/11/2026 - Nâng Cấp Toàn Diện Hệ Thống Cảm Quan, Miêu Tả 100% Hương Vị & Định Lượng Gia Vị Cho Mọi Món Ăn / Đồ Uống)
 - **Ngày thực hiện**: 07/11/2026 (Phiên Đại Nâng Cấp Hệ Thống Cảm Quan Vị Giác, Bảo Toàn 100% Vị Nguyên Liệu Tự Nhiên & Gia Vị, Định Lượng Số Phần Gia Vị & Trợ Năng NVDA)
 - **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
 - **Mục tiêu hoàn thành**:

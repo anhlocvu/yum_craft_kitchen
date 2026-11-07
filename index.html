@@ -6650,71 +6650,70 @@
     }
 
     // PURE SENSORY TASTE LEXICON (VIETNAMESE SENSORY EVALUATION - NO HARDCODED INGREDIENTS/TEMPERATURES)
-    // Phản ánh đầy đủ 100% mọi hương vị có mặt trong món ăn/thức uống từ 0.1/10 đến 10/10
     function describePureFlavorDescriptor(tasteKey, score, seed = 0) {
       if (!score || score <= 0) return null;
       const pick = (arr) => arr[Math.abs(seed) % arr.length];
 
       switch (tasteKey) {
         case 'sweet':
-          if (score >= 8.5) return pick(['vị ngọt lịm sắc sảo', 'vị ngọt sắc đậm lịm', 'vị ngọt gắt khé cổ']);
-          if (score >= 6.5) return pick(['vị ngọt đậm đà', 'vị ngọt đượm sâu lắng', 'vị ngọt lịm rõ nét']);
-          if (score >= 4.0) return pick(['vị ngọt đằm', 'vị ngọt ngào êm dịu', 'vị ngọt đượm dịu dàng']);
-          if (score >= 1.8) return pick(['vị ngọt thanh', 'vị ngọt dịu dàng', 'vị ngọt thanh thoát']);
-          if (score >= 0.1) return pick(['vị ngọt dịu nhẹ', 'chút vị ngọt thanh thoang thoảng']);
+          if (score >= 8.6) return pick(['vị ngọt lịm sắc sảo', 'vị ngọt sắc đậm lịm', 'vị ngọt gắt khé cổ']);
+          if (score >= 7.1) return pick(['vị ngọt đậm đà', 'vị ngọt đượm sâu lắng', 'vị ngọt lịm rõ nét']);
+          if (score >= 4.6) return pick(['vị ngọt đằm', 'vị ngọt ngào êm dịu', 'vị ngọt đượm dịu dàng']);
+          if (score >= 2.1) return pick(['vị ngọt thanh', 'vị ngọt dịu dàng', 'vị ngọt thanh thoát']);
+          if (score >= 0.8) return pick(['vị ngọt dịu nhẹ', 'chút vị ngọt thoang thoảng']);
           return null;
 
         case 'umami':
-          if (score >= 6.8) return pick(['vị Umami cực kỳ đậm đà và sâu lắng', 'chiều sâu vị ngọt thịt Umami tròn đầy mạnh mẽ']);
-          if (score >= 4.2) return pick(['vị đậm đà Umami sâu lắng', 'chiều sâu vị Umami tròn đầy đậm nét']);
-          if (score >= 2.0) return pick(['vị đượm đà Umami thanh tao', 'vị đậm đà Umami êm dịu']);
-          if (score >= 0.1) return pick(['vị đượm Umami nhẹ nhàng', 'chút vị đậm đà Umami thoang thoảng']);
+          if (score >= 7.1) return pick(['vị Umami cực kỳ đậm đà và sâu lắng', 'chiều sâu vị giác tròn đầy mạnh mẽ']);
+          if (score >= 4.6) return pick(['vị đượm đà sâu lắng', 'chiều sâu tròn vị đậm nét']);
+          if (score >= 2.6) return pick(['chiều sâu đượm đà thanh tao', 'vị đượm êm dịu']);
+          if (score >= 1.2) return pick(['vị đượm nhẹ nhàng', 'chút vị đượm thoang thoảng']);
           return null;
 
         case 'fatty':
-          if (score >= 6.8) return pick(['độ béo ngậy cực kỳ nồng đậm', 'lớp béo ngậy đậm đặc tràn đầy']);
-          if (score >= 4.2) return pick(['lớp béo ngậy đậm đà', 'độ béo ngậy rõ nét']);
-          if (score >= 2.0) return pick(['vị béo bùi vừa vặn', 'độ béo ngậy mượt mà']);
-          if (score >= 0.1) return pick(['chút béo bùi thoang thoảng', 'độ béo êm dịu nhẹ nhàng']);
+          if (score >= 7.1) return pick(['độ béo ngậy cực kỳ nồng đậm', 'lớp béo ngậy đậm đặc (khá ngấy)']);
+          if (score >= 4.6) return pick(['lớp béo ngậy đậm đà', 'độ béo ngậy rõ nét']);
+          if (score >= 2.6) return pick(['vị béo bùi vừa vặn', 'độ ngậy mượt mà']);
+          if (score >= 1.2) return pick(['chút béo bùi thoang thoảng', 'độ béo êm dịu']);
           return null;
 
         case 'salty':
           if (score >= 5.6) return pick(['vị mặn chát gắt', 'vị mặn khé lưỡi']);
-          if (score >= 3.5) return pick(['vị mặn đậm đà', 'vị mặn mòi rõ rệt']);
-          if (score >= 1.5) return pick(['vị mặn mà vừa vặn', 'vị mặn mòi hài hòa']);
-          if (score >= 0.1) return pick(['chút vị mặn nhẹ điểm xuyết', 'vị mặn dịu nhẹ nhàng']);
+          if (score >= 3.9) return pick(['vị mặn đậm đà', 'vị mặn mòi rõ rệt']);
+          if (score >= 2.1) return pick(['vị mặn mà vừa vặn', 'vị mặn mòi hài hòa']);
+          if (score >= 0.8) return pick(['chút vị mặn nhẹ điểm xuyết', 'vị mặn dịu']);
           return null;
 
         case 'sour':
-          if (score >= 6.5) return pick(['vị chua gắt xộc đầu lưỡi', 'vị chua lòe nhăn mặt']);
-          if (score >= 3.5) return pick(['vị chua đậm nét rõ rệt', 'vị chua sắc sảo kích thích vị giác']);
-          if (score >= 1.5) return pick(['vị chua thanh dịu', 'vị chua dịu vừa miệng']);
-          if (score >= 0.1) return pick(['chút vị chua rôn rốt', 'chút vị chua thanh dịu nhẹ']);
+          if (score >= 6.6) return pick(['vị chua gắt xộc đầu lưỡi', 'vị chua lòe nhăn mặt']);
+          if (score >= 4.1) return pick(['vị chua đậm nét rõ rệt', 'vị chua sắc sảo']);
+          if (score >= 2.1) return pick(['vị chua thanh dịu', 'vị chua dịu vừa miệng']);
+          if (score >= 0.8) return pick(['chút vị chua rôn rốt', 'chút vị chua dịu nhẹ']);
           return null;
 
         case 'spicy':
-          if (score >= 6.0) return pick(['vị cay xé lưỡi bùng nổ', 'vị cay xộc cực mạnh']);
-          if (score >= 3.2) return pick(['vị cay nồng đậm đà', 'vị cay bốc mạnh mẽ']);
-          if (score >= 1.4) return pick(['vị cay tê kích thích vừa độ', 'vị cay ấm nồng rõ nét']);
-          if (score >= 0.1) return pick(['chút vị the cay ấm nhẹ', 'vị cay cay lăn tăn nơi đầu lưỡi']);
+          if (score >= 6.1) return pick(['vị cay xé lưỡi bùng nổ', 'vị cay xộc cực mạnh']);
+          if (score >= 3.6) return pick(['vị cay nồng đậm đà', 'vị cay bốc mạnh mẽ']);
+          if (score >= 1.9) return pick(['vị cay tê kích thích vừa độ', 'vị cay đượm']);
+          if (score >= 0.6) return pick(['chút the cay nhẹ', 'vị cay cay lăn tăn']);
           return null;
 
         case 'bitter':
-          if (score >= 4.5) return pick(['vị đắng ngắt rõ rệt', 'vị đắng đậm sắc nét']);
-          if (score >= 2.0) return pick(['vị đắng thanh sâu lắng', 'vị đắng dịu đặc trưng']);
-          if (score >= 0.1) return pick(['chút vị đắng thanh dịu nhẹ', 'vị đắng nhẹ thoang thoảng tinh tế']);
+          if (score >= 4.6) return pick(['vị đắng ngắt rõ rệt', 'vị đắng đậm sắc nét']);
+          if (score >= 2.6) return pick(['vị đắng thanh sâu lắng', 'chút đắng đót tinh tế']);
+          if (score >= 1.0) return pick(['chút vị đắng dịu nhẹ', 'vị đắng nhẹ thoang thoảng']);
           return null;
 
         case 'aroma':
-          if (score >= 6.5) return pick(['hương thơm lừng cực kỳ quyến rũ', 'hương thơm nức mũi ngào ngạt']);
-          if (score >= 3.2) return pick(['hương thơm nức ngào ngạt', 'hương thơm quyến rũ rõ nét']);
-          if (score >= 0.1) return pick(['hương thơm thoang thoảng dịu nhẹ', 'chút hương thơm thanh nhẹ']);
+          if (score >= 6.6) return pick(['hương thơm lừng cực kỳ quyến rũ', 'hương thơm nức mũi ngào ngạt']);
+          if (score >= 3.6) return pick(['hương thơm nức ngào ngạt', 'hương thơm quyến rũ rõ nét']);
+          if (score >= 1.5) return pick(['hương thơm thoang thoảng dịu nhẹ', 'chút hương thơm nhẹ nhàng']);
           return null;
 
         case 'crunch':
           if (score >= 3.5) return pick(['kết cấu giòn rụm rôm rốp đã tai', 'độ giòn tan sần sật cuốn hút']);
           if (score >= 1.5) return pick(['độ giòn sần sật vui miệng', 'kết cấu giòn giòn thú vị']);
-          if (score >= 0.4) return pick(['chút độ giòn nhẹ xen lẫn']);
+          if (score >= 0.8) return pick(['chút độ giòn nhẹ xen lẫn']);
           return null;
 
         default:
@@ -7091,7 +7090,9 @@
         return level >= 2 ? 'chế biến chín kỹ thơm lừng' : 'chế biến chín tới thơm ngon';
       };
 
-      const subject = finalDishName ? `Món '${finalDishName}'` : 'Món ăn';
+      const subject = finalDishName
+        ? (isDrinkOrSmoothie ? `Thức uống '${finalDishName}'` : `Món '${finalDishName}'`)
+        : (isDrinkOrSmoothie ? 'Thức uống' : 'Món ăn');
 
       if (rolledItem) {
         const outer = rolledItem.outerItem ? rolledItem.outerItem.name : rolledItem.name;
@@ -7181,7 +7182,7 @@
           const g = groups[0] || { names: [], actions: [], actionDesc: 'tươi nguyên bản' };
           const ingNames = formatNaturalList(g.names, 'và');
           if (g.actions.length === 0) {
-            structureDesc = finalDishName ? `Món '${finalDishName}' (${ingNames}) ${g.actionDesc}` : `${ingNames} ${g.actionDesc}`;
+            structureDesc = finalDishName ? `${subject} (${ingNames}) ${g.actionDesc}` : `${ingNames} ${g.actionDesc}`;
           } else {
             structureDesc = `${subject} ${g.actionDesc} từ ${ingNames || 'các nguyên liệu'}`;
           }
@@ -7325,28 +7326,48 @@
 
       if (score >= 82) {
         reactionType = 'love';
-        moodTag = 'Tuyệt phẩm 5 Sao! 🤩🌟';
-        if (character.id === 'chef_bear') {
-          speech = `"Nhoàm nhoàm... ÔI TUYỆT HẢO! ${sensorySentence}, tạo nên một hương vị cực kỳ tuyệt vời! Đúng là tay nghề của một bếp trưởng thực thụ, ăn vào đã cái bụng vô cùng!"`;
-        } else if (character.id === 'cat_miu') {
-          speech = `"Măm măm... ÔI THÍCH QUÁ! ${sensorySentence}, vị ngon hòa quyện tan ngay trong miệng làm Miu mê tít luôn!"`;
-        } else if (character.id === 'dragon_long') {
-          speech = `"Khà khà... ĐÃ MIỆNG THẬT! ${sensorySentence}, hương vị đậm đà bùng nổ đúng gu của ta rồi!"`;
-        } else if (character.id === 'fox_gourmet') {
-          speech = `"Chẹp chẹp... QUÁ ĐỖI TINH TẾ! ${sensorySentence}, một tuyệt tác vị giác thanh nhã làm say đắm lòng người, xứng tầm nhà hàng cao cấp!"`;
-        } else if (character.id === 'rabbit_gardener') {
-          speech = `"Chóp chép... ÔI NGON LÀNH QUÁ! ${sensorySentence}, từng tầng hương vị ngọt mát tươi lành như mang cả khu vườn vào món ăn vậy!"`;
+        moodTag = isDrinkOrSmoothie ? 'Thức uống 5 Sao! 🤩🍹' : 'Tuyệt phẩm 5 Sao! 🤩🌟';
+        if (isDrinkOrSmoothie) {
+          if (character.id === 'chef_bear') {
+            speech = `"Ực ực... Khà! ÔI TUYỆT HẢO! ${sensorySentence}, tạo nên một hương vị thức uống cực kỳ tuyệt vời! Đúng là tay nghề pha chế thượng hạng, uống vào sảng khoái đã cơn khát vô cùng!"`;
+          } else if (character.id === 'cat_miu') {
+            speech = `"Ực ực... ÔI THÍCH QUÁ! ${sensorySentence}, vị ngon ngọt mát tan ngay nơi đầu lưỡi làm Miu mê tít luôn!"`;
+          } else if (character.id === 'dragon_long') {
+            speech = `"Khà khà... ĐÃ CƠN KHÁT THẬT! ${sensorySentence}, hương vị thức uống đậm đà bùng nổ đúng gu của ta rồi!"`;
+          } else if (character.id === 'fox_gourmet') {
+            speech = `"Nhấp một ngụm... QUÁ ĐỖI TINH TẾ! ${sensorySentence}, một tuyệt tác pha chế thanh nhã làm say đắm lòng người, xứng tầm nhà hàng cao cấp!"`;
+          } else if (character.id === 'rabbit_gardener') {
+            speech = `"Ực ực... ÔI THANH MÁT NGON LÀNH QUÁ! ${sensorySentence}, từng ngụm tươi lành ngọt dịu như mang cả khu vườn vào ly nước vậy!"`;
+          } else {
+            speech = `"Nhấp một ngụm... XUẤT SẮC! ${sensorySentence}, sự phối hợp pha chế này đạt độ hài hòa cân bằng đỉnh cao!"`;
+          }
         } else {
-          speech = `"Chà... XUẤT SẮC! ${sensorySentence}, sự phối hợp ẩm thực này đạt độ hài hòa cân bằng đỉnh cao!"`;
+          if (character.id === 'chef_bear') {
+            speech = `"Nhoàm nhoàm... ÔI TUYỆT HẢO! ${sensorySentence}, tạo nên một hương vị cực kỳ tuyệt vời! Đúng là tay nghề của một bếp trưởng thực thụ, ăn vào đã cái bụng vô cùng!"`;
+          } else if (character.id === 'cat_miu') {
+            speech = `"Măm măm... ÔI THÍCH QUÁ! ${sensorySentence}, vị ngon hòa quyện tan ngay trong miệng làm Miu mê tít luôn!"`;
+          } else if (character.id === 'dragon_long') {
+            speech = `"Khà khà... ĐÃ MIỆNG THẬT! ${sensorySentence}, hương vị đậm đà bùng nổ đúng gu của ta rồi!"`;
+          } else if (character.id === 'fox_gourmet') {
+            speech = `"Chẹp chẹp... QUÁ ĐỖI TINH TẾ! ${sensorySentence}, một tuyệt tác vị giác thanh nhã làm say đắm lòng người, xứng tầm nhà hàng cao cấp!"`;
+          } else if (character.id === 'rabbit_gardener') {
+            speech = `"Chóp chép... ÔI NGON LÀNH QUÁ! ${sensorySentence}, từng tầng hương vị ngọt mát tươi lành như mang cả khu vườn vào món ăn vậy!"`;
+          } else {
+            speech = `"Chà... XUẤT SẮC! ${sensorySentence}, sự phối hợp ẩm thực này đạt độ hài hòa cân bằng đỉnh cao!"`;
+          }
         }
       } else if (score >= 50) {
         reactionType = 'good';
-        moodTag = 'Ngon miệng vừa vị! 😋👍';
-        speech = `"Măm măm! ${sensorySentence}, ăn rất ngon miệng và vừa vị (Hài hòa: ${score}/100 điểm)!"`;
+        moodTag = isDrinkOrSmoothie ? 'Thơm ngon vừa vị! 🍹👍' : 'Ngon miệng vừa vị! 😋👍';
+        speech = isDrinkOrSmoothie
+          ? `"Ực ực... Khà! ${sensorySentence}, uống rất thơm ngon và vừa vị (Hài hòa: ${score}/100 điểm)!"`
+          : `"Măm măm! ${sensorySentence}, ăn rất ngon miệng và vừa vị (Hài hòa: ${score}/100 điểm)!"`;
       } else {
         reactionType = 'good';
         moodTag = 'Vị lạ độc đáo! 🤔';
-        speech = `"Hừm... ${sensorySentence}. Món ăn có hương vị khá độc lạ và mới mẻ, lần sau đầu bếp hãy thử nêm nếm thêm xem sao nhé!"`;
+        speech = isDrinkOrSmoothie
+          ? `"Hừm... ${sensorySentence}. Thức uống có hương vị khá độc lạ và mới mẻ, lần sau đầu bếp hãy thử pha chế cân bằng hơn xem sao nhé!"`
+          : `"Hừm... ${sensorySentence}. Món ăn có hương vị khá độc lạ và mới mẻ, lần sau đầu bếp hãy thử nêm nếm thêm xem sao nhé!"`;
       }
 
       return { speech, moodTag, reactionType, score, sensorySentence };
@@ -7520,7 +7541,7 @@
       // 4. Trích xuất mô tả cảm quan từng món để tổng hòa thành lời thoại tự nhiên
       const dishDetails = dishReviews.map(dr => {
         let sent = dr.review.sensorySentence;
-        sent = sent.replace(/^Món\s+'[^']+'\s+(?:\([^)]+\)\s+)?/, '');
+        sent = sent.replace(/^(?:Món|Thức uống)\s+'[^']+'\s+(?:\([^)]+\)\s+)?/, '');
         return {
           name: dr.dish.name,
           desc: sent,
@@ -7652,10 +7673,11 @@
       const playlist = buildEatingAudioPlaylist(state.plateItems);
 
       // Chạy tuần tự từng âm thanh ăn uống theo kiểu Play Wait
+      const isPlateOnlyDrinks = state.plateItems.length > 0 && state.plateItems.every(it => it.kind === 'beverage' || it.kind === 'blended' || it.texture === 'drink');
       for (let i = 0; i < playlist.length; i++) {
         const soundFile = playlist[i];
         if (feedLbl) {
-          feedLbl.textContent = 'ĐANG THƯỞNG THỨC MÓN ĂN... 😋';
+          feedLbl.textContent = isPlateOnlyDrinks ? 'ĐANG THƯỞNG THỨC ĐỒ UỐNG... 🍹' : 'ĐANG THƯỞNG THỨC MÓN ĂN... 😋';
         }
         await playExternalAudio(soundFile, true);
         if (i < playlist.length - 1) {
@@ -7677,9 +7699,10 @@
         ? generateMultiDishTastingReview(dishes, char)
         : generateSensoryTastingReview(dishes[0].items, dishes[0].analysis, char, dishes[0].name);
 
+      const isSingleDrinkDish = dishes.length === 1 && dishes[0].items && dishes[0].items.every(it => it.kind === 'beverage' || it.kind === 'blended' || it.texture === 'drink');
       const finalDishTitle = (dishes.length > 1)
         ? `thực đơn ${dishes.length} món (${dishes.map(d => d.name).join(', ')})`
-        : `món "${dishes[0].name}"`;
+        : `${isSingleDrinkDish ? 'thức uống' : 'món'} "${dishes[0].name}"`;
 
       // Phát âm thanh sóng cảm xúc tương ứng
       if (review.reactionType === 'love') {
