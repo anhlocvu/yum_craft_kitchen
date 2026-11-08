@@ -7,6 +7,7 @@
 > 3. **Nhận Xét Của Thực Khách Sinh Động & Chân Thực (Living Character Critique)**: Khi thưởng thức, nhân vật sẽ miêu tả chi tiết cảm giác vị giác, kết cấu món ăn (nướng, luộc, chiên, cuộn, nhồi...) và mùi vị của các loại gia vị người chơi đã nêm, phản ánh đúng gu thưởng thức và biểu cảm của từng thực khách.
 > 4. **Trợ Năng Toàn Diện Chuẩn Quốc Tế (WCAG AA/AAA & NVDA First)**: Mọi tương tác, cảm giác vị giác và diễn biến nấu nướng đều phải được truyền tải hoàn hảo, tự nhiên và liền mạch đến người chơi khiếm thị thông qua NVDA và bàn phím.
 >5 ** không được đưa vào bất kỳ công thức cứng nhắt nào trong code, vì đây là game nấu ăn tự gio, không phải game nấu ăn theo công thức xách giáo khoa
+>6 ** Khi phát triển bất kỳ tính năng nào, luôn tự động tuân thủ quy trình Specify.
 ---
 
 # NHẬT KÝ DỰ ÁN — YUMCRAFT KITCHEN
