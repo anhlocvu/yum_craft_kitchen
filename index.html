@@ -2229,7 +2229,7 @@
       { id: 'noodles_flour', name: '🍜 Mì & Các Loại Bột' },
       { id: 'wrappers', name: '🥖 Vỏ Bánh & Đồ Cuốn' },
       { id: 'sweets', name: '☕🍫 Cà Phê, Đường & Đồ Ngọt' },
-      { id: 'meat', name: '🥩 Thịt, Xúc Xích & Pate' },
+      { id: 'meat', name: '🥩 Thịt, Nội Tạng & Da Mỡ' },
       { id: 'seafood', name: '🦐 Hải Sản & Trứng' },
       { id: 'starch', name: '🍚 Cơm, Khoai & Phô Mai' }
     ];
@@ -4639,6 +4639,256 @@
         texture: 'crispy',
         flavorDesc: 'Bánh bỏng gạo nổ phồng xốp giòn rụm tan ngay trên lưỡi, thơm lừng mùi cốm gạo mới, rắc đường caramel hoặc kẹp xúc xích',
         flavors: { umami: 0.6, salty: 0.3, sweet: 2.2, sour: 0.0, spicy: 0.0, fatty: 0.2, bitter: 0.0, aroma: 3.6, crunch: 4.8 }
+      },
+
+      // --- BỔ SUNG 20 NGUYÊN LIỆU MỚI: ĐẶC SẢN THANH HÓA, NỘI TẠNG ĐỘNG VẬT, DA & MỠ ĐỘNG VẬT (TỰ DO SANDBOX, SNACK & TÓP MỠ) ---
+      // A. ĐẶC SẢN THANH HÓA
+      {
+        id: 'la_dang_thanh_hoa',
+        name: 'Lá Đắng Rừng Xứ Thanh',
+        category: 'veg',
+        emoji: '🍃',
+        color: '#166534',
+        cookedColor: '#14532d',
+        needsCooking: false,
+        canBeWrapper: true,
+        flavorDesc: 'Đặc sản núi rừng Thanh Hóa, đắng thanh sâu lắng, hậu ngọt đượm thảo mộc, nấu canh lòng mề hoặc cuộn thịt băm nướng',
+        flavors: { umami: 1.2, salty: 0.2, sweet: 0.8, sour: 0.2, spicy: 0.0, fatty: 0.1, bitter: 5.2, aroma: 3.5, crunch: 1.2 }
+      },
+      {
+        id: 'com_me',
+        name: 'Cơm Mẻ Ngấu Lên Men',
+        category: 'veg',
+        emoji: '🥣',
+        color: '#fefce8',
+        cookedColor: '#fef08a',
+        needsCooking: false,
+        texture: 'soft',
+        flavorDesc: 'Cơm gạo lên men vi sinh sánh mịn, thơm nồng men rượu, vị chua thanh tao dịu êm, ướp nướng hoặc om lòng chua ngọt',
+        flavors: { umami: 2.2, salty: 0.2, sweet: 0.8, sour: 4.8, spicy: 0.0, fatty: 0.2, bitter: 0.0, aroma: 3.4, crunch: 0.0 }
+      },
+      {
+        id: 'mam_tep_ba_lang',
+        name: 'Mắm Tép Ba Làng Xứ Thanh',
+        category: 'seafood',
+        emoji: '🦐',
+        color: '#be123c',
+        cookedColor: '#9f1239',
+        needsCooking: false,
+        flavorDesc: 'Đặc sản tiến vua Ba Làng từ tép biển tươi ủ thính đỏ au, bùng nổ vị Umami đậm đà thơm ngát, chưng thịt hoặc xào lòng nướng',
+        flavors: { umami: 5.6, salty: 4.8, sweet: 1.5, sour: 0.4, spicy: 0.0, fatty: 0.4, bitter: 0.0, aroma: 4.6, crunch: 0.0 }
+      },
+      {
+        id: 'rau_ma_thanh_hoa',
+        name: 'Rau Má Tươi Thanh Hóa',
+        category: 'veg',
+        emoji: '🌿',
+        color: '#15803d',
+        cookedColor: '#166534',
+        needsCooking: false,
+        isFreshBalancer: true,
+        texture: 'crisp',
+        flavorDesc: 'Rau má tươi giòn mát rượi, vị nhân nhẫn đắng dịu, hậu ngọt thanh mát lành, ăn sống, nấu canh thanh nhiệt hoặc xay sinh tố',
+        flavors: { umami: 0.8, salty: 0.1, sweet: 1.2, sour: 0.0, spicy: 0.0, fatty: 0.1, bitter: 2.2, aroma: 2.6, crunch: 1.4 }
+      },
+      {
+        id: 'banh_da_thanh_hoa',
+        name: 'Bánh Đa Mè Đen Nướng Giòn',
+        category: 'wrappers',
+        emoji: '🫓',
+        color: '#78716c',
+        cookedColor: '#44403c',
+        needsCooking: false,
+        canBeVessel: true,
+        texture: 'crisp',
+        flavorDesc: 'Bánh đa gạo mè đen xứ Thanh nướng than phồng rộp giòn tan rụm rụm, thơm nức mè rang, dùng làm đế xúc tóp mỡ, lòng xào hay nộm',
+        flavors: { umami: 1.0, salty: 0.5, sweet: 1.0, sour: 0.0, spicy: 0.0, fatty: 1.2, bitter: 0.0, aroma: 3.6, crunch: 4.5 }
+      },
+
+      // B. NỘI TẠNG ĐỘNG VẬT (PROTEIN SỐNG BẮT BUỘC NẤU NHIỆT, GIÀU UMAMI & SẦN SẬT)
+      {
+        id: 'pork_small_intestine',
+        name: 'Lòng Non Heo Tươi Sạch',
+        category: 'meat',
+        emoji: '🥓',
+        color: '#fda4af',
+        cookedColor: '#e2e8f0',
+        needsCooking: true,
+        canBeVessel: true,
+        texture: 'crisp',
+        flavorDesc: 'Đoạn lòng non tươi trắng hồng mềm giòn sần sật, có vị béo bùi và nhân ngậy ngọt đượm, luộc giòn, xào mẻ, nướng xém hay nhồi nhân',
+        flavors: { umami: 3.8, salty: 0.8, sweet: 1.2, sour: 0.0, spicy: 0.0, fatty: 3.0, bitter: 0.2, aroma: 2.0, crunch: 2.2 }
+      },
+      {
+        id: 'pork_large_intestine',
+        name: 'Lòng Già Khấu Đuôi Heo',
+        category: 'meat',
+        emoji: '🌀',
+        color: '#fecdd3',
+        cookedColor: '#d97706',
+        needsCooking: true,
+        canBeVessel: true,
+        flavorDesc: 'Khấu đuôi heo dày dặn giòn dai béo ngậy, rán xém cạnh thơm lừng, xào dưa chua hoặc nhồi đầy rau thơm đậu xanh làm dồi',
+        flavors: { umami: 3.9, salty: 0.7, sweet: 1.0, sour: 0.0, spicy: 0.0, fatty: 3.6, bitter: 0.0, aroma: 2.2, crunch: 2.5 }
+      },
+      {
+        id: 'pork_heart',
+        name: 'Tim Heo Tươi Mọng Nước',
+        category: 'meat',
+        emoji: '🫀',
+        color: '#991b1b',
+        cookedColor: '#581c87',
+        needsCooking: true,
+        flavorDesc: 'Thớ nạc săn chắc giòn ngọt mọng nước, giàu đạm Umami thanh khiết không hề ngấy, xào lá đắng, luộc chín mềm hoặc nướng xiên que',
+        flavors: { umami: 4.0, salty: 0.8, sweet: 1.6, sour: 0.0, spicy: 0.0, fatty: 1.2, bitter: 0.0, aroma: 1.8, crunch: 1.4 }
+      },
+      {
+        id: 'pork_liver',
+        name: 'Gan Heo Tươi Bùi Béo',
+        category: 'meat',
+        emoji: '🟤',
+        color: '#7f1d1d',
+        cookedColor: '#451a03',
+        needsCooking: true,
+        texture: 'soft',
+        flavorDesc: 'Mềm mịn bùi ngậy đậm đà vị ngọt đạm tự nhiên, thái mỏng xào lá đắng rừng, áp chảo chín mềm mọng hoặc làm pate thơm béo',
+        flavors: { umami: 4.4, salty: 0.9, sweet: 1.2, sour: 0.0, spicy: 0.0, fatty: 2.4, bitter: 0.2, aroma: 2.2, crunch: 0.3 }
+      },
+      {
+        id: 'pork_stomach',
+        name: 'Bao Tử Heo Giòn Sần Sật',
+        category: 'meat',
+        emoji: '🥟',
+        color: '#fed7aa',
+        cookedColor: '#fbbf24',
+        needsCooking: true,
+        canBeVessel: true,
+        texture: 'crisp',
+        flavorDesc: 'Thành dạ dày dày dặn giòn sần sật tuyệt hảo, có thể làm túi nhồi hạt sen thịt băm nướng thơm hoặc luộc giòn chấm mắm tép',
+        flavors: { umami: 3.6, salty: 0.7, sweet: 1.1, sour: 0.0, spicy: 0.0, fatty: 1.5, bitter: 0.0, aroma: 1.8, crunch: 3.4 }
+      },
+      {
+        id: 'chicken_gizzard',
+        name: 'Mề Gà Giòn Sần Sật',
+        category: 'meat',
+        emoji: '🍗',
+        color: '#9f1239',
+        cookedColor: '#831843',
+        needsCooking: true,
+        texture: 'crisp',
+        flavorDesc: 'Khối cơ săn chắc giòn sần sật giòn rụm, khía hoa xào xả ớt lá đắng, nướng que xiên than hoa hoặc rim mắm tiêu',
+        flavors: { umami: 3.5, salty: 0.7, sweet: 1.0, sour: 0.0, spicy: 0.0, fatty: 1.1, bitter: 0.0, aroma: 1.8, crunch: 3.6 }
+      },
+      {
+        id: 'pork_blood_curd',
+        name: 'Tiết Heo Mềm Núng Nính',
+        category: 'meat',
+        emoji: '🩸',
+        color: '#881337',
+        cookedColor: '#4c0519',
+        needsCooking: true,
+        texture: 'soft',
+        flavorDesc: 'Khối tiết mềm mướt núng nính, thanh mát, dùng nấu canh lá đắng xứ Thanh, nấu cháo lòng hoặc nhồi dồi huyết hấp chín',
+        flavors: { umami: 3.0, salty: 0.8, sweet: 0.8, sour: 0.0, spicy: 0.0, fatty: 0.8, bitter: 0.1, aroma: 1.5, crunch: 0.0 }
+      },
+      {
+        id: 'pork_kidney',
+        name: 'Cật Heo Giòn Ngọt Bổ Dưỡng',
+        category: 'meat',
+        emoji: '🫘',
+        color: '#831843',
+        cookedColor: '#500724',
+        needsCooking: true,
+        texture: 'crisp',
+        flavorDesc: 'Bầu dục heo tươi thái hoa giòn ngọt thanh tao, xào cần tỏi, xào mẻ hoặc nướng than hoa mềm mọng',
+        flavors: { umami: 3.7, salty: 0.7, sweet: 1.5, sour: 0.0, spicy: 0.0, fatty: 1.3, bitter: 0.0, aroma: 1.6, crunch: 2.0 }
+      },
+
+      // C. CÁC LOẠI DA & MỠ ĐỘNG VẬT (CHUYÊN DÙNG LÀM SNACK, TÓP MỠ & CHIÊN RÁN TỰ DO)
+      {
+        id: 'pork_skin',
+        name: 'Da Heo Tươi Giòn Rụm',
+        category: 'meat',
+        emoji: '🥓',
+        color: '#ffedd5',
+        cookedColor: '#d97706',
+        needsCooking: true,
+        canBeWrapper: true,
+        texture: 'crispy',
+        flavorDesc: 'Bì heo tươi dẻo giàu collagen, khi chiên dầu hoặc nướng nồi chiên không dầu sẽ phồng rộp giòn tan rụm rụm làm snack da heo xóc muối ớt, hoặc làm vỏ cuộn nướng',
+        flavors: { umami: 2.5, salty: 0.6, sweet: 0.8, sour: 0.0, spicy: 0.0, fatty: 2.8, bitter: 0.0, aroma: 2.5, crunch: 4.2 }
+      },
+      {
+        id: 'pork_fatback',
+        name: 'Mỡ Khổ Heo (Làm Tóp Mỡ)',
+        category: 'meat',
+        emoji: '🧈',
+        color: '#fffbeb',
+        cookedColor: '#b45309',
+        needsCooking: true,
+        texture: 'crispy',
+        flavorDesc: 'Mỡ khổ trắng tươi, khi áp chảo hay chiên giòn sẽ thắng ra mỡ thơm và để lại tóp mỡ giòn rụm béo bùi bùng nổ, xào dưa chua hoặc xóc tỏi ớt làm snack',
+        flavors: { umami: 2.8, salty: 0.5, sweet: 1.0, sour: 0.0, spicy: 0.0, fatty: 5.6, bitter: 0.0, aroma: 3.2, crunch: 3.8 }
+      },
+      {
+        id: 'chicken_skin',
+        name: 'Da Gà Chiên Giòn Tan',
+        category: 'meat',
+        emoji: '🍗',
+        color: '#fef3c7',
+        cookedColor: '#d97706',
+        needsCooking: true,
+        texture: 'crispy',
+        flavorDesc: 'Mảng da gà béo mọng, nướng lò hoặc chiên giòn phồng rộp rụm rụm, bốc mùi thơm béo ngào ngạt của snack da gà quay nức tiếng',
+        flavors: { umami: 3.0, salty: 0.7, sweet: 0.9, sour: 0.0, spicy: 0.0, fatty: 4.5, bitter: 0.0, aroma: 3.8, crunch: 4.0 }
+      },
+      {
+        id: 'chicken_fat',
+        name: 'Mỡ Gà Vàng Óng Thơm Ngậy',
+        category: 'meat',
+        emoji: '🫙',
+        color: '#fef08a',
+        cookedColor: '#eab308',
+        needsCooking: true,
+        flavorDesc: 'Mỡ gà tươi vàng mơ, khi đun nóng dậy hương thơm ngào ngạt béo ngậy, tưới lên cơm gà, xào rau hoặc quét nướng các món ăn óng ả',
+        flavors: { umami: 2.6, salty: 0.4, sweet: 0.8, sour: 0.0, spicy: 0.0, fatty: 5.2, bitter: 0.0, aroma: 4.2, crunch: 0.5 }
+      },
+
+      // D. NGUYÊN LIỆU MỞ RỘNG ĐỘC ĐÁO (MỠ CHÀI BỌC NƯỚNG, THÍNH GẠO RANG & TAI HEO GÂN GIÒN)
+      {
+        id: 'caul_fat',
+        name: 'Mỡ Chài Bọc Nướng Mềm Mọng',
+        category: 'wrappers',
+        emoji: '🕸️',
+        color: '#f8fafc',
+        cookedColor: '#fef3c7',
+        needsCooking: true,
+        canBeWrapper: true,
+        flavorDesc: 'Lớp màng ren mỡ mỏng dùng cuộn bọc thịt bò, chả viên nướng than, khi nướng mỡ tan chảy ngấm đều giữ nhân mềm mọng nước thơm lừng không bị khô',
+        flavors: { umami: 2.0, salty: 0.4, sweet: 0.7, sour: 0.0, spicy: 0.0, fatty: 4.0, bitter: 0.0, aroma: 2.8, crunch: 0.5 }
+      },
+      {
+        id: 'roasted_rice_powder',
+        name: 'Thính Gạo Rang Vàng Thơm Nức',
+        category: 'noodles_flour',
+        emoji: '🌾',
+        color: '#fef08a',
+        cookedColor: '#d97706',
+        needsCooking: false,
+        flavorDesc: 'Gạo rang cháy vàng xay mịn thơm lừng mùi đồng quê, rắc trộn bì heo làm nem thính, hoặc xóc cùng tóp mỡ da giòn bùi béo',
+        flavors: { umami: 1.2, salty: 0.2, sweet: 0.8, sour: 0.0, spicy: 0.0, fatty: 0.3, bitter: 0.0, aroma: 4.8, crunch: 1.5 }
+      },
+      {
+        id: 'pork_ear',
+        name: 'Tai Heo Gân Giòn Sần Sật',
+        category: 'meat',
+        emoji: '👂',
+        color: '#ffedd5',
+        cookedColor: '#fed7aa',
+        needsCooking: true,
+        texture: 'crisp',
+        flavorDesc: 'Lớp sụn gân ở giữa bọc da giòn sần sật sảng khoái, thái mỏng bóp thính, ngâm chua ngọt hoặc xào xả ớt giòn rụm',
+        flavors: { umami: 3.0, salty: 0.6, sweet: 1.0, sour: 0.0, spicy: 0.0, fatty: 2.0, bitter: 0.0, aroma: 2.0, crunch: 3.8 }
       }
     ];
 

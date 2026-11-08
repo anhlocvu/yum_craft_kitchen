@@ -7,12 +7,54 @@
 > 3. **Nhận Xét Của Thực Khách Sinh Động & Chân Thực (Living Character Critique)**: Khi thưởng thức, nhân vật sẽ miêu tả chi tiết cảm giác vị giác, kết cấu món ăn (nướng, luộc, chiên, cuộn, nhồi...) và mùi vị của các loại gia vị người chơi đã nêm, phản ánh đúng gu thưởng thức và biểu cảm của từng thực khách.
 > 4. **Trợ Năng Toàn Diện Chuẩn Quốc Tế (WCAG AA/AAA & NVDA First)**: Mọi tương tác, cảm giác vị giác và diễn biến nấu nướng đều phải được truyền tải hoàn hảo, tự nhiên và liền mạch đến người chơi khiếm thị thông qua NVDA và bàn phím.
 >5 ** không được đưa vào bất kỳ công thức cứng nhắt nào trong code, vì đây là game nấu ăn tự gio, không phải game nấu ăn theo công thức xách giáo khoa
->6 ** Khi phát triển bất kỳ tính năng nào, luôn tự động tuân thủ quy trình Specify.
+>6 **trong mọi trường hợp phát triển, bắt buộc, luôn luôn làm theo qui trình specify
 ---
 
 # NHẬT KÝ DỰ ÁN — YUMCRAFT KITCHEN
 
-## 1. Thông Tin Phiên Làm Việc Mới Nhất (08/11/2026 - Khôi Phục Từ Vựng Vị Đượm Trung Tính & Chuẩn Hóa Ngữ Cảnh Thưởng Thức Đồ Uống)
+## 1. Thông Tin Phiên Làm Việc Mới Nhất (08/11/2026 - Mở Rộng 20 Nguyên Liệu: Đặc Sản Thanh Hóa, Nội Tạng Động Vật, Da & Mỡ Cho Snack & Tóp Mỡ Tự Do Sandbox)
+- **Ngày thực hiện**: 08/11/2026 (Phiên Mở Rộng 20 Nguyên Liệu Đậm Chất Văn Hóa Xứ Thanh, Nội Tạng Tươi Giòn, Da & Mỡ Động Vật Chế Biến Snack / Tóp Mỡ Sandbox, Trợ Năng NVDA First)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Quy trình áp dụng**: Chuẩn hóa toàn diện quy trình **Specify** (`spec.md` -> `plan.md` -> `tasks.md` -> `implement` -> `test suites 100% pass`).
+- **Mục tiêu hoàn thành**:
+  1. **Nâng cấp Danh mục Tủ lạnh `FRIDGE_CATEGORIES`**:
+     - Cập nhật tab `meat` thành: **`🥩 Thịt, Nội Tạng & Da Mỡ`**, giúp người chơi và trình đọc màn hình NVDA dễ dàng định vị toàn bộ các loại thịt tươi, nội tạng, da và mỡ.
+     - Tổng số nguyên liệu trong tủ lạnh nâng từ **200 lên 220 nguyên liệu**.
+  2. **Bổ sung 20 Nguyên Liệu Mới Vào [`INGREDIENTS`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html#L4644-L4894)**:
+     - **Nhóm 1: Đặc sản Xứ Thanh (5 nguyên liệu)**:
+       1. 🍃 **Lá Đắng Rừng Xứ Thanh** (`la_dang_thanh_hoa`, `category: 'veg'`): Vị đắng sâu lắng thảo mộc (`bitter: 5.2`), thơm hương rừng (`aroma: 3.5`), hậu ngọt (`sweet: 0.8`), có thể ăn sống, nấu canh hoặc làm vỏ cuộn thịt nướng (`canBeWrapper: true`).
+       2. 🥣 **Cơm Mẻ Ngấu Lên Men** (`com_me`, `category: 'veg'`): Cơm gạo lên men vi sinh sánh mịn (`texture: 'soft'`), vị chua thanh tao dịu êm (`sour: 4.8`), thơm nồng men rượu gạo (`aroma: 3.4`), ướp nướng hoặc om chua ngọt.
+       3. 🦐 **Mắm Tép Ba Làng Xứ Thanh** (`mam_tep_ba_lang`, `category: 'seafood'`): Đặc sản tiến vua Ba Làng đỏ au ủ thính, giàu Umami bùng nổ (`umami: 5.6`, `salty: 4.8`, `aroma: 4.6`), chưng thịt hoặc xào lòng.
+       4. 🌿 **Rau Má Tươi Thanh Hóa** (`rau_ma_thanh_hoa`, `category: 'veg'`): Giòn mát rượi (`texture: 'crisp'`), vị nhân nhẫn đắng dịu (`bitter: 2.2`), hậu ngọt mát (`sweet: 1.2`), thanh nhiệt cân bằng độ ngấy (`isFreshBalancer: true`).
+       5. 🫓 **Bánh Đa Mè Đen Nướng Giòn** (`banh_da_thanh_hoa`, `category: 'wrappers'`): Bánh đa mè đen nướng than phồng rộp giòn tan rụm rụm (`crunch: 4.5`, `aroma: 3.6`), làm đế xúc tóp mỡ, lòng xào hay nộm (`canBeVessel: true`).
+     - **Nhóm 2: Nội Tạng Động Vật Tươi Sống (8 nguyên liệu, `needsCooking: true`)**:
+       6. 🥓 **Lòng Non Heo Tươi Sạch** (`pork_small_intestine`, `category: 'meat'`): Trắng hồng mềm giòn sần sật (`crunch: 2.2`), ngậy béo bùi (`fatty: 3.0`, `umami: 3.8`), có thể làm túi nhồi nhân (`canBeVessel: true`) hoặc luộc giòn, xào mẻ.
+       7. 🌀 **Lòng Già Khấu Đuôi Heo** (`pork_large_intestine`, `category: 'meat'`): Dày dặn giòn dai béo ngậy (`fatty: 3.6`, `crunch: 2.5`), rán xém cạnh hoặc nhồi làm dồi (`canBeVessel: true`).
+       8. 🫀 **Tim Heo Tươi Mọng Nước** (`pork_heart`, `category: 'meat'`): Thớ nạc săn chắc giòn ngọt (`umami: 4.0`, `sweet: 1.6`), xào lá đắng, luộc hoặc nướng que.
+       9. 🟤 **Gan Heo Tươi Bùi Béo** (`pork_liver`, `category: 'meat'`): Mềm mịn bùi ngậy (`texture: 'soft'`, `umami: 4.4`, `fatty: 2.4`), thái xào lá đắng hoặc làm pate béo.
+       10. 🥟 **Bao Tử Heo Giòn Sần Sật (Dạ Dày)** (`pork_stomach`, `category: 'meat'`): Dày dặn giòn sần sật tuyệt hảo (`crunch: 3.4`), làm túi nhồi hạt sen/thịt băm nướng thơm (`canBeVessel: true`) hoặc luộc giòn chấm mắm tép.
+       11. 🍗 **Mề Gà Giòn Sần Sật** (`chicken_gizzard`, `category: 'meat'`): Giòn rụm sần sật trứ danh (`crunch: 3.6`, `umami: 3.5`), khía hoa xào xả ớt lá đắng hoặc nướng que.
+       12. 🩸 **Tiết Heo Mềm Núng Nính** (`pork_blood_curd`, `category: 'meat'`): Khối tiết mềm mướt núng nính (`texture: 'soft'`, `umami: 3.0`), thanh mát, nấu canh lá đắng hoặc nhồi dồi huyết.
+       13. 🫘 **Cật Heo Giòn Ngọt Bổ Dưỡng** (`pork_kidney`, `category: 'meat'`): Giòn ngọt thanh tao (`crunch: 2.0`, `umami: 3.7`, `sweet: 1.5`), xào cần tỏi hoặc nướng than hoa.
+     - **Nhóm 3: Các Loại Da & Mỡ Động Vật (4 nguyên liệu, chuyên dùng làm snack & tóp mỡ, `needsCooking: true`)**:
+       14. 🥓 **Da Heo Tươi Giòn Rụm (Bì Heo)** (`pork_skin`, `category: 'meat'`): Khi chiên ngập dầu hoặc nồi chiên không dầu phồng rộp giòn tan rụm rụm (`crunch: 4.2`, `fatty: 2.8`) làm snack da heo xóc muối ớt, hoặc làm vỏ cuộn nướng (`canBeWrapper: true`).
+       15. 🧈 **Mỡ Khổ Heo (Làm Tóp Mỡ)** (`pork_fatback`, `category: 'meat'`): Khi áp chảo/chiên sẽ thắng ra mỡ thơm (`aroma: 3.2`) và để lại tóp mỡ giòn rụm béo bùi bùng nổ (`fatty: 5.6`, `crunch: 3.8`), xào dưa chua hoặc xóc tỏi ớt làm snack.
+       16. 🍗 **Da Gà Chiên Giòn Tan** (`chicken_skin`, `category: 'meat'`): Da gà béo mọng nướng lò hoặc chiên giòn rụm rộp rộp (`crunch: 4.0`, `fatty: 4.5`, `aroma: 3.8`), làm snack da gà quay nức tiếng.
+       17. 🫙 **Mỡ Gà Vàng Óng Thơm Ngậy** (`chicken_fat`, `category: 'meat'`): Dậy hương thơm ngào ngạt béo ngậy (`aroma: 4.2`, `fatty: 5.2`), tưới cơm gà, xào rau hoặc quét nướng óng ả.
+     - **Nhóm 4: Nguyên Liệu Mở Rộng Độc Đáo (3 nguyên liệu)**:
+       18. 🕸️ **Mỡ Chài Bọc Nướng Mềm Mọng** (`caul_fat`, `category: 'wrappers'`): Màng ren mỡ mỏng dùng cuộn bọc thịt bò/chả nướng than (`canBeWrapper: true`), tan chảy giữ nước cốt mềm mọng không bị khô.
+       19. 🌾 **Thính Gạo Rang Vàng Thơm Nức** (`roasted_rice_powder`, `category: 'noodles_flour'`): Gạo rang cháy vàng xay mịn thơm lừng mùi đồng quê (`aroma: 4.8`), rắc trộn nem thính bì heo hoặc xóc cùng tóp mỡ/snack da giòn bùi béo.
+       20. 👂 **Tai Heo Gân Giòn Sần Sật** (`pork_ear`, `category: 'meat'`): Lớp sụn gân ở giữa bọc da giòn sần sật sảng khoái (`crunch: 3.8`, `fatty: 2.0`), thái mỏng bóp thính hoặc xào xả ớt giòn rụm.
+  3. **Bảo Toàn Triệt Để Triết Lý Toca Kitchen Sandbox (100% Zero Hardcoded Recipes)**:
+     - Hoàn toàn không đưa vào bất kỳ quy tắc cứng nào. Người chơi tự do ném da heo vào nồi chiên không dầu làm snack giòn rụm, tự do thắng mỡ khổ lấy tóp mỡ xào dưa, cuộn mỡ chài hay nấu canh lòng mề lá đắng theo ý thích.
+     - Toàn bộ 14 nguyên liệu sống có `needsCooking: true`, nếu dọn sống chưa qua nhiệt sẽ kích hoạt cảnh báo thịt sống `hasRawMeat: true` đúng tính cách thực khách. Khi qua nhiệt chín tới/chín giòn (`cookLevel >= 1`), món ăn giải phóng toàn bộ hương thơm, độ giòn và độ béo tự nhiên.
+  4. **Bộ Kiểm Thử Tự Động Chuyên Biệt ([`tests/test_thanh_hoa_and_offal_ingredients.js`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/tests/test_thanh_hoa_and_offal_ingredients.js))**:
+     - Kiểm thử 14 kịch bản toàn diện: Cập nhật danh mục, đủ 20 nguyên liệu, tính toàn vẹn 9 trục vị giác, kiểm tra cấm thịt sống, kịch bản snack da heo & tóp mỡ chiên giòn, kịch bản canh lá đắng, cơm mẻ, vỏ cuộn mỡ chài, túi nhồi bao tử/lòng già, mắm tép Ba Làng, thính gạo rang, rau má và kiểm tra không có công thức cứng.
+     - Kết quả kiểm thử: **14/14 BÀI TEST ĐẠT (100% PASS)**.
+
+---
+
+## 2. Thông Tin Phiên Làm Việc Trước (08/11/2026 - Khôi Phục Từ Vựng Vị Đượm Trung Tính & Chuẩn Hóa Ngữ Cảnh Thưởng Thức Đồ Uống)
 - **Ngày thực hiện**: 08/11/2026 (Phiên Khôi Phục Từ Điển Cảm Quan `describePureFlavorDescriptor` Từ Lịch Sử GitHub & Tách Biệt Ngữ Cảnh Thưởng Thức Đồ Uống `isDrinkOrSmoothie`)
 - **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
 - **Mục tiêu hoàn thành**:
