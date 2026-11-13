@@ -15,7 +15,7 @@
 - [2. Các Tính Năng Nổi Bật](#-2-các-tính-năng-nổi-bật)
   - [2.1. Bộ Máy Hóa Học Vị Giác Cảm Quan (Dynamic Sensory Chemistry)](#21-bộ-máy-hóa-học-vị-giác-cảm-quan-dynamic-sensory-chemistry)
   - [2.2. Kho 200 Nguyên Liệu & 29 Gia Vị](#22-kho-200-nguyên-liệu--29-gia-vị)
-  - [2.3. Hệ Thống 17 Dụng Cụ Chế Biến](#23-hệ-thống-17-dụng-cụ-chế-biến)
+  - [2.3. Hệ Thống 18 Dụng Cụ Chế Biến](#23-hệ-thống-18-dụng-cụ-chế-biến)
   - [2.4. 6 Thực Khách Cá Tính & Nhận Xét 4 Tầng Sống Động](#24-6-thực-khách-cá-tính--nhận-xét-4-tầng-sống-động)
   - [2.5. Bộ Tổng Hợp Âm Thanh Foley (Web Audio API Synthesizer)](#25-bộ-tổng-hợp-âm-thanh-foley-web-audio-api-synthesizer)
 - [3. Thiết Kế Trợ Năng Toàn Diện (Accessibility & NVDA First)](#-3-thiết-kế-trợ-năng-toàn-diện-accessibility--nvda-first)
@@ -76,9 +76,9 @@ Hệ thống nguyên liệu được phân loại trực quan trong Tủ Lạnh:
 - 🍚 **Cơm, Khoai & Phô Mai (8 món)**: Cơm trắng dẻo, Bún tươi sợi trắng, Khoai tây Đà Lạt, Khoai lang mật tươi, Khoai môn củ tươi, Đậu hũ non thanh mát, Phô mai Cheddar lát, Phô mai khối Mozzarella.
 - 🧂 **29 Loại Gia Vị Phong Phú**: Muối biển, tiêu đen, chanh, đường mía, ớt hiểm, nước mắm, nước tương, tương ớt, mật ong, tỏi, gừng, sả, mayonnaise, bơ lạt, ngũ vị hương, dầu hào, giấm gạo, phô mai bột, sa tế tôm, dầu mè, ketchup, sốt bơ đậu phộng, muối tiêu chanh, quế, hoa hồi, nghệ, cà ri, mù tạt và xi-rô lá phong.
 
-### 2.3. Hệ Thống 17 Dụng Cụ Chế Biến
+### 2.3. Hệ Thống 18 Dụng Cụ Chế Biến
 Tại **Tab 2 (Bàn Chế Biến)**, không gian bếp được tái cấu trúc thành **3 Khu Vực Ngữ Nghĩa Độc Lập** với các thẻ Heading H3 chuẩn trợ năng quốc tế WCAG AA/AAA:
-- **Khu 1 (`1. Chọn Dụng Cụ Nấu`)**: Toolbar gồm 17 nút chọn công cụ bếp trực quan, từ dao thớt và bàn cuốn đến nồi cơm điện, nồi chiên không dầu và lò vi sóng.
+- **Khu 1 (`1. Chọn Dụng Cụ Nấu`)**: Toolbar gồm 18 nút chọn công cụ bếp trực quan, từ dao thớt, bàn cuốn, bàn trộn đến nồi cơm điện, nồi chiên không dầu và lò vi sóng.
 - **Khu 2 (`2. Thao Tác Với [Tên Dụng Cụ]`)**: Tiêu đề tự động mang tên và emoji của công cụ đang chọn (ví dụ: *2. Thao Tác Với 🍳 Chảo Chiên Xào*, *2. Thao Tác Với 🌪️ Máy Xay Sinh Tố*...). Dưới heading này là các nút chế biến chính (áp chảo, đun sôi, bật lò, cuộn tròn, băm nhỏ...) và bộ chọn vỏ cuốn/nhồi.
 - **Khu 3 (`3. Nguyên Liệu Đang Có Trong Bếp`)**: Danh sách thực phẩm đang nấu trong dụng cụ, nhiệt độ, trạng thái chín và cặp nút thao tác nhanh *Cất ra Khay Tạm (T)* cùng *Dọn sạch bếp*.
 > **💡 Trợ năng NVDA**: Người chơi chỉ cần nhấn phím **`H`** hoặc phím số **`3`** để nhảy tức thì qua 3 khu vực; sau khi chọn công cụ ở Khu 1, ấn `H` một lần rồi ấn `Tab` là chạm ngay vào các nút chế biến!
@@ -109,6 +109,7 @@ graph LR
 15. 🍚 **Nồi Cơm Điện (`rice_cooker`)**: Nấu chín dẻo bằng hơi nước kín.
 16. 🍟 **Nồi Chiên Không Dầu (`air_fryer`)**: Làm giòn bằng luồng khí nóng, tạo phương pháp `air_fried`.
 17. 📡 **Lò Vi Sóng (`microwave`)**: Làm nóng nhanh, tạo phương pháp `microwaved`.
+18. 🥣 **Bàn Trộn Đa Năng (`mixing_table`)**: Trộn bột, nhào nặn dẻo quánh, đánh bông kem trứng hoặc trộn gỏi/nhân tự do mà vẫn giữ nguyên dạng món ăn (`kind: 'mixed'`, KHÔNG biến thành đồ uống) với 3 thao tác `mix_toss` (`C`), `knead_dough` (`K`) và `whisk_batter` (`W`).
 
 ### 2.4. 6 Thực Khách Cá Tính & Nhận Xét 4 Tầng Sống Động
 Mỗi thực khách có khẩu vị, sở thích và giới hạn chịu cay riêng biệt:
@@ -183,8 +184,12 @@ Người chơi có thể điều khiển toàn bộ nhà bếp mà không cần 
 | **`Alt + 5`** | Mở ngay **Tab 5: Bàn Tiệc & Thưởng Thức** | Toàn game |
 | **`Arrow Left / Right`** | Di chuyển qua lại giữa 5 Tab khi đang ở thanh Tab | Thanh Tab |
 | **`Home / End`** | Nhảy nhanh về Tab 1 hoặc tới Tab 5 | Thanh Tab |
-| **`C`** | Thực hiện thao tác nấu / cắt tại dụng cụ hiện tại (Thái, Xào, Luộc, Nướng...) | Tab 2 |
+| **`C`** | Thực hiện thao tác nấu / cắt / trộn đều tại dụng cụ hiện tại (Thái, Xào, Luộc, Nướng, Trộn...) | Tab 2 |
+| **`K`** | Nhào nặn dẻo quánh (tạo khối bột/nhân có thể làm vỏ cuốn) tại Bàn Trộn số 18 | Tab 2 |
+| **`W`** | Đánh bông / Đánh tan sánh mịn hỗn hợp bột trứng sữa tại Bàn Trộn số 18 | Tab 2 |
 | **`R`** | Cuộn tròn lại (tại Bàn Cuốn) hoặc Xẻ ruột & Nhồi nhân (tại Trạm Nhồi) | Tab 2 |
+| **`S`** | Lắc bình Shaker tại Trạm Pha Chế số 10 | Tab 2 |
+| **`B`** | Hãm trà & cà phê nước nóng tại Trạm Pha Chế số 10 | Tab 2 |
 | **`T`** | Cất toàn bộ thức ăn trong bếp ra Khay Tạm chờ sơ chế | Tab 2 |
 | **`P`** | Mở hộp thoại **⭐ HOÀN THÀNH MÓN & BÀY BIỆN** | Toàn bếp |
 | **`F`** | **🥄 Đút cho thực khách ăn ngay!** | Tab 5 |

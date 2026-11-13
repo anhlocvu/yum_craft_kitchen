@@ -50,14 +50,24 @@ const SETTINGS_STORAGE_KEY = "yumcraft_game_settings";
 export function getSavedSettings() {
   try {
     const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        sfxEnabled: true,
+        sfxVolume: 80,
+        voiceAnnouncements: true,
+        singleKeyShortcutsEnabled: true,
+        ...parsed
+      };
+    }
   } catch (e) {
     console.warn("Không thể đọc cài đặt trò chơi:", e);
   }
   return {
     sfxEnabled: true,
     sfxVolume: 80,
-    voiceAnnouncements: true
+    voiceAnnouncements: true,
+    singleKeyShortcutsEnabled: true
   };
 }
 
@@ -218,6 +228,7 @@ function applySettingsToGameState(settings) {
   if (window.state) {
     window.state.sfxEnabled = settings.sfxEnabled;
     window.state.sfxVolume = settings.sfxVolume / 100;
+    window.state.singleKeyShortcutsEnabled = settings.singleKeyShortcutsEnabled !== false;
   }
 }
 
@@ -1572,11 +1583,13 @@ export function initMainMenuController() {
     const volSlider = document.getElementById("setting-sfx-volume");
     const volLabel = document.getElementById("setting-sfx-volume-val");
     const voiceToggle = document.getElementById("setting-voice-announcements");
+    const shortcutToggle = document.getElementById("setting-single-key-shortcuts");
 
     if (toggleSfx) toggleSfx.checked = s.sfxEnabled;
     if (volSlider) volSlider.value = s.sfxVolume;
     if (volLabel) volLabel.textContent = s.sfxVolume + "%";
     if (voiceToggle) voiceToggle.checked = s.voiceAnnouncements;
+    if (shortcutToggle) shortcutToggle.checked = s.singleKeyShortcutsEnabled !== false;
   };
 
   if (btnMenuSettings && modalSettings) {
@@ -1606,11 +1619,13 @@ export function initMainMenuController() {
       const toggleSfx = document.getElementById("setting-sfx-toggle");
       const volSlider = document.getElementById("setting-sfx-volume");
       const voiceToggle = document.getElementById("setting-voice-announcements");
+      const shortcutToggle = document.getElementById("setting-single-key-shortcuts");
 
       const newSettings = {
         sfxEnabled: toggleSfx ? toggleSfx.checked : true,
         sfxVolume: volSlider ? parseInt(volSlider.value, 10) : 80,
-        voiceAnnouncements: voiceToggle ? voiceToggle.checked : true
+        voiceAnnouncements: voiceToggle ? voiceToggle.checked : true,
+        singleKeyShortcutsEnabled: shortcutToggle ? shortcutToggle.checked : true
       };
 
       saveSettings(newSettings);

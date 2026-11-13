@@ -793,13 +793,13 @@
         </div>
 
         <!-- Ingredients Shelf Grid -->
-        <div id="fridge-items-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 max-h-[500px] overflow-y-auto custom-scroll pr-1.5" role="region" aria-label="Danh sách nguyên liệu trong tủ lạnh">
+        <div id="fridge-items-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 max-h-[500px] overflow-y-auto custom-scroll pr-1.5">
           <!-- Populated by JS -->
         </div>
       </div>
 
       <!-- ===================================================================== -->
-      <!-- TABPANEL 2: BÀN CHẾ BIẾN & 9 DỤNG CỤ (WORKBENCH)                     -->
+      <!-- TABPANEL 2: BÀN CHẾ BIẾN & 18 DỤNG CỤ (WORKBENCH)                    -->
       <!-- ===================================================================== -->
       <div id="panel-workbench" role="tabpanel" tabindex="0" aria-labelledby="tab-workbench" class="hidden bg-white rounded-3xl shadow-sm border-2 border-amber-200/90 p-4 sm:p-6 max-w-5xl mx-auto flex flex-col gap-4">
         <!-- Main Panel Header (Heading H2) -->
@@ -808,9 +808,9 @@
             <span class="text-3xl" aria-hidden="true">🔥</span>
             <div>
               <h2 class="text-base sm:text-lg font-extrabold text-stone-900 font-game leading-tight">
-                Bàn Chế Biến &amp; 17 Dụng Cụ
+                Bàn Chế Biến &amp; 18 Dụng Cụ
               </h2>
-              <p id="station-desc-sub" class="text-xs text-stone-500 font-medium">Chọn dụng cụ nấu, cuốn hoặc nhồi</p>
+              <p id="station-desc-sub" class="text-xs text-stone-500 font-medium">Chọn dụng cụ nấu, trộn, cuốn hoặc nhồi</p>
             </div>
           </div>
           <span id="active-station-badge" class="text-xs sm:text-sm font-bold px-3 py-1 rounded-xl bg-orange-100 text-orange-900 border border-orange-200">
@@ -821,23 +821,23 @@
         <!-- =================================================================== -->
         <!-- KHU 1: CHỌN CÔNG CỤ NẤU ĂN (HEADING H3)                             -->
         <!-- =================================================================== -->
-        <section class="flex flex-col gap-2" aria-labelledby="heading-station-picker">
+        <div class="flex flex-col gap-2">
           <div class="flex items-center justify-between">
             <h3 id="heading-station-picker" class="text-xs sm:text-sm font-extrabold text-stone-700 uppercase tracking-wider font-game flex items-center gap-1.5">
               <span aria-hidden="true">🛠️</span>
-              <span>1. Chọn Dụng Cụ Nấu (17 Dụng Cụ)</span>
+              <span>1. Chọn Dụng Cụ Nấu (18 Dụng Cụ)</span>
             </h3>
           </div>
           <!-- Cooking tools grid -->
-          <div id="station-selector-grid" class="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-1.5" role="toolbar" aria-label="Chọn 1 trong 17 công cụ nấu ăn">
+          <div id="station-selector-grid" class="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-1.5" role="toolbar" aria-label="Chọn 1 trong 18 công cụ nấu ăn">
             <!-- Populated by JS -->
           </div>
-        </section>
+        </div>
 
         <!-- =================================================================== -->
         <!-- KHU 2: THAO TÁC VỚI CÔNG CỤ ĐANG CHỌN (HEADING H3 ĐỘNG)             -->
         <!-- =================================================================== -->
-        <section class="bg-amber-50/70 rounded-2xl p-3.5 border-2 border-amber-200/90 flex flex-col gap-3 shadow-xs" aria-labelledby="heading-station-actions">
+        <div class="bg-amber-50/70 rounded-2xl p-3.5 border-2 border-amber-200/90 flex flex-col gap-3 shadow-xs">
           <div class="flex items-center justify-between">
             <h3 id="heading-station-actions" class="text-xs sm:text-sm font-extrabold text-amber-950 uppercase tracking-wider font-game flex items-center gap-1.5">
               <span aria-hidden="true">🔪</span>
@@ -859,7 +859,7 @@
             <p id="wrap-vessel-selector-hint" class="text-xs text-amber-900 mb-2 leading-relaxed">
               Hãy chọn 1 nguyên liệu đang có trong dụng cụ để làm lớp vỏ ngoài, tất cả các nguyên liệu còn lại sẽ được cuộn/nhồi vào bên trong!
             </p>
-            <div id="wrap-vessel-options-container" class="grid grid-cols-2 sm:grid-cols-3 gap-2" role="radiogroup" aria-label="Chọn nguyên liệu làm vỏ ngoài">
+            <div id="wrap-vessel-options-container" class="grid grid-cols-2 sm:grid-cols-3 gap-2" role="radiogroup" aria-labelledby="wrap-vessel-selector-title">
               <!-- Populated by JS from current station items -->
             </div>
           </div>
@@ -886,12 +886,12 @@
               <!-- Populated by JS -->
             </div>
           </div>
-        </section>
+        </div>
 
         <!-- =================================================================== -->
         <!-- KHU 3: NGUYÊN LIỆU ĐANG CÓ TRONG DỤNG CỤ (HEADING H3)               -->
         <!-- =================================================================== -->
-        <section class="bg-stone-50 rounded-2xl p-3.5 border border-stone-200 flex flex-col gap-2.5" aria-labelledby="heading-station-items">
+        <div class="bg-stone-50 rounded-2xl p-3.5 border border-stone-200 flex flex-col gap-2.5">
           <div class="flex items-center justify-between">
             <h3 id="heading-station-items" class="text-xs sm:text-sm font-extrabold text-stone-800 uppercase tracking-wider font-game flex items-center gap-1.5">
               <span aria-hidden="true">🥘</span>
@@ -909,7 +909,7 @@
           <div id="station-items-list" class="space-y-2 max-h-[180px] overflow-y-auto custom-scroll pr-1" role="list" aria-label="Danh sách nguyên liệu trong dụng cụ chế biến">
             <!-- Populated by JS -->
           </div>
-        </section>
+        </div>
       </div>
 
       <!-- ===================================================================== -->
@@ -969,7 +969,7 @@
           </div>
         </div>
 
-        <div id="spices-grid" class="grid grid-cols-3 sm:grid-cols-6 gap-2.5" role="region" aria-label="29 hũ gia vị và chai sốt">
+        <div id="spices-grid" class="grid grid-cols-3 sm:grid-cols-6 gap-2.5">
           <!-- Populated by JS -->
         </div>
       </div>
@@ -1110,7 +1110,7 @@
   <!-- ========================================================================= -->
   <!-- MODAL 1: HOÀN THÀNH MÓN ĂN, TỰ ĐẶT TÊN MÓN & TRANG TRÍ DĨA (ACCESSIBLE)    -->
   <!-- ========================================================================= -->
-  <dialog id="modal-finish-dish" class="backdrop:bg-black/60 backdrop:backdrop-blur-sm bg-transparent p-4 z-50 max-w-xl w-full m-auto" role="dialog" aria-modal="true" aria-labelledby="finish-modal-title">
+  <dialog id="modal-finish-dish" class="backdrop:bg-black/60 backdrop:backdrop-blur-sm bg-transparent p-4 z-50 max-w-xl w-full m-auto" aria-labelledby="finish-modal-title">
     <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-2xl border-4 border-amber-300 flex flex-col gap-4 text-stone-800">
       <div class="flex items-center justify-between border-b border-amber-200 pb-3">
         <div class="flex items-center gap-2.5">
@@ -1177,7 +1177,7 @@
   <!-- ========================================================================= -->
   <!-- MODAL 2: XÁC NHẬN QUAY LẠI MÀN HÌNH CHỌN NHÂN VẬT (RESET KITCHEN)        -->
   <!-- ========================================================================= -->
-  <dialog id="modal-confirm-back" class="backdrop:bg-black/60 backdrop:backdrop-blur-sm bg-transparent p-4 z-50 max-w-md w-full m-auto" role="dialog" aria-modal="true" aria-labelledby="confirm-back-title">
+  <dialog id="modal-confirm-back" class="backdrop:bg-black/60 backdrop:backdrop-blur-sm bg-transparent p-4 z-50 max-w-md w-full m-auto" aria-labelledby="confirm-back-title">
     <div class="bg-white rounded-3xl p-5 shadow-2xl border-4 border-orange-300 flex flex-col gap-3.5 text-stone-800 text-center">
       <div class="text-4xl" aria-hidden="true">⚠️</div>
       <h2 id="confirm-back-title" class="text-lg font-extrabold text-stone-900 font-game">
@@ -1200,7 +1200,7 @@
   <!-- ========================================================================= -->
   <!-- MODAL: XAC NHAN QUAY LAI MENU CHINH TU NHA BEP                           -->
   <!-- ========================================================================= -->
-  <dialog id="modal-confirm-back-to-menu" class="backdrop:bg-black/60 backdrop:backdrop-blur-sm bg-transparent p-4 z-50 max-w-md w-full m-auto" role="dialog" aria-modal="true" aria-labelledby="confirm-back-to-menu-title">
+  <dialog id="modal-confirm-back-to-menu" class="backdrop:bg-black/60 backdrop:backdrop-blur-sm bg-transparent p-4 z-50 max-w-md w-full m-auto" aria-labelledby="confirm-back-to-menu-title">
     <div class="bg-white rounded-3xl p-5 shadow-2xl border-4 border-amber-400 flex flex-col gap-3.5 text-stone-800 text-center">
       <div class="text-4xl" aria-hidden="true">🏠</div>
       <h2 id="confirm-back-to-menu-title" class="text-lg font-extrabold text-stone-900 font-game">
@@ -1268,6 +1268,18 @@
         </div>
       </div>
 
+      <!-- Phím tắt một ký tự trong bếp (WCAG 2.1.4) -->
+      <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200">
+        <h3 class="font-bold text-stone-800 text-sm mb-1">⌨️ Phím Tắt Nhanh Một Ký Tự (C, K, W, R, S, B, T, P, F, I, H)</h3>
+        <p class="text-xs text-stone-600 mb-3">Cho phép dùng phím tắt đơn để thao tác nhanh trong bếp. Nếu dùng điều hướng chữ cái của NVDA, có thể tắt tùy chọn này (vẫn dùng được Alt+1..5 và nút bấm).</p>
+        <div class="flex items-center gap-3">
+          <input type="checkbox" id="setting-single-key-shortcuts" checked class="w-5 h-5 text-orange-600 rounded cursor-pointer">
+          <label for="setting-single-key-shortcuts" class="text-sm font-medium text-stone-700 cursor-pointer">
+            Bật phím tắt nhanh một ký tự trong bếp
+          </label>
+        </div>
+      </div>
+
       <div class="pt-2 flex justify-end">
         <button type="button" id="btn-save-settings" class="px-6 py-3 rounded-2xl bg-orange-600 hover:bg-orange-700 text-white font-game font-bold text-base shadow cursor-pointer">
           💾 Lưu Cài Đặt
@@ -1276,7 +1288,7 @@
     </div>
   </dialog>
 
-  <dialog id="modal-help" class="backdrop:bg-black/60 backdrop:backdrop-blur-sm bg-transparent p-4 z-50 max-w-2xl w-full m-auto" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
+  <dialog id="modal-help" class="backdrop:bg-black/60 backdrop:backdrop-blur-sm bg-transparent p-4 z-50 max-w-2xl w-full m-auto" aria-labelledby="help-modal-title">
     <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-2xl border-4 border-amber-300 max-h-[85vh] overflow-y-auto custom-scroll text-stone-800">
       <div class="flex items-center justify-between border-b border-stone-200 pb-3 mb-3">
         <h2 id="help-modal-title" class="text-lg font-extrabold text-stone-900 font-game flex items-center gap-2">
@@ -1299,7 +1311,7 @@
             <div class="font-extrabold text-amber-950 mb-1.5 font-game">Phím Nhảy Nhanh 5 Tab:</div>
             <ul class="space-y-1 font-medium">
               <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">Alt + 1</kbd>: Tab 1 Tủ Lạnh &amp; Kho Đồ</li>
-              <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">Alt + 2</kbd>: Tab 2 Bàn Chế Biến &amp; 17 Dụng Cụ</li>
+              <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">Alt + 2</kbd>: Tab 2 Bàn Chế Biến &amp; 18 Dụng Cụ</li>
               <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">Alt + 3</kbd>: Tab 3 Khay Tạm Chờ Sơ Chế</li>
               <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">Alt + 4</kbd>: Tab 4 Khay Gia Vị &amp; Nước Sốt</li>
               <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">Alt + 5</kbd>: Tab 5 Bàn Tiệc &amp; Thưởng Thức</li>
@@ -1309,7 +1321,9 @@
           <div>
             <div class="font-extrabold text-amber-950 mb-1.5 font-game">Phím Nấu Ăn Nhanh:</div>
             <ul class="space-y-1 font-medium">
-              <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">C</kbd>: Chế biến / Nấu tại bếp hiện tại</li>
+              <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">C</kbd>: Chế biến / Nấu / Trộn đều tại bếp hiện tại</li>
+              <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">K</kbd>: Nhào nặn bột/nhân dẻo quánh (tại Bàn Trộn số 18)</li>
+              <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">W</kbd>: Đánh bông / Đánh tan sánh mịn (tại Bàn Trộn số 18)</li>
               <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">R</kbd>: Cuốn tròn (ở Bàn Cuốn) hoặc Nhồi kẹp (ở Trạm Nhồi)</li>
               <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">S</kbd>: Lắc bình Shaker (tại Trạm Pha Chế)</li>
               <li><kbd class="px-1.5 py-0.5 bg-white rounded border text-xs font-mono font-bold">B</kbd>: Hãm trà &amp; cà phê nước nóng (tại Trạm Pha Chế)</li>
@@ -1326,6 +1340,7 @@
         <div>
           <div class="font-extrabold text-stone-900 mb-1 font-game">Mẹo Sáng Tạo Độc Lạ YumCraft Kitchen:</div>
           <ul class="list-disc pl-5 space-y-1 font-medium">
+            <li><strong>Trộn bột, nộm gỏi &amp; nhân bánh tự do:</strong> Chọn Bàn Trộn Đa Năng (Dụng cụ 18) -&gt; Bỏ Bột mì, Bột năng, Bột gạo, Trứng, Đường hoặc Rau củ, Tóp mỡ -&gt; Bấm Trộn Đều (C), Nhào Nặn Dẻo (K) hoặc Đánh Bông (W) thành hỗn hợp món ăn (vẫn giữ kết cấu ăn được để đem chiên, nướng, hấp, luộc hoặc cuộn tiếp)!</li>
             <li><strong>Mì xào &amp; Mì nấu:</strong> Lấy Mì Ý hoặc Mì Trứng bỏ vào Nồi Luộc luộc chín -> Cất ra Khay Tạm -> Cho vào Chảo Chiên cùng Thịt bò thăn lát và Dầu hào để xào mì thơm phức!</li>
             <li><strong>Nhúng bột chiên giòn:</strong> Lấy Tôm, Mực hoặc Xúc xích cùng Bột chiên giòn cho vào Chảo Chiên Giòn để làm món Tempura giòn tan rụm!</li>
             <li><strong>Thịt bò cuộn pate:</strong> Lấy Thịt bò và Pate từ tủ bỏ vào Bàn Cuốn -> Chọn Thịt bò làm vỏ ngoài -> Bấm Phím R để cuộn! Có thể chuyển ra Khay Tạm rồi cho vào Vỉ Nướng Than để nướng thơm lừng!</li>
@@ -5087,6 +5102,20 @@
         actions: [
           { id: 'microwave_step', label: '📡 Làm Nóng Bằng Vi Sóng (C)', desc: 'Làm nóng nhanh món ăn; thao tác lặp lại có thể làm món khô hoặc cháy' }
         ]
+      },
+      {
+        id: 'mixing_table',
+        name: 'Bàn Trộn Đa Năng',
+        shortName: '18. Bàn Trộn',
+        emoji: '🥣',
+        temp: 'Nhiệt độ phòng (Trộn)',
+        desc: 'Trộn bột, nhào bột làm bánh, đánh bông kem trứng hoặc trộn gỏi/nhân tự do mà vẫn giữ nguyên dạng món ăn',
+        isMixingStation: true,
+        actions: [
+          { id: 'mix_toss', label: '🥣 Trộn Đều Hỗn Hợp (C)', desc: 'Trộn đều các loại bột, rau củ, thịt băm hoặc đồ giòn thành hỗn hợp món ăn thống nhất' },
+          { id: 'knead_dough', label: '👐 Nhào Nặn Dẻo Quánh (K)', desc: 'Nhồi nặn bột hoặc nhân thành khối dẻo mịn, có thể đem nấu chín hoặc làm vỏ cuộn' },
+          { id: 'whisk_batter', label: '🥢 Đánh Bông / Đánh Tan Sánh Mịn (W)', desc: 'Đánh tan bột, trứng, kem sữa thành hỗn hợp sánh mịn bông xốp' }
+        ]
       }
     ];
 
@@ -5176,7 +5205,9 @@
 
       // Audio & Accessibility Settings
       sfxEnabled: true,
+      sfxVolume: 0.9,
       ttsEnabled: false,
+      singleKeyShortcutsEnabled: true,
       liveToggleBuffer: false,
       cravingIndex: 0,
 
@@ -5194,17 +5225,13 @@
       nextItemUid: 1,
       nextBatchId: 1
     };
+    if (typeof window !== 'undefined') window.state = state;
 
     /*************************************************************************
      * 3. HỆ THỐNG TRỢ NĂNG NVDA & ĐỌC MÀN HÌNH (ARIA LIVE & TTS)
      *************************************************************************/
     function announceNVDA(message, priority = 'polite') {
       if (!message) return;
-
-      const liveTextEl = document.getElementById('live-status-text');
-      if (liveTextEl) {
-        liveTextEl.textContent = message;
-      }
 
       state.liveToggleBuffer = !state.liveToggleBuffer;
       const suffix = state.liveToggleBuffer ? 'a' : 'b';
@@ -5221,7 +5248,7 @@
         targetEl.textContent = '';
         setTimeout(() => {
           targetEl.textContent = message;
-        }, 25);
+        }, 60);
       }
 
       if (state.ttsEnabled && 'speechSynthesis' in window) {
@@ -5251,18 +5278,26 @@
       return audioCtx;
     }
 
-    // Play external audio file from sounds/ with optional Play Wait Promise
-    function playExternalAudio(filename, wait = false) {
+    // Play external audio file from sounds/ with optional Play Wait Promise & Web Audio fallback
+    function playExternalAudio(filename, wait = false, fallbackSfx = null) {
       if (!state.sfxEnabled) return Promise.resolve();
       return new Promise((resolve) => {
+        let fallbackTriggered = false;
+        const triggerFallback = () => {
+          if (!fallbackTriggered && fallbackSfx) {
+            fallbackTriggered = true;
+            playSoundEffect(fallbackSfx);
+          }
+        };
         try {
           const encodedName = encodeURI(filename);
           const audio = new Audio(`sounds/${encodedName}`);
-          audio.volume = 0.9;
+          audio.volume = typeof state.sfxVolume === 'number' ? Math.max(0, Math.min(1, state.sfxVolume)) : 0.9;
 
           if (!wait) {
             audio.play().catch(e => {
               console.warn('Audio play error (no-wait):', e);
+              triggerFallback();
             });
             resolve();
             return;
@@ -5272,6 +5307,7 @@
           const complete = () => {
             if (!isResolved) {
               isResolved = true;
+              clearTimeout(safetyTimer);
               audio.removeEventListener('ended', complete);
               audio.removeEventListener('error', onError);
               resolve();
@@ -5280,6 +5316,7 @@
 
           const onError = (e) => {
             console.warn(`Lỗi tải âm thanh sounds/${filename}:`, e);
+            triggerFallback();
             complete();
           };
 
@@ -5293,11 +5330,12 @@
 
           audio.play().catch(err => {
             console.warn(`Lỗi phát âm thanh sounds/${filename}:`, err);
-            clearTimeout(safetyTimer);
+            triggerFallback();
             complete();
           });
         } catch (err) {
           console.warn('playExternalAudio exception:', err);
+          triggerFallback();
           resolve();
         }
       });
@@ -5517,6 +5555,56 @@
           osc.start(t);
           osc.stop(t + 0.21);
         });
+      } else if (type === 'mix_bowl') {
+        [0, 0.14, 0.28, 0.42].forEach((offset, idx) => {
+          const t = now + offset;
+          const bufSize = Math.floor(ctx.sampleRate * 0.1);
+          const buffer = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufSize * 0.6));
+          const noise = ctx.createBufferSource();
+          noise.buffer = buffer;
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.frequency.value = 650 + idx * 140;
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(0.22, t);
+          g.gain.exponentialRampToValueAtTime(0.005, t + 0.1);
+          noise.connect(filter);
+          filter.connect(g);
+          g.connect(ctx.destination);
+          noise.start(t);
+        });
+      } else if (type === 'knead_dough') {
+        [0, 0.22, 0.44].forEach((offset) => {
+          const t = now + offset;
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(160, t);
+          osc.frequency.exponentialRampToValueAtTime(65, t + 0.14);
+          g.gain.setValueAtTime(0.26, t);
+          g.gain.exponentialRampToValueAtTime(0.002, t + 0.16);
+          osc.connect(g);
+          g.connect(ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.17);
+        });
+      } else if (type === 'whisk_batter') {
+        [0, 0.1, 0.2, 0.3, 0.4, 0.5].forEach((offset, idx) => {
+          const t = now + offset;
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(420 + (idx % 2) * 180, t);
+          osc.frequency.exponentialRampToValueAtTime(760, t + 0.07);
+          g.gain.setValueAtTime(0.14, t);
+          g.gain.exponentialRampToValueAtTime(0.002, t + 0.08);
+          osc.connect(g);
+          g.connect(ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.09);
+        });
       } else if (type === 'react_bad') {
         const osc = ctx.createOscillator();
         const g = ctx.createGain();
@@ -5610,6 +5698,9 @@
         baked: 'đút lò nướng',
         grilled: 'nướng than hoa',
         blended: 'xay sinh tố',
+        mixed: 'trộn đều hỗn hợp',
+        kneaded: 'nhào nặn dẻo quánh',
+        whisked: 'đánh bông sánh mịn',
         stirred: 'khuấy ly',
         shaken: 'lắc shaker',
         brewed: 'hãm nóng',
@@ -5634,6 +5725,8 @@
         else if (item.cookLevel >= 3) parts.push('cháy khét đen');
       } else if (item.cookMethod === 'blended') {
         parts.push('xay sánh mịn');
+      } else if (item.cookMethod === 'mixed' || item.cookMethod === 'kneaded' || item.cookMethod === 'whisked') {
+        parts.push(`${methodMap[item.cookMethod]} (${item.needsCooking ? 'còn sống' : 'sẵn sàng'})`);
       } else if (item.cookMethod === 'stirred') {
         parts.push('khuấy đều');
       } else if (item.cookMethod === 'shaken') {
@@ -5751,6 +5844,7 @@
         else if (it.kind === 'stuffed') allStructures.add('stuffed');
         else if (it.kind === 'blended') allStructures.add('blended');
         else if (it.kind === 'beverage') allStructures.add('beverage');
+        else if (it.kind === 'mixed') allStructures.add('mixed');
         else allStructures.add('loose');
 
         if (it.isFreshBalancer && it.cookLevel <= 1) hasFreshBalancer = true;
@@ -6114,7 +6208,10 @@
 
     // STATION COOKING / CHOPPING / BLENDING (ASYNC WITH PLAY WAIT)
     async function performStationAction(actionId) {
-      if (state.isCookingBusy) return;
+      if (state.isCookingBusy) {
+        announceNVDA('Bếp đang bận chế biến, vui lòng chờ trong giây lát.', 'polite');
+        return;
+      }
 
       const station = STATIONS.find(s => s.id === state.activeStationId);
       if (!station) return;
@@ -6235,7 +6332,7 @@
         state.stationItems = [rolledItem];
         state.selectedWrapperUid = null;
 
-        announceNVDA(`Đã cuộn tròn một lượt thành món "${rolledItem.name}"! Bạn có thể cất ra Khay Tạm (T) hoặc chuyển sang Chảo Chiên / Vỉ Than Nướng để làm chín vàng giòn rụm!`, 'assertive');
+        announceNVDA(`Đã cuộn tròn một lượt thành món "${rolledItem.name}"! Bạn có thể cất ra Khay Tạm (T) hoặc chuyển sang Chảo Chiên / Vỉ Than Nướng để làm chín vàng giòn rụm!`, 'polite');
         renderAll();
         return;
       }
@@ -6327,7 +6424,7 @@
         state.stationItems = [stuffedItem];
         state.selectedVesselUid = null;
 
-        announceNVDA(`Đã xẻ ruột và nhồi chặt thành món "${stuffedItem.name}"! Bạn có thể cất ra Khay Tạm (T) hoặc cho vào Lò Nướng / Vỉ Than nướng nóng giòn!`, 'assertive');
+        announceNVDA(`Đã xẻ ruột và nhồi chặt thành món "${stuffedItem.name}"! Bạn có thể cất ra Khay Tạm (T) hoặc cho vào Lò Nướng / Vỉ Than nướng nóng giòn!`, 'polite');
         renderAll();
         return;
       }
@@ -6338,6 +6435,7 @@
         state.stationActionFlash = 45;
         state.stationActionType = 'blend_smooth';
         renderWorkbench();
+        announceNVDA('Đang xay nhuyễn nguyên liệu trong Máy Xay Sinh Tố...', 'polite');
 
         await playExternalAudio('blender.ogg', true);
 
@@ -6443,6 +6541,7 @@
           method = 'brewed';
         }
 
+        announceNVDA(`Đang ${actionVerb} tại Trạm Pha Chế...`, 'polite');
         await playExternalAudio(soundFile, true);
 
         // Bảo toàn danh sách nguyên liệu gốc khi thao tác liên tiếp (không lồng thức uống vào thức uống)
@@ -6575,6 +6674,179 @@
         return;
       }
 
+      // 4c. Bàn Trộn Đa Năng (Mixing Table - Station 18) - TRỘN ĐỀU, NHÀO BỘT, ĐÁNH BÔNG (KHÔNG BIẾN THÀNH ĐỒ UỐNG)
+      if (actionId === 'mix_toss' || actionId === 'knead_dough' || actionId === 'whisk_batter') {
+        state.isCookingBusy = true;
+        state.stationActionFlash = 42;
+        state.stationActionType = actionId;
+        renderWorkbench();
+
+        let soundFile = 'mix_bowl.ogg';
+        let fallbackSfx = 'mix_bowl';
+        let method = 'mixed';
+        let actionVerb = 'trộn đều hỗn hợp';
+
+        if (actionId === 'knead_dough') {
+          soundFile = 'knead_dough.ogg';
+          fallbackSfx = 'knead_dough';
+          method = 'kneaded';
+          actionVerb = 'nhào nặn dẻo quánh';
+        } else if (actionId === 'whisk_batter') {
+          soundFile = 'whisk_batter.ogg';
+          fallbackSfx = 'whisk_batter';
+          method = 'whisked';
+          actionVerb = 'đánh bông sánh mịn';
+        }
+
+        announceNVDA(`Đang ${actionVerb} trên Bàn Trộn Đa Năng...`, 'polite');
+        await playExternalAudio(soundFile, true, fallbackSfx);
+
+        // Làm phẳng danh sách nguyên liệu gốc khi thao tác trộn nhiều lần liên tiếp
+        const sourceItems = [];
+        state.stationItems.forEach(item => {
+          if ((item.kind === 'mixed' || item.kind === 'blended') && item.subItems && item.subItems.length > 0) {
+            item.subItems.forEach(sub => sourceItems.push(sub));
+          } else {
+            sourceItems.push(item);
+          }
+        });
+
+        const names = sourceItems.map(i => i.name);
+        const combinedFlavors = combineFlavorProfiles(state.stationItems);
+        combinedFlavors.aroma += 0.6;
+        const combinedSpices = [];
+        let anyRaw = false;
+        let maxCookLevel = 0;
+
+        state.stationItems.forEach(item => {
+          if (item.needsCooking && item.cookLevel === 0) anyRaw = true;
+          if ((item.cookLevel || 0) > maxCookLevel) maxCookLevel = item.cookLevel || 0;
+          (item.spicesApplied || []).forEach(sp => combinedSpices.push({ ...sp }));
+        });
+
+        // Điều chỉnh vật lý kết cấu động theo từng thao tác trộn (100% phi công thức cứng, không bao giờ hóa lỏng thành đồ uống)
+        let mixedTexture = 'soft';
+        let canBeWrapper = false;
+        let mixEmoji = '🥣';
+
+        if (actionId === 'mix_toss') {
+          const liquidCount = state.stationItems.filter(i => i.texture === 'drink' || i.texture === 'liquid').length;
+          const solidCount = state.stationItems.length - liquidCount;
+          if (liquidCount <= solidCount && (combinedFlavors.crunch || 0) >= 2.0) {
+            mixedTexture = 'crispy';
+          } else {
+            mixedTexture = 'soft';
+          }
+          if (liquidCount > solidCount) {
+            combinedFlavors.crunch *= 0.65;
+          }
+        } else if (actionId === 'knead_dough') {
+          mixedTexture = 'soft';
+          combinedFlavors.crunch *= 0.25;
+          combinedFlavors.umami += 0.3;
+          canBeWrapper = true;
+          mixEmoji = '🫓';
+        } else if (actionId === 'whisk_batter') {
+          mixedTexture = 'soft';
+          combinedFlavors.crunch *= 0.15;
+          combinedFlavors.aroma += 0.4;
+          combinedFlavors.fatty *= 1.06;
+          mixEmoji = '🥢';
+        }
+
+        // Bảo toàn chuỗi phương pháp chế biến liên tục vào actionHistory
+        const inheritedMixActions = [];
+        const prevMixedItems = state.stationItems.filter(i => i.kind === 'mixed' && i.actionHistory && i.actionHistory.length > 0);
+        const nonMixedWithHistory = state.stationItems.filter(i => i.kind !== 'mixed' && i.actionHistory && i.actionHistory.length > 0);
+        const allShareSameMixHistory = state.stationItems.length > 0 && state.stationItems.every(
+          i => JSON.stringify(i.actionHistory || []) === JSON.stringify(state.stationItems[0].actionHistory || [])
+        );
+        if (state.stationItems.length === 1 || allShareSameMixHistory) {
+          const refItem = state.stationItems[0];
+          (refItem.actionHistory || []).forEach(act => {
+            if (inheritedMixActions.length === 0 || inheritedMixActions[inheritedMixActions.length - 1] !== act) {
+              inheritedMixActions.push(act);
+            }
+          });
+        } else if (prevMixedItems.length === 1 && nonMixedWithHistory.length === 0) {
+          // Đang trộn tiếp một hỗn hợp sẵn có bằng cách cho thêm nguyên liệu mới chưa chế biến
+          prevMixedItems[0].actionHistory.forEach(act => {
+            if (inheritedMixActions.length === 0 || inheritedMixActions[inheritedMixActions.length - 1] !== act) {
+              inheritedMixActions.push(act);
+            }
+          });
+        }
+        if (inheritedMixActions.length === 0 || inheritedMixActions[inheritedMixActions.length - 1] !== method) {
+          inheritedMixActions.push(method);
+        }
+
+        const mixShortLabels = {
+          mixed: 'trộn đều',
+          kneaded: 'nhào dẻo',
+          whisked: 'đánh mịn',
+          sliced: 'thái lát',
+          diced: 'thái hạt lựu',
+          minced: 'băm nhuyễn',
+          fried: 'áp chảo',
+          deep_fried: 'chiên giòn',
+          baked: 'nướng lò',
+          grilled: 'nướng than',
+          boiled: 'luộc/hầm',
+          steamed: 'hấp',
+          air_fried: 'chiên khí nóng',
+          rice_cooked: 'nấu nồi cơm',
+          microwaved: 'quay vi sóng',
+          wok_fried: 'đảo Wok',
+          pan_grilled: 'nướng chảo gang',
+          pressure_cooked: 'ninh áp suất'
+        };
+
+        const methodLabel = inheritedMixActions.map(a => mixShortLabels[a] || a).join(' ➔ ');
+        const previewNames = names.slice(0, 3).join(' & ');
+        const extraSuffix = names.length > 3 ? ` (+${names.length - 3})` : '';
+        const defaultMixedName = `${previewNames}${extraSuffix} (${methodLabel})`;
+
+        const currentBatchId = state.nextBatchId++;
+        const mixedItem = {
+          uid: state.nextItemUid++,
+          kind: 'mixed',
+          baseId: 'mixed_dish',
+          name: defaultMixedName,
+          emoji: mixEmoji,
+          category: sourceItems[0] ? sourceItems[0].category : 'veg',
+          color: state.stationItems[0].color,
+          cookedColor: state.stationItems[0].cookedColor,
+          needsCooking: anyRaw,
+          canBeWrapper: canBeWrapper,
+          canBeVessel: false,
+          isFreshBalancer: sourceItems.some(i => i.isFreshBalancer),
+          cutState: actionId === 'knead_dough' ? 'whole' : (state.stationItems[0].cutState || 'whole'),
+          cookLevel: anyRaw ? 0 : maxCookLevel,
+          cookMethod: method,
+          actionHistory: [...inheritedMixActions],
+          lastStationId: state.activeStationId,
+          batchId: currentBatchId,
+          returnedFromStaging: false,
+          texture: mixedTexture,
+          hasIce: sourceItems.some(i => itemContainsIce(i)),
+          outerTexture: null,
+          spicesApplied: combinedSpices,
+          subItems: [...sourceItems],
+          outerItem: null,
+          flavors: combinedFlavors
+        };
+
+        state.stationItems = [mixedItem];
+        state.isCookingBusy = false;
+
+        const nextHint = anyRaw
+          ? ' Hỗn hợp còn thành phần cần làm chín, bạn có thể mang đi chiên, nướng, hấp hoặc luộc!'
+          : (canBeWrapper ? ' Khối nhào dẻo mịn này có thể đem nướng chín hoặc làm vỏ ở Bàn Cuộn!' : '');
+        announceNVDA(`Đã ${actionVerb} thành "${mixedItem.name}".${nextHint}`, 'polite');
+        renderAll();
+        return;
+      }
+
       // 5. Heat-based cooking (Fry, Boil, Deep Fry, Bake, Grill, Steam, Wok, Grill Pan, Pressure Cook, Rice Cook, Air Fry, Microwave)
       const heatMethods = {
         fry_step: { method: 'fried', soundFile: 'frying_pan.ogg', verb: 'Áp chảo / Xào' },
@@ -6598,6 +6870,7 @@
         state.stationActionFlash = 50;
         state.stationActionType = actionId;
         renderWorkbench();
+        announceNVDA(`Đang ${heat.verb.toLowerCase()}...`, 'polite');
 
         if (heat.soundFile) {
           await playExternalAudio(heat.soundFile, true);
@@ -6609,7 +6882,7 @@
         const descriptions = [];
 
         state.stationItems.forEach(item => {
-          const nonHeatMethods = ['none', 'stirred', 'shaken', 'brewed', 'blended', 'rolled', 'stuffed'];
+          const nonHeatMethods = ['none', 'stirred', 'shaken', 'brewed', 'blended', 'rolled', 'stuffed', 'mixed', 'kneaded', 'whisked'];
           if (nonHeatMethods.includes(item.cookMethod) || item.cookLevel === 0) {
             item.stationCookSteps = 1;
             item.cookLevel = 1;
@@ -6803,6 +7076,8 @@
       const ingredientsSummaryEl = document.getElementById('finish-modal-ingredients-summary');
       const nameInput = document.getElementById('input-custom-dish-name');
 
+      modal._returnFocusEl = document.activeElement;
+      modal._skipRestoreFocus = false;
       ingredientsSummaryEl.textContent = analysis.structureSummary || 'Các món đã chế biến trong bếp';
       nameInput.value = analysis.autoTitle || 'Món Ăn Thượng Hạng Của Bếp';
 
@@ -6818,25 +7093,42 @@
     function renderFinishModalGarnishes() {
       const container = document.getElementById('finish-garnish-list');
       if (!container) return;
+      const keepFocus = container.contains(document.activeElement);
       container.innerHTML = '';
+      attachRovingKeyNavigation(container, '[role="radio"]', (targetBtn) => {
+        targetBtn.click();
+        targetBtn.focus();
+      });
 
       GARNISH_OPTIONS.forEach(g => {
         const isSel = g.id === state.selectedGarnishId;
         const btn = document.createElement('button');
         btn.type = 'button';
+        btn.dataset.garnishId = g.id;
         btn.setAttribute('role', 'radio');
         btn.setAttribute('aria-checked', isSel ? 'true' : 'false');
+        btn.setAttribute('tabindex', isSel ? '0' : '-1');
         btn.className = `p-2 rounded-xl border text-left text-xs transition flex items-center gap-2 ${
           isSel ? 'bg-amber-600 text-white font-bold border-amber-700 shadow-sm' : 'bg-stone-50 hover:bg-amber-100 text-stone-800 border-stone-200'
         }`;
         btn.innerHTML = `<span class="text-lg" aria-hidden="true">${g.emoji}</span><span class="truncate">${g.name}</span>`;
         btn.addEventListener('click', () => {
+          const hadFocus = container.contains(document.activeElement);
           state.selectedGarnishId = g.id;
           playSoundEffect('pick');
+          announceNVDA(`Đã chọn kiểu trang trí: ${g.name}.`, 'polite');
           renderFinishModalGarnishes();
+          if (hadFocus) {
+            const restored = container.querySelector(`[data-garnish-id="${g.id}"]`);
+            if (restored) restored.focus();
+          }
         });
         container.appendChild(btn);
       });
+      if (keepFocus) {
+        const restored = container.querySelector(`[data-garnish-id="${state.selectedGarnishId}"]`);
+        if (restored) restored.focus();
+      }
     }
 
     function confirmPlatingDish() {
@@ -6879,6 +7171,7 @@
       }
 
       const modal = document.getElementById('modal-finish-dish');
+      modal._skipRestoreFocus = true;
       modal.close();
 
       const char = CHARACTERS.find(c => c.id === state.activeCharacterId) || CHARACTERS[0];
@@ -6893,7 +7186,7 @@
       const countMsg = totalDishes > 1
         ? ` Bàn tiệc hiện có ${totalDishes} món hoàn chỉnh, tổng cộng ${state.plateItems.length} nguyên liệu trên dĩa.`
         : ` (Món ăn kết hợp từ ${finishingItems.length} nguyên liệu).`;
-      announceNVDA(`Món "${customName}" đã được hoàn thành và bày biện đẹp mắt lên dĩa với phong cách ${garnish.name}!${countMsg} Đã tự động chuyển sang tab Bàn Tiệc & Thưởng Thức. Giờ đây bạn có thể bấm Phím F để đút cho ${char.name} thưởng thức!`, 'assertive');
+      announceNVDA(`Món "${customName}" đã được hoàn thành và bày biện đẹp mắt lên dĩa với phong cách ${garnish.name}!${countMsg} Đã tự động chuyển sang tab Bàn Tiệc & Thưởng Thức. Giờ đây bạn có thể bấm Phím F để đút cho ${char.name} thưởng thức!`, 'polite');
 
       const feedBtn = document.getElementById('btn-master-feed');
       if (feedBtn) feedBtn.focus();
@@ -7031,6 +7324,9 @@
         shaken: 'lắc sủi bọt',
         brewed: 'hãm nóng',
         blended: 'xay nhuyễn sánh mịn',
+        mixed: 'trộn đều',
+        kneaded: 'nhào nặn dẻo quánh',
+        whisked: 'đánh bông sánh mịn',
         rolled: 'cuộn chặt',
         stuffed: 'nhồi nhân',
         boiled: 'luộc chín mềm',
@@ -7109,6 +7405,9 @@
         if (act === 'blended') {
           return hasIce ? 'xay nhuyễn sánh mịn mát lạnh' : 'xay nhuyễn sánh mịn';
         }
+        if (act === 'mixed') return 'trộn đều hòa quyện';
+        if (act === 'kneaded') return 'nhào nặn thành khối dẻo mịn';
+        if (act === 'whisked') return 'đánh bông sánh mịn hòa quyện';
         if (act === 'shaken') {
           return hasIce ? 'lắc bình shaker sủi bọt mát lạnh' : 'lắc bình shaker sủi bọt';
         }
@@ -7337,6 +7636,9 @@
         if (m === 'microwaved') {
           return level >= 2 ? 'quay vi sóng nóng hổi kỹ càng' : 'làm nóng nhanh bằng vi sóng';
         }
+        if (m === 'mixed') return 'trộn đều hòa quyện';
+        if (m === 'kneaded') return 'nhào nặn dẻo mịn';
+        if (m === 'whisked') return 'đánh bông sánh mịn';
         return level >= 2 ? 'chế biến chín kỹ thơm lừng' : 'chế biến chín tới thơm ngon';
       };
 
@@ -7924,6 +8226,7 @@
 
       // Chạy tuần tự từng âm thanh ăn uống theo kiểu Play Wait
       const isPlateOnlyDrinks = state.plateItems.length > 0 && state.plateItems.every(it => it.kind === 'beverage' || it.kind === 'blended' || it.texture === 'drink');
+      announceNVDA(isPlateOnlyDrinks ? `Đang mời ${char.name} thưởng thức đồ uống...` : `Đang đút cho ${char.name} thưởng thức món ăn...`, 'polite');
       for (let i = 0; i < playlist.length; i++) {
         const soundFile = playlist[i];
         if (feedLbl) {
@@ -8035,7 +8338,7 @@
           msg += `Món ${idx + 1}: "${d.name}" - ${rev.sensorySentence}. Điểm hài hòa: ${d.analysis.harmonyScore}/100 (Umami ${f.umami}, Mặn ${f.salty}, Ngọt ${f.sweet}, Chua ${f.sour}, Cay ${f.spicy}, Béo ${f.fatty}, Đắng ${f.bitter}, Thơm ${f.aroma}). `;
         });
         msg += `Tổng thể thực đơn: Điểm trung bình ${multiReview.score}/100 (${multiReview.moodTag}).`;
-        announceNVDA(msg, 'assertive');
+        announceNVDA(msg, 'polite');
         return;
       }
 
@@ -8060,7 +8363,7 @@
       const synStr = analysis.synergies.length > 0 ? ` Phản ứng hòa vị: ${analysis.synergies.join('; ')}.` : '';
 
       const msg = `Báo cáo món ăn ${place}: Tên món "${name}". Cảm quan món ăn: ${review.sensorySentence}. Điểm hài hòa: ${analysis.harmonyScore}/100. Chi tiết 8 vị: Đậm đà Umami ${f.umami}, Mặn ${f.salty}, Ngọt ${f.sweet}, Béo ${f.fatty}, Thơm ${f.aroma}, Cay ${f.spicy}, Chua ${f.sour}, Đắng ${f.bitter}.${warnStr}${synStr}`;
-      announceNVDA(msg, 'assertive');
+      announceNVDA(msg, 'polite');
     }
 
     // RESET KITCHEN & RETURN TO START SCREEN (YUMCRAFT KITCHEN STYLE)
@@ -8194,6 +8497,42 @@
       if (lbl) lbl.textContent = `VÀO BẾP NẤU CHO ${char.name.toUpperCase()}!`;
     }
 
+    // SHARED ROVING TABINDEX KEYBOARD NAVIGATION HELPER (WAI-ARIA TOOLBAR / TABLIST / RADIOGROUP)
+    function attachRovingKeyNavigation(container, itemSelector, onSelectItem) {
+      if (!container || container.dataset.rovingBound === 'true') return;
+      container.dataset.rovingBound = 'true';
+      container.addEventListener('keydown', (e) => {
+        const items = Array.from(container.querySelectorAll(itemSelector));
+        if (items.length === 0) return;
+        const currentIdx = items.indexOf(document.activeElement);
+        if (currentIdx === -1) return;
+
+        let targetIdx = null;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          targetIdx = (currentIdx + 1) % items.length;
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          targetIdx = (currentIdx - 1 + items.length) % items.length;
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          targetIdx = 0;
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          targetIdx = items.length - 1;
+        }
+
+        if (targetIdx !== null && items[targetIdx]) {
+          items.forEach((el, i) => el.setAttribute('tabindex', i === targetIdx ? '0' : '-1'));
+          if (onSelectItem) {
+            onSelectItem(items[targetIdx], targetIdx);
+          } else {
+            items[targetIdx].focus();
+          }
+        }
+      });
+    }
+
     // RENDER FRIDGE COMPARTMENTS & INGREDIENTS
     function renderFridge() {
       const badgeEl = document.getElementById('fridge-total-count-badge');
@@ -8201,27 +8540,45 @@
 
       const tabsEl = document.getElementById('fridge-category-tabs');
       if (tabsEl) {
+        const focusedCatId = document.activeElement && tabsEl.contains(document.activeElement)
+          ? document.activeElement.dataset.catId
+          : null;
         tabsEl.innerHTML = '';
+        attachRovingKeyNavigation(tabsEl, '[role="tab"]', (targetBtn) => {
+          targetBtn.click();
+          targetBtn.focus();
+        });
         FRIDGE_CATEGORIES.forEach(cat => {
           const isAct = cat.id === state.activeCategoryId;
           const btn = document.createElement('button');
           btn.type = 'button';
+          btn.dataset.catId = cat.id;
           btn.setAttribute('role', 'tab');
           btn.setAttribute('aria-selected', isAct ? 'true' : 'false');
+          btn.setAttribute('tabindex', isAct ? '0' : '-1');
           btn.className = `px-2.5 py-1 rounded-xl text-xs font-bold transition ${
             isAct ? 'bg-orange-600 text-white shadow-sm' : 'bg-white hover:bg-slate-200 text-slate-700 border border-slate-300'
           }`;
           const catDisplayName = cat.id === 'all' ? `Tất cả (${INGREDIENTS.length})` : cat.name;
           btn.textContent = catDisplayName;
           btn.addEventListener('click', () => {
+            const keepFocus = tabsEl.contains(document.activeElement);
             state.activeCategoryId = cat.id;
             playSoundEffect('pick');
             const catAnnounceName = cat.id === 'all' ? `Tất cả ${INGREDIENTS.length} món` : cat.name;
             announceNVDA(`Đã mở ngăn tủ: ${catAnnounceName}`, 'polite');
             renderFridge();
+            if (keepFocus) {
+              const nextFocus = tabsEl.querySelector(`[data-cat-id="${cat.id}"]`);
+              if (nextFocus) nextFocus.focus();
+            }
           });
           tabsEl.appendChild(btn);
         });
+        if (focusedCatId) {
+          const restoreBtn = tabsEl.querySelector(`[data-cat-id="${state.activeCategoryId}"]`);
+          if (restoreBtn) restoreBtn.focus();
+        }
       }
 
       const grid = document.getElementById('fridge-items-grid');
@@ -8266,12 +8623,19 @@
       const activeSt = STATIONS.find(s => s.id === state.activeStationId) || STATIONS[0];
 
       if (stationGrid) {
+        const wasInStationGrid = document.activeElement && stationGrid.contains(document.activeElement);
         stationGrid.innerHTML = '';
+        attachRovingKeyNavigation(stationGrid, 'button', (targetBtn) => {
+          targetBtn.click();
+          targetBtn.focus();
+        });
         STATIONS.forEach(st => {
           const isAct = st.id === state.activeStationId;
           const btn = document.createElement('button');
           btn.type = 'button';
+          btn.dataset.stationId = st.id;
           btn.setAttribute('aria-pressed', isAct ? 'true' : 'false');
+          btn.setAttribute('tabindex', isAct ? '0' : '-1');
           btn.setAttribute('aria-label', `${st.name}. ${st.desc}`);
           btn.className = `p-2 rounded-2xl border text-left transition flex items-center gap-1.5 ${
             isAct ? 'station-btn-active font-bold' : 'bg-stone-50 hover:bg-amber-50 border-stone-200 text-stone-800'
@@ -8281,13 +8645,22 @@
             <span class="text-xs font-extrabold leading-tight truncate font-game">${st.shortName}</span>
           `;
           btn.addEventListener('click', () => {
+            const keepFocus = stationGrid.contains(document.activeElement);
             state.activeStationId = st.id;
             playSoundEffect('pick');
             announceNVDA(`Đã chuyển sang: ${st.name}. ${st.desc}`, 'polite');
             renderAll();
+            if (keepFocus) {
+              const target = stationGrid.querySelector(`[data-station-id="${st.id}"]`);
+              if (target) target.focus();
+            }
           });
           stationGrid.appendChild(btn);
         });
+        if (wasInStationGrid) {
+          const activeBtn = stationGrid.querySelector(`[data-station-id="${state.activeStationId}"]`);
+          if (activeBtn) activeBtn.focus();
+        }
       }
 
       document.getElementById('active-station-badge').textContent = `${activeSt.emoji} ${activeSt.name}`;
@@ -8312,15 +8685,20 @@
       const wvOptionsList = document.getElementById('wrap-vessel-options-container');
 
       if ((activeSt.isRollingStation || activeSt.isStuffingStation) && state.stationItems.length > 0) {
+        const keepWvFocus = wvOptionsList.contains(document.activeElement);
         wrapperVesselPanel.classList.remove('hidden');
         wvOptionsList.innerHTML = '';
+        attachRovingKeyNavigation(wvOptionsList, '[role="radio"]', (targetBtn) => {
+          targetBtn.click();
+          targetBtn.focus();
+        });
 
         if (activeSt.isRollingStation) {
           wvTitle.textContent = '🌯 Chọn 1 Nguyên Liệu Làm Lớp Vỏ Cuốn Ngoài:';
           wvHint.textContent = 'Bấm chọn nguyên liệu làm vỏ ngoài (ví dụ: Bánh tráng, Lá rong biển, hoặc Lát thịt bò...). Các nguyên liệu còn lại sẽ được cuộn vào trong ruột!';
 
           // Auto-select wrapper if not set
-          if (!state.selectedWrapperUid && state.stationItems.length > 0) {
+          if (!state.selectedWrapperUid || !state.stationItems.some(i => i.uid === state.selectedWrapperUid)) {
             state.selectedWrapperUid = state.stationItems[0].uid;
           }
 
@@ -8329,25 +8707,36 @@
             if (isSel) wvSelectedLabel.textContent = `Vỏ: ${it.name}`;
             const btn = document.createElement('button');
             btn.type = 'button';
+            btn.dataset.uid = String(it.uid);
             btn.setAttribute('role', 'radio');
             btn.setAttribute('aria-checked', isSel ? 'true' : 'false');
+            btn.setAttribute('tabindex', isSel ? '0' : '-1');
             btn.className = `p-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 truncate ${
               isSel ? 'bg-orange-600 text-white border-orange-700' : 'bg-white text-stone-800 border-amber-200 hover:bg-orange-50'
             }`;
             btn.innerHTML = `<span aria-hidden="true">${it.emoji}</span><span class="truncate">${it.name}</span>`;
             btn.addEventListener('click', () => {
+              const hadFocus = wvOptionsList.contains(document.activeElement);
               state.selectedWrapperUid = it.uid;
               playSoundEffect('pick');
               announceNVDA(`Đã chọn "${it.name}" làm lớp vỏ cuốn ngoài cùng.`, 'polite');
               renderWorkbench();
+              if (hadFocus) {
+                const target = wvOptionsList.querySelector(`[data-uid="${it.uid}"]`);
+                if (target) target.focus();
+              }
             });
             wvOptionsList.appendChild(btn);
           });
+          if (keepWvFocus) {
+            const target = wvOptionsList.querySelector(`[data-uid="${state.selectedWrapperUid}"]`);
+            if (target) target.focus();
+          }
         } else {
           wvTitle.textContent = '🥖 Chọn 1 Nguyên Liệu Làm Vỏ Nhồi / Bánh Kẹp:';
           wvHint.textContent = 'Bấm chọn nguyên liệu làm vỏ nhồi (ví dụ: Ổ Bánh Mì, Xúc Xích, Ớt Chuông, Quả cà chua, hoặc Bánh Oreo...). Các nguyên liệu còn lại sẽ được nhồi vào ruột!';
 
-          if (!state.selectedVesselUid && state.stationItems.length > 0) {
+          if (!state.selectedVesselUid || !state.stationItems.some(i => i.uid === state.selectedVesselUid)) {
             state.selectedVesselUid = state.stationItems[0].uid;
           }
 
@@ -8356,44 +8745,70 @@
             if (isSel) wvSelectedLabel.textContent = `Vỏ: ${it.name}`;
             const btn = document.createElement('button');
             btn.type = 'button';
+            btn.dataset.uid = String(it.uid);
             btn.setAttribute('role', 'radio');
             btn.setAttribute('aria-checked', isSel ? 'true' : 'false');
+            btn.setAttribute('tabindex', isSel ? '0' : '-1');
             btn.className = `p-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 truncate ${
               isSel ? 'bg-orange-600 text-white border-orange-700' : 'bg-white text-stone-800 border-amber-200 hover:bg-orange-50'
             }`;
             btn.innerHTML = `<span aria-hidden="true">${it.emoji}</span><span class="truncate">${it.name}</span>`;
             btn.addEventListener('click', () => {
+              const hadFocus = wvOptionsList.contains(document.activeElement);
               state.selectedVesselUid = it.uid;
               playSoundEffect('pick');
               announceNVDA(`Đã chọn "${it.name}" làm vỏ nhồi.`, 'polite');
               renderWorkbench();
+              if (hadFocus) {
+                const target = wvOptionsList.querySelector(`[data-uid="${it.uid}"]`);
+                if (target) target.focus();
+              }
             });
             wvOptionsList.appendChild(btn);
           });
+          if (keepWvFocus) {
+            const target = wvOptionsList.querySelector(`[data-uid="${state.selectedVesselUid}"]`);
+            if (target) target.focus();
+          }
         }
       } else {
         wrapperVesselPanel.classList.add('hidden');
       }
 
-      // Action Buttons
+      // Action Buttons (Cập nhật in-place để KHÔNG làm rớt focus khi đang xử lý audio Play Wait)
       const actionsEl = document.getElementById('station-action-buttons');
       if (actionsEl) {
-        actionsEl.innerHTML = '';
-        activeSt.actions.forEach(act => {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.setAttribute('aria-label', `${act.label}. ${act.desc}`);
-          btn.className = 'game-btn btn-3d-orange py-2.5 px-3 rounded-2xl text-xs sm:text-sm font-extrabold font-game flex items-center justify-center gap-1.5 col-span-full sm:col-span-1 shadow-md';
-          if (state.isCookingBusy) {
-            btn.disabled = true;
-            btn.setAttribute('aria-busy', 'true');
-            btn.className += ' opacity-60 cursor-not-allowed';
-            btn.textContent = '⏳ Đang nấu...';
-          } else {
-            btn.textContent = act.label;
+        actionsEl.setAttribute('aria-busy', state.isCookingBusy ? 'true' : 'false');
+        const needsRebuild = actionsEl.dataset.renderedStationId !== activeSt.id ||
+          actionsEl.children.length !== activeSt.actions.length;
+
+        if (needsRebuild) {
+          actionsEl.innerHTML = '';
+          actionsEl.dataset.renderedStationId = activeSt.id;
+          activeSt.actions.forEach(act => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.dataset.actionId = act.id;
             btn.addEventListener('click', () => performStationAction(act.id));
+            actionsEl.appendChild(btn);
+          });
+        }
+
+        activeSt.actions.forEach((act, idx) => {
+          const btn = actionsEl.children[idx];
+          if (!btn) return;
+          btn.disabled = false;
+          if (state.isCookingBusy) {
+            btn.setAttribute('aria-disabled', 'true');
+            btn.setAttribute('aria-label', `Đang xử lý: ${act.label}`);
+            btn.className = 'game-btn btn-3d-orange py-2.5 px-3 rounded-2xl text-xs sm:text-sm font-extrabold font-game flex items-center justify-center gap-1.5 col-span-full sm:col-span-1 shadow-md opacity-60 cursor-not-allowed';
+            btn.textContent = '⏳ Đang chế biến...';
+          } else {
+            btn.removeAttribute('aria-disabled');
+            btn.setAttribute('aria-label', `${act.label}. ${act.desc}`);
+            btn.className = 'game-btn btn-3d-orange py-2.5 px-3 rounded-2xl text-xs sm:text-sm font-extrabold font-game flex items-center justify-center gap-1.5 col-span-full sm:col-span-1 shadow-md';
+            btn.textContent = act.label;
           }
-          actionsEl.appendChild(btn);
         });
       }
 
@@ -8402,7 +8817,7 @@
       if (listEl) {
         listEl.innerHTML = '';
         if (state.stationItems.length === 0) {
-          listEl.innerHTML = `<div class="p-3 rounded-2xl bg-stone-50 border border-dashed border-stone-300 text-xs text-stone-500 text-center">Bếp đang trống. Hãy lấy nguyên liệu từ Tủ Lạnh (Alt+1) bỏ vào đây!</div>`;
+          listEl.innerHTML = `<div role="listitem" class="p-3 rounded-2xl bg-stone-50 border border-dashed border-stone-300 text-xs text-stone-500 text-center">Bếp đang trống. Hãy lấy nguyên liệu từ Tủ Lạnh (Alt+1) bỏ vào đây!</div>`;
         } else {
           state.stationItems.forEach((it, idx) => {
             const desc = describeItemStateShort(it);
@@ -8427,16 +8842,38 @@
               </div>
             `;
             row.querySelector(`[data-to-staging="${idx}"]`).addEventListener('click', () => {
+              const keepFocus = listEl.contains(document.activeElement);
               const [moved] = state.stationItems.splice(idx, 1);
               state.stagingItems.push(moved);
               playSoundEffect('pick');
               announceNVDA(`Đã cất ${moved.name} ra Khay Tạm.`, 'polite');
               renderAll();
+              if (keepFocus) {
+                if (state.stationItems.length > 0) {
+                  const nextIdx = Math.min(idx, state.stationItems.length - 1);
+                  const nextBtn = listEl.querySelector(`[data-to-staging="${nextIdx}"]`);
+                  if (nextBtn) nextBtn.focus();
+                } else {
+                  const fallback = document.getElementById('panel-workbench');
+                  if (fallback) fallback.focus();
+                }
+              }
             });
             row.querySelector(`[data-del-st="${idx}"]`).addEventListener('click', () => {
+              const keepFocus = listEl.contains(document.activeElement);
               const [del] = state.stationItems.splice(idx, 1);
               announceNVDA(`Đã bỏ ${del.name} khỏi bếp.`, 'polite');
               renderAll();
+              if (keepFocus) {
+                if (state.stationItems.length > 0) {
+                  const nextIdx = Math.min(idx, state.stationItems.length - 1);
+                  const nextBtn = listEl.querySelector(`[data-del-st="${nextIdx}"]`);
+                  if (nextBtn) nextBtn.focus();
+                } else {
+                  const fallback = document.getElementById('panel-workbench');
+                  if (fallback) fallback.focus();
+                }
+              }
             });
             listEl.appendChild(row);
           });
@@ -8454,7 +8891,7 @@
       listEl.innerHTML = '';
 
       if (state.stagingItems.length === 0) {
-        listEl.innerHTML = `<div class="p-2.5 rounded-2xl bg-white/70 border border-dashed border-amber-300 text-xs text-amber-800 text-center">Khay tạm đang trống. Hãy cất các món đã cuốn hoặc nấu dở ra đây để làm tiếp món khác!</div>`;
+        listEl.innerHTML = `<div role="listitem" class="p-2.5 rounded-2xl bg-white/70 border border-dashed border-amber-300 text-xs text-amber-800 text-center">Khay tạm đang trống. Hãy cất các món đã cuốn hoặc nấu dở ra đây để làm tiếp món khác!</div>`;
         return;
       }
 
@@ -8481,17 +8918,39 @@
           </div>
         `;
         row.querySelector(`[data-to-st="${idx}"]`).addEventListener('click', () => {
+          const keepFocus = listEl.contains(document.activeElement);
           const [moved] = state.stagingItems.splice(idx, 1);
           moved.returnedFromStaging = true;
           state.stationItems.push(moved);
           playSoundEffect('pick');
           announceNVDA(`Đã đưa ${moved.name} từ Khay Tạm vào Bếp.`, 'polite');
           renderAll();
+          if (keepFocus) {
+            if (state.stagingItems.length > 0) {
+              const nextIdx = Math.min(idx, state.stagingItems.length - 1);
+              const nextBtn = listEl.querySelector(`[data-to-st="${nextIdx}"]`);
+              if (nextBtn) nextBtn.focus();
+            } else {
+              const fallback = document.getElementById('panel-staging');
+              if (fallback) fallback.focus();
+            }
+          }
         });
         row.querySelector(`[data-del-stag="${idx}"]`).addEventListener('click', () => {
+          const keepFocus = listEl.contains(document.activeElement);
           const [del] = state.stagingItems.splice(idx, 1);
           announceNVDA(`Đã bỏ ${del.name} khỏi Khay Tạm.`, 'polite');
           renderAll();
+          if (keepFocus) {
+            if (state.stagingItems.length > 0) {
+              const nextIdx = Math.min(idx, state.stagingItems.length - 1);
+              const nextBtn = listEl.querySelector(`[data-del-stag="${nextIdx}"]`);
+              if (nextBtn) nextBtn.focus();
+            } else {
+              const fallback = document.getElementById('panel-staging');
+              if (fallback) fallback.focus();
+            }
+          }
         });
         listEl.appendChild(row);
       });
@@ -8623,7 +9082,7 @@
       if (listEl) {
         listEl.innerHTML = '';
         if (state.plateItems.length === 0) {
-          listEl.innerHTML = `<div class="p-2 rounded-xl bg-stone-50 border border-dashed border-stone-300 text-xs text-stone-500 text-center">Bấm nút ⭐ HOÀN THÀNH MÓN bên dưới để bày đồ ăn lên dĩa!</div>`;
+          listEl.innerHTML = `<div role="listitem" class="p-2 rounded-xl bg-stone-50 border border-dashed border-stone-300 text-xs text-stone-500 text-center">Bấm nút ⭐ HOÀN THÀNH MÓN bên dưới để bày đồ ăn lên dĩa!</div>`;
         } else if (state.servedDishes && state.servedDishes.length > 0) {
           state.servedDishes.forEach((dish, idx) => {
             const row = document.createElement('div');
@@ -8639,11 +9098,12 @@
                 <span class="font-bold text-stone-900 truncate" title="${dish.name}${summaryText}">${idx + 1}. ${dish.name}</span>
                 <span class="text-[10px] text-stone-500 truncate hidden sm:inline">${summaryText}</span>
               </div>
-              <button type="button" data-del-dish="${dish.id}" class="px-2 py-0.5 rounded bg-stone-200 hover:bg-red-200 text-stone-700 hover:text-red-900 font-bold text-[10px]" aria-label="Bỏ món ${dish.name} khỏi dĩa">
+              <button type="button" data-del-dish="${dish.id}" data-del-dish-idx="${idx}" class="px-2 py-0.5 rounded bg-stone-200 hover:bg-red-200 text-stone-700 hover:text-red-900 font-bold text-[10px]" aria-label="Bỏ món ${dish.name} khỏi dĩa">
                 Xóa
               </button>
             `;
             row.querySelector(`[data-del-dish="${dish.id}"]`).addEventListener('click', () => {
+              const keepFocus = listEl.contains(document.activeElement);
               const dishName = dish.name;
               const itemUids = new Set(dish.items.map(i => i.uid));
               state.plateItems = state.plateItems.filter(i => !itemUids.has(i.uid));
@@ -8657,6 +9117,16 @@
               }
               announceNVDA(`Đã bỏ món "${dishName}" khỏi dĩa ăn.`, 'polite');
               renderAll();
+              if (keepFocus) {
+                if (state.servedDishes.length > 0) {
+                  const nextIdx = Math.min(idx, state.servedDishes.length - 1);
+                  const nextBtn = listEl.querySelector(`[data-del-dish-idx="${nextIdx}"]`);
+                  if (nextBtn) nextBtn.focus();
+                } else {
+                  const fallback = document.getElementById('panel-dining');
+                  if (fallback) fallback.focus();
+                }
+              }
             });
             listEl.appendChild(row);
           });
@@ -8677,9 +9147,20 @@
               </button>
             `;
             row.querySelector(`[data-del-plate="${idx}"]`).addEventListener('click', () => {
+              const keepFocus = listEl.contains(document.activeElement);
               const [removed] = state.plateItems.splice(idx, 1);
               announceNVDA(`Đã bỏ món "${displayName}" khỏi dĩa ăn.`, 'polite');
               renderAll();
+              if (keepFocus) {
+                if (state.plateItems.length > 0) {
+                  const nextIdx = Math.min(idx, state.plateItems.length - 1);
+                  const nextBtn = listEl.querySelector(`[data-del-plate="${nextIdx}"]`);
+                  if (nextBtn) nextBtn.focus();
+                } else {
+                  const fallback = document.getElementById('panel-dining');
+                  if (fallback) fallback.focus();
+                }
+              }
             });
             listEl.appendChild(row);
           });
@@ -8871,6 +9352,38 @@
             ctx.stroke();
           }
         }
+      } else if (stId === 'mixing_table') {
+        // Bàn trộn mặt đá / gỗ ấm & tô trộn inox sâu lòng ở trung tâm
+        ctx.fillStyle = '#44403c';
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = '#f5f5f4';
+        ctx.beginPath();
+        ctx.roundRect(40, 24, W - 80, H - 46, 16);
+        ctx.fill();
+
+        // Tô trộn inox lớn
+        ctx.fillStyle = '#e7e5e4';
+        ctx.strokeStyle = '#78716c';
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.arc(W / 2, H / 2 + 6, 86, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Lòng tô trộn sáng bóng + hiệu ứng khuấy xoáy khi đang trộn
+        ctx.fillStyle = '#fafaf9';
+        ctx.beginPath();
+        ctx.arc(W / 2, H / 2 + 6, 74, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (state.stationActionFlash > 0) {
+          ctx.strokeStyle = '#f59e0b';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          const startAng = state.animTick * 0.2;
+          ctx.arc(W / 2, H / 2 + 6, 52, startAng, startAng + Math.PI * 1.3);
+          ctx.stroke();
+        }
       }
 
       // Draw items in station
@@ -9043,8 +9556,10 @@
         document.getElementById('kitchen-char-craving-snippet').textContent = char.cravings[0];
 
         playSoundEffect('door');
-        announceNVDA(`Chào mừng bạn vào bếp nấu cho ${char.name}! Hãy lấy nguyên liệu từ Tủ Lạnh (Alt+1) để bắt đầu.`, 'assertive');
+        announceNVDA(`Chào mừng bạn vào bếp nấu cho ${char.name}! Hãy lấy nguyên liệu từ Tủ Lạnh (Alt+1) để bắt đầu.`, 'polite');
         renderAll();
+        const firstTab = document.getElementById('tab-fridge');
+        if (firstTab) firstTab.focus();
       });
 
       // Sound & TTS Toggles on Start Screen
@@ -9062,9 +9577,31 @@
         syncSoundControls();
       });
 
+      // Shared Dialog Focus Restoration Helper
+      const bindDialogFocusRestore = (dlg) => {
+        if (!dlg || dlg.dataset.restoreBound === 'true') return;
+        dlg.dataset.restoreBound = 'true';
+        dlg.addEventListener('close', () => {
+          if (dlg._skipRestoreFocus) {
+            dlg._skipRestoreFocus = false;
+            return;
+          }
+          const prev = dlg._returnFocusEl;
+          dlg._returnFocusEl = null;
+          if (prev && typeof prev.focus === 'function' && prev.isConnected && prev.offsetParent !== null) {
+            prev.focus();
+          }
+        });
+      };
+
       // Help Modal Toggles
       const modalHelp = document.getElementById('modal-help');
-      const openHelp = () => { modalHelp.showModal(); document.getElementById('btn-close-help').focus(); };
+      bindDialogFocusRestore(modalHelp);
+      const openHelp = () => {
+        modalHelp._returnFocusEl = document.activeElement;
+        modalHelp.showModal();
+        document.getElementById('btn-close-help').focus();
+      };
       const closeHelp = () => { modalHelp.close(); };
       const startBtnHelp = document.getElementById('start-btn-help');
       if (startBtnHelp) startBtnHelp.addEventListener('click', openHelp);
@@ -9104,7 +9641,9 @@
 
       // Back to Main Menu from Kitchen
       const modalConfirmBackToMenu = document.getElementById('modal-confirm-back-to-menu');
+      bindDialogFocusRestore(modalConfirmBackToMenu);
       document.getElementById('btn-kitchen-back-to-mainmenu').addEventListener('click', () => {
+        modalConfirmBackToMenu._returnFocusEl = document.activeElement;
         modalConfirmBackToMenu.showModal();
         document.getElementById('btn-cancel-back-to-menu').focus();
       });
@@ -9122,6 +9661,7 @@
         window.lastTastedMeal = null;
         const shareContainer = document.getElementById('share-community-container');
         if (shareContainer) shareContainer.classList.add('hidden');
+        modalConfirmBackToMenu._skipRestoreFocus = true;
         modalConfirmBackToMenu.close();
         if (typeof window.showScreen === 'function') {
           window.showScreen('main-menu');
@@ -9131,12 +9671,17 @@
 
       // Back to Character Select (Reset Kitchen) Modal
       const modalConfirmBack = document.getElementById('modal-confirm-back');
+      bindDialogFocusRestore(modalConfirmBack);
       document.getElementById('btn-back-to-select').addEventListener('click', () => {
+        modalConfirmBack._returnFocusEl = document.activeElement;
         modalConfirmBack.showModal();
         document.getElementById('btn-cancel-back').focus();
       });
       document.getElementById('btn-cancel-back').addEventListener('click', () => modalConfirmBack.close());
-      document.getElementById('btn-do-reset-and-back').addEventListener('click', resetKitchenAndGoBack);
+      document.getElementById('btn-do-reset-and-back').addEventListener('click', () => {
+        modalConfirmBack._skipRestoreFocus = true;
+        resetKitchenAndGoBack();
+      });
 
       // Character craving inspiration hint button
       document.getElementById('btn-char-hint').addEventListener('click', () => {
@@ -9190,8 +9735,12 @@
       if (btnDestStation) {
         btnDestStation.addEventListener('click', () => {
           state.fridgeDestination = 'station';
+          btnDestStation.setAttribute('aria-pressed', 'true');
           btnDestStation.className = 'flex-1 py-1.5 px-2 rounded-xl font-bold bg-orange-600 text-white shadow-sm transition text-center text-xs';
-          if (btnDestStaging) btnDestStaging.className = 'flex-1 py-1.5 px-2 rounded-xl font-bold bg-transparent text-slate-700 hover:bg-white/60 transition text-center text-xs';
+          if (btnDestStaging) {
+            btnDestStaging.setAttribute('aria-pressed', 'false');
+            btnDestStaging.className = 'flex-1 py-1.5 px-2 rounded-xl font-bold bg-transparent text-slate-700 hover:bg-white/60 transition text-center text-xs';
+          }
           announceNVDA('Đã chọn: Lấy nguyên liệu từ tủ bỏ vào Bếp Đang Chọn.', 'polite');
         });
       }
@@ -9199,8 +9748,12 @@
       if (btnDestStaging) {
         btnDestStaging.addEventListener('click', () => {
           state.fridgeDestination = 'staging';
+          btnDestStaging.setAttribute('aria-pressed', 'true');
           btnDestStaging.className = 'flex-1 py-1.5 px-2 rounded-xl font-bold bg-amber-600 text-white shadow-sm transition text-center text-xs';
-          if (btnDestStation) btnDestStation.className = 'flex-1 py-1.5 px-2 rounded-xl font-bold bg-transparent text-slate-700 hover:bg-white/60 transition text-center text-xs';
+          if (btnDestStation) {
+            btnDestStation.setAttribute('aria-pressed', 'false');
+            btnDestStation.className = 'flex-1 py-1.5 px-2 rounded-xl font-bold bg-transparent text-slate-700 hover:bg-white/60 transition text-center text-xs';
+          }
           announceNVDA('Đã chọn: Lấy nguyên liệu từ tủ bỏ vào Khay Tạm Chờ Sơ Chế.', 'polite');
         });
       }
@@ -9240,8 +9793,12 @@
       if (spStation) {
         spStation.addEventListener('click', () => {
           state.spiceTarget = 'station';
-          spStation.className = 'px-2 py-1 rounded-lg font-bold bg-amber-600 text-white';
-          if (spStaging) spStaging.className = 'px-2 py-1 rounded-lg font-bold text-stone-700 hover:bg-white';
+          spStation.setAttribute('aria-pressed', 'true');
+          spStation.className = 'px-3 py-1.5 rounded-xl font-bold bg-amber-600 text-white shadow-sm transition';
+          if (spStaging) {
+            spStaging.setAttribute('aria-pressed', 'false');
+            spStaging.className = 'px-3 py-1.5 rounded-xl font-bold text-stone-700 hover:bg-white transition';
+          }
           announceNVDA('Đã chọn nêm gia vị vào Bếp Đang Chọn.', 'polite');
         });
       }
@@ -9249,8 +9806,12 @@
       if (spStaging) {
         spStaging.addEventListener('click', () => {
           state.spiceTarget = 'staging';
-          spStaging.className = 'px-2 py-1 rounded-lg font-bold bg-amber-600 text-white';
-          if (spStation) spStation.className = 'px-2 py-1 rounded-lg font-bold text-stone-700 hover:bg-white';
+          spStaging.setAttribute('aria-pressed', 'true');
+          spStaging.className = 'px-3 py-1.5 rounded-xl font-bold bg-amber-600 text-white shadow-sm transition';
+          if (spStation) {
+            spStation.setAttribute('aria-pressed', 'false');
+            spStation.className = 'px-3 py-1.5 rounded-xl font-bold text-stone-700 hover:bg-white transition';
+          }
           announceNVDA('Đã chọn nêm gia vị vào Khay Tạm Chờ Sơ Chế.', 'polite');
         });
       }
@@ -9274,6 +9835,8 @@
 
       // Finish Dish Modal Actions
       const finishModal = document.getElementById('modal-finish-dish');
+      bindDialogFocusRestore(finishModal);
+      const modalSettings = document.getElementById('modal-settings');
       document.getElementById('btn-close-finish-modal').addEventListener('click', () => finishModal.close());
       document.getElementById('btn-cancel-finish').addEventListener('click', () => finishModal.close());
       document.getElementById('btn-confirm-plate-dish').addEventListener('click', confirmPlatingDish);
@@ -9293,9 +9856,11 @@
         const isTyping = tag === 'input' || tag === 'textarea';
 
         if (e.key === 'Escape') {
-          if (finishModal.open) { finishModal.close(); return; }
-          if (modalConfirmBack.open) { modalConfirmBack.close(); return; }
-          if (modalHelp.open) { modalHelp.close(); return; }
+          if (finishModal && finishModal.open) { finishModal.close(); return; }
+          if (modalConfirmBack && modalConfirmBack.open) { modalConfirmBack.close(); return; }
+          if (modalConfirmBackToMenu && modalConfirmBackToMenu.open) { modalConfirmBackToMenu.close(); return; }
+          if (modalHelp && modalHelp.open) { modalHelp.close(); return; }
+          if (modalSettings && modalSettings.open) { modalSettings.close(); return; }
         }
 
         // Enter on Start Screen to start
@@ -9332,6 +9897,8 @@
         }
 
         if (isTyping) return;
+        if (e.altKey || e.ctrlKey || e.metaKey) return;
+        if (state.singleKeyShortcutsEnabled === false) return;
 
         const k = e.key.toLowerCase();
         if (state.currentScreen === 'kitchen') {
@@ -9339,6 +9906,16 @@
             e.preventDefault();
             const st = STATIONS.find(s => s.id === state.activeStationId);
             if (st && st.actions.length > 0) performStationAction(st.actions[0].id);
+          } else if (k === 'k') {
+            e.preventDefault();
+            const st = STATIONS.find(s => s.id === state.activeStationId);
+            if (st && st.isMixingStation) performStationAction('knead_dough');
+            else announceNVDA('Phím K dùng để Nhào nặn dẻo quánh tại Bàn Trộn Đa Năng (Dụng cụ số 18)!', 'polite');
+          } else if (k === 'w') {
+            e.preventDefault();
+            const st = STATIONS.find(s => s.id === state.activeStationId);
+            if (st && st.isMixingStation) performStationAction('whisk_batter');
+            else announceNVDA('Phím W dùng để Đánh bông / Đánh tan sánh mịn tại Bàn Trộn Đa Năng (Dụng cụ số 18)!', 'polite');
           } else if (k === 'r') {
             e.preventDefault();
             const st = STATIONS.find(s => s.id === state.activeStationId);
@@ -9382,6 +9959,17 @@
 
     // INITIALIZATION
     window.addEventListener('load', () => {
+      try {
+        const rawSettings = localStorage.getItem('yumcraft_game_settings');
+        if (rawSettings) {
+          const parsed = JSON.parse(rawSettings);
+          if (typeof parsed.sfxEnabled === 'boolean') state.sfxEnabled = parsed.sfxEnabled;
+          if (typeof parsed.sfxVolume === 'number') state.sfxVolume = parsed.sfxVolume / 100;
+          if (typeof parsed.singleKeyShortcutsEnabled === 'boolean') state.singleKeyShortcutsEnabled = parsed.singleKeyShortcutsEnabled;
+        }
+      } catch (err) {
+        console.warn('Could not read saved kitchen settings:', err);
+      }
       bindEvents();
       renderAll();
       startAnimationLoop();
