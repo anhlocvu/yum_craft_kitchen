@@ -103,7 +103,7 @@ function showAlert(boxId, message, isError = true) {
   const box = document.getElementById(boxId);
   if (!box) return;
   box.textContent = message;
-  box.classList.remove("hidden");
+  box.classList.remove("hidden", "sr-only");
   if (isError) {
     box.className = "mb-4 p-3.5 rounded-2xl text-sm font-semibold border bg-red-50 text-red-700 border-red-300";
   } else {
@@ -116,7 +116,7 @@ function clearAlert(boxId) {
   const box = document.getElementById(boxId);
   if (!box) return;
   box.textContent = "";
-  box.classList.add("hidden");
+  box.className = "sr-only mb-4 p-3.5 rounded-2xl text-sm font-semibold border";
 }
 
 /**
@@ -1594,8 +1594,11 @@ export function initMainMenuController() {
 
   if (btnMenuSettings && modalSettings) {
     btnMenuSettings.addEventListener("click", () => {
+      modalSettings._returnFocusEl = document.activeElement || btnMenuSettings;
       populateSettingsModal();
       modalSettings.showModal();
+      const firstInput = document.getElementById("setting-sfx-toggle") || btnCloseSettings;
+      if (firstInput) firstInput.focus();
     });
   }
 
@@ -1641,7 +1644,10 @@ export function initMainMenuController() {
   const modalHelp = document.getElementById("modal-help");
   if (btnMenuHelp && modalHelp) {
     btnMenuHelp.addEventListener("click", () => {
+      modalHelp._returnFocusEl = document.activeElement || btnMenuHelp;
       modalHelp.showModal();
+      const btnCloseHelp = document.getElementById("btn-close-help");
+      if (btnCloseHelp) btnCloseHelp.focus();
     });
   }
 

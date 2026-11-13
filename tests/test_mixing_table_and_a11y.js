@@ -24,7 +24,7 @@ gameScript += `
   describeItemStateShort, formatActionHistoryChain, groupItemsByCookingHistory,
   analyzeCulinaryChemistry, generateSensoryTastingReview, getEatingSoundForItem,
   renderFridge, renderWorkbench, renderStagingTray, renderSpices, renderServingPlate,
-  renderFinishModalGarnishes, bindEvents, announceNVDA
+  renderFinishModalGarnishes, bindEvents, announceNVDA, feedCharacter
 };
 `;
 
@@ -220,6 +220,8 @@ trackedIds.forEach(id => elementsById.set(id, createMockElement('div', id)));
 const windowListeners = {};
 const playedExternalAudios = [];
 const timersScheduled = [];
+const timersCleared = [];
+let nextTimerId = 1;
 
 const mockDoc = {
   activeElement: null,
@@ -282,11 +284,14 @@ const sandbox = {
     setItem(k, v) { this._store[k] = String(v); }
   },
   setTimeout(fn, ms) {
+    const id = nextTimerId++;
     timersScheduled.push(ms);
     if (ms <= 100) fn();
-    return 1;
+    return id;
   },
-  clearTimeout() {},
+  clearTimeout(id) {
+    if (id !== null && id !== undefined) timersCleared.push(id);
+  },
   requestAnimationFrame() {},
   window: {
     AudioContext: null,
@@ -614,6 +619,222 @@ function resetStation() {
     assert.strictEqual(api.state.stationItems.length, 1);
     assert.strictEqual(api.state.stationItems[0].cookMethod, 'whisked');
     assert.deepStrictEqual(Array.from(api.state.stationItems[0].actionHistory), ['kneaded', 'whisked']);
+  });
+
+  function getLiveText(priority = 'polite') {
+    const a = mockDoc.getElementById(`nvda-live-${priority}-a`).textContent;
+    const b = mockDoc.getElementById(`nvda-live-${priority}-b`).textContent;
+    return a || b || '';
+  }
+
+  await test('T11: Hien day du 4 nguyen lieu tren Ban Tron (so-co-la, ca phe, trung, sua tuoi) qua mix/knead/whisk + nuong chin, KHONG co (+1)', async () => {
+    const fourIds = ['chocolate', 'brewed_coffee', 'egg', 'milk'];
+    const fourNames = fourIds.map(id => makeItem(id).name);
+
+    for (const [actId, suffix] of [['mix_toss', 'trộn đều'], ['knead_dough', 'nhào dẻo'], ['whisk_batter', 'đánh mịn']]) {
+      resetStation();
+      api.state.activeStationId = 'mixing_table';
+      fourIds.forEach(id => api.state.stationItems.push(makeItem(id)));
+
+      await api.performStationAction(actId);
+      assert.strictEqual(api.state.stationItems.length, 1);
+      const item = api.state.stationItems[0];
+      assert.strictEqual(item.kind, 'mixed');
+      assert.ok(!item.name.includes('(+'), `Khong duoc cat gon ten mon voi (+N): ${item.name}`);
+      assert.ok(item.name.endsWith(`(${suffix})`), `Ten mon phai ket thuc bang (${suffix}): ${item.name}`);
+      fourNames.forEach(n => {
+        assert.ok(item.name.includes(n), `Thieu ten nguyen lieu "${n}" trong "${item.name}"`);
+      });
+
+      const live = getLiveText('polite');
+      assert.ok(!live.includes('(+'), `Thong bao NVDA khong duoc chua (+N): ${live}`);
+      fourNames.forEach(n => {
+        assert.ok(live.includes(n), `Thong bao NVDA thieu ten "${n}": ${live}`);
+      });
+      assert.ok(live.includes('cần làm chín'), 'Vi co Trung ga ta nen phai nhac can lam chin');
+    }
+
+    // Mang hon hop 4 nguyen lieu sang Lo Nuong -> van giu du 4 ten, khong (+1)
+    resetStation();
+    api.state.activeStationId = 'mixing_table';
+    fourIds.forEach(id => api.state.stationItems.push(makeItem(id)));
+    await api.performStationAction('mix_toss');
+    api.state.activeStationId = 'oven';
+    await api.performStationAction('bake_step');
+    const baked = api.state.stationItems[0];
+    assert.ok(!baked.name.includes('(+'), `Ten mon sau khi nuong khong duoc chua (+N): ${baked.name}`);
+    fourNames.forEach(n => {
+      assert.ok(baked.name.includes(n), `Ten mon sau khi nuong thieu "${n}": ${baked.name}`);
+    });
+  });
+
+  await test('T12: Kiem thu mo rong 5, 6, 10, 20 nguyen lieu tren Ban Tron & tron nhieu buoc lien tiep', async () => {
+    const actions = ['mix_toss', 'knead_dough', 'whisk_batter'];
+    for (const [idx, count] of [5, 6, 10, 20].entries()) {
+      resetStation();
+      api.state.activeStationId = 'mixing_table';
+      const batch = api.INGREDIENTS.slice(0, count).map(ing => api.createFoodItem(ing));
+      const expectedNames = batch.map(i => i.name);
+      api.state.stationItems.push(...batch);
+
+      await api.performStationAction(actions[idx % actions.length]);
+      assert.strictEqual(api.state.stationItems.length, 1);
+      const res = api.state.stationItems[0];
+      assert.strictEqual(res.subItems.length, count);
+      assert.ok(!res.name.includes('(+'), `Ban Tron ${count} nguyen lieu khong duoc co (+N): ${res.name}`);
+      expectedNames.forEach(n => {
+        assert.ok(res.name.includes(n), `Ban Tron ${count} nguyen lieu bi thieu "${n}"`);
+      });
+      const live = getLiveText('polite');
+      expectedNames.forEach(n => {
+        assert.ok(live.includes(n), `NVDA Ban Tron ${count} nguyen lieu bi thieu "${n}"`);
+      });
+    }
+
+    // Sequential multi-step: 6 -> +4 (knead = 10) -> +10 (whisk = 20)
+    resetStation();
+    api.state.activeStationId = 'mixing_table';
+    const first6 = api.INGREDIENTS.slice(0, 6);
+    const next4 = api.INGREDIENTS.slice(6, 10);
+    const last10 = api.INGREDIENTS.slice(10, 20);
+    first6.forEach(ing => api.state.stationItems.push(api.createFoodItem(ing)));
+    await api.performStationAction('mix_toss');
+
+    next4.forEach(ing => api.state.stationItems.push(api.createFoodItem(ing)));
+    await api.performStationAction('knead_dough');
+
+    last10.forEach(ing => api.state.stationItems.push(api.createFoodItem(ing)));
+    await api.performStationAction('whisk_batter');
+
+    const final20 = api.state.stationItems[0];
+    assert.strictEqual(final20.subItems.length, 20);
+    assert.deepStrictEqual(Array.from(final20.actionHistory), ['mixed', 'kneaded', 'whisked']);
+    assert.ok(!final20.name.includes('(+'));
+    api.INGREDIENTS.slice(0, 20).forEach(ing => {
+      assert.ok(final20.name.includes(ing.name), `Tron 20 nguyen lieu nhieu buoc bi thieu "${ing.name}"`);
+    });
+  });
+
+  await test('T13: May Xay Sinh To (blend_smooth) hien day du 4, 5, 6, 10, 20 nguyen lieu & xay noi tiep, KHONG co (+N)', async () => {
+    for (const count of [4, 5, 6, 10, 20]) {
+      resetStation();
+      api.state.activeStationId = 'blender';
+      const batch = api.INGREDIENTS.slice(0, count).map(ing => api.createFoodItem(ing));
+      const expectedNames = batch.map(i => i.name);
+      api.state.stationItems.push(...batch);
+
+      await api.performStationAction('blend_smooth');
+      assert.strictEqual(api.state.stationItems.length, 1);
+      const res = api.state.stationItems[0];
+      assert.strictEqual(res.kind, 'blended');
+      assert.strictEqual(res.subItems.length, count);
+      assert.ok(res.name.endsWith('(xay nhuyễn)'));
+      assert.ok(!res.name.includes('(+'), `May xay ${count} nguyen lieu khong duoc co (+N): ${res.name}`);
+      expectedNames.forEach(n => {
+        assert.ok(res.name.includes(n), `May xay ${count} nguyen lieu bi thieu "${n}"`);
+      });
+      const live = getLiveText('polite');
+      expectedNames.forEach(n => {
+        assert.ok(live.includes(n), `NVDA May xay ${count} nguyen lieu bi thieu "${n}"`);
+      });
+    }
+
+    // Sequential blend: 4 blended + 6 new -> 10 flattened subItems
+    resetStation();
+    api.state.activeStationId = 'blender';
+    api.INGREDIENTS.slice(0, 4).forEach(ing => api.state.stationItems.push(api.createFoodItem(ing)));
+    await api.performStationAction('blend_smooth');
+    api.INGREDIENTS.slice(4, 10).forEach(ing => api.state.stationItems.push(api.createFoodItem(ing)));
+    await api.performStationAction('blend_smooth');
+    const blended10 = api.state.stationItems[0];
+    assert.strictEqual(blended10.subItems.length, 10);
+    assert.ok(!blended10.name.includes('(+'));
+    api.INGREDIENTS.slice(0, 10).forEach(ing => {
+      assert.ok(blended10.name.includes(ing.name), `Xay noi tiep 10 nguyen lieu bi thieu "${ing.name}"`);
+    });
+  });
+
+  await test('T14: Kiem tra giao dien & tro nang (khong cat ten truncate, maxlength=2000, WCAG 2.5.3, group actions, sr-only alert)', async () => {
+    assert.ok(html.includes('id="input-custom-dish-name" type="text" maxlength="2000"'));
+    assert.ok(html.includes('id="login-alert-box" role="alert" aria-live="assertive" class="sr-only'));
+    assert.ok(html.includes('id="reg-alert-box" role="alert" aria-live="assertive" class="sr-only'));
+    assert.ok(html.includes('id="station-action-buttons" class="grid grid-cols-2 sm:grid-cols-3 gap-2" role="group" aria-labelledby="heading-station-actions"'));
+    assert.ok(html.includes('id="station-items-list" tabindex="0"'));
+    assert.ok(html.includes('<span aria-hidden="true">📦</span>\r\n                <span>Cất ra Khay Tạm (T)</span>') || html.includes('<span aria-hidden="true">📦</span>\n                <span>Cất ra Khay Tạm (T)</span>'));
+
+    resetStation();
+    api.state.activeStationId = 'mixing_table';
+    ['chocolate', 'brewed_coffee', 'egg', 'milk'].forEach(id => api.state.stationItems.push(makeItem(id)));
+    await api.performStationAction('mix_toss');
+    api.renderWorkbench();
+
+    // WCAG 2.5.3: station button aria-label starts with visible shortName
+    const stGrid = mockDoc.getElementById('station-selector-grid');
+    assert.ok(stGrid.children[17].getAttribute('aria-label').startsWith('18. Bàn Trộn'));
+    assert.ok(stGrid.children[17].title && stGrid.children[17].title.length > 0);
+
+    // Station items list wraps long text cleanly without .truncate & matches button aria-labels
+    const stListHtml = mockDoc.getElementById('station-items-list').children[0].innerHTML;
+    assert.ok(stListHtml.includes('break-words leading-snug'));
+    assert.ok(!stListHtml.includes('truncate'));
+    assert.ok(stListHtml.includes('Thanh Sô-cô-la Đen') && stListHtml.includes('Sữa tươi thanh trùng'));
+    assert.ok(stListHtml.includes('aria-label="Ra khay: Cất '));
+    assert.ok(stListHtml.includes('aria-label="Xóa '));
+
+    // Action button busy/ready WCAG 2.5.3 labels
+    const actContainer = mockDoc.getElementById('station-action-buttons');
+    assert.strictEqual(actContainer.children[0].getAttribute('aria-label'), api.STATIONS[17].actions[0].label);
+    api.state.isCookingBusy = true;
+    api.renderWorkbench();
+    assert.ok(actContainer.children[0].getAttribute('aria-label').startsWith('Đang chế biến: '));
+    api.state.isCookingBusy = false;
+
+    // Staging & Plate list rendering without truncate or hidden sm:inline
+    api.state.stagingItems.push(api.state.stationItems[0]);
+    api.renderStagingTray();
+    const stagingHtml = mockDoc.getElementById('staging-items-list').children[0].innerHTML;
+    assert.ok(stagingHtml.includes('break-words leading-snug') && !stagingHtml.includes('truncate'));
+    assert.ok(stagingHtml.includes('aria-label="Vào bếp: Đưa '));
+
+    api.state.plateItems.push(api.state.stationItems[0]);
+    api.renderServingPlate();
+    const plateHtml = mockDoc.getElementById('plate-items-list').children[0].innerHTML;
+    assert.ok(plateHtml.includes('break-words leading-snug') && !plateHtml.includes('truncate'));
+    assert.ok(!plateHtml.includes('hidden sm:inline'));
+    assert.ok(plateHtml.includes('aria-label="Xóa món '));
+  });
+
+  await test('T15: Kiem tra clearTimeout trong announceNVDA, feedCharacter dung polite, & restore focus dialog', async () => {
+    timersCleared.length = 0;
+    api.announceNVDA('Thong bao thu nhat', 'polite');
+    api.announceNVDA('Thong bao thu hai', 'polite');
+    assert.ok(timersCleared.length >= 1, 'announceNVDA goi lien tiep phai clearTimeout timer truoc do');
+
+    // Clear assertive & polite live boxes before feedCharacter
+    ['nvda-live-assertive-a', 'nvda-live-assertive-b', 'nvda-live-polite-a', 'nvda-live-polite-b'].forEach(id => {
+      mockDoc.getElementById(id).textContent = '';
+    });
+    resetStation();
+    const cookie = makeItem('chocolate');
+    api.state.plateItems.push(cookie);
+    api.state.servedDishes.push({
+      id: 'dish-1',
+      name: cookie.name,
+      items: [cookie],
+      analysis: api.analyzeCulinaryChemistry([cookie]),
+      garnish: null
+    });
+    await api.feedCharacter();
+    const politeAfterFeed = getLiveText('polite');
+    const assertiveAfterFeed = getLiveText('assertive');
+    assert.ok(politeAfterFeed.includes('Nhận xét:'), `feedCharacter phai phat nhan xet qua kenh polite: ${politeAfterFeed}`);
+    assert.strictEqual(assertiveAfterFeed, '', 'feedCharacter khong duoc chen ngang kenh assertive');
+
+    // Focus restore & sr-only alert checks
+    assert.ok(html.includes('bindDialogFocusRestore(modalSettings)'));
+    assert.ok(mainMenuJs.includes('box.classList.remove("hidden", "sr-only")'));
+    assert.ok(mainMenuJs.includes('modalSettings._returnFocusEl'));
+    assert.ok(mainMenuJs.includes('modalHelp._returnFocusEl'));
   });
 
   console.log(`\nSUMMARY: ${passed} passed, ${failed} failed.`);

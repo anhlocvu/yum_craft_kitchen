@@ -1,0 +1,93 @@
+{
+  "skill": "keyboard-navigator",
+  "scope": [
+    "index.html",
+    "js/main-menu.js"
+  ],
+  "findings": [
+    {
+      "rule": "FOCUS-001",
+      "wcag": "2.4.3 A",
+      "severity": "serious",
+      "location": "index.html:9863",
+      "summary": "Pressing Escape in #modal-settings closes the dialog without returning focus to #btn-menu-settings.",
+      "fix": "Register modalSettings with bindDialogFocusRestore(modalSettings) in index.html, and set modalSettings._returnFocusEl = btnMenuSettings in js/main-menu.js when opened.",
+      "evidence": "if (modalSettings && modalSettings.open) { modalSettings.close(); return; }",
+      "component": "SettingsModal"
+    },
+    {
+      "rule": "FOCUS-002",
+      "wcag": "2.4.3 A",
+      "severity": "moderate",
+      "location": "js/main-menu.js:1644",
+      "summary": "Opening #modal-help from Main Menu does not set _returnFocusEl or focus close button, losing focus on close.",
+      "fix": "In js/main-menu.js, set modalHelp._returnFocusEl = btnMenuHelp and focus btn-close-help when modalHelp.showModal() is invoked.",
+      "evidence": "btnMenuHelp.addEventListener('click', () => { modalHelp.showModal(); });",
+      "component": "HelpModal"
+    },
+    {
+      "rule": "FOCUS-003",
+      "wcag": "2.4.3 A",
+      "severity": "moderate",
+      "location": "index.html:8628",
+      "summary": "Roving tabindex callback invokes targetBtn.focus() on a detached DOM element after targetBtn.click() replaces station buttons.",
+      "fix": "Remove redundant targetBtn.focus() from onSelectItem callback in renderWorkbench since targetBtn.click() already queries and focuses the active station in the live DOM.",
+      "evidence": "attachRovingKeyNavigation(stationGrid, 'button', (targetBtn) => { targetBtn.click(); targetBtn.focus(); });",
+      "component": "StationSelectorGrid"
+    },
+    {
+      "rule": "KEYBOARD-001",
+      "wcag": "2.1.1 A",
+      "severity": "minor",
+      "location": "index.html:8628",
+      "summary": "Station selector toolbar activates stations immediately on arrow key navigation rather than allowing arrow exploration with Space/Enter activation.",
+      "fix": "Separate arrow key focus movement from tool activation by removing targetBtn.click() from the arrow key handler and allowing Enter/Space to select, or change role to radiogroup.",
+      "evidence": "attachRovingKeyNavigation(stationGrid, 'button', (targetBtn) => { targetBtn.click(); targetBtn.focus(); });",
+      "component": "StationSelectorGrid"
+    },
+    {
+      "rule": "KEYBOARD-002",
+      "wcag": "2.1.1 A",
+      "severity": "minor",
+      "location": "index.html:909",
+      "summary": "Scrollable #station-items-list container lacks tabindex=\"0\", preventing keyboard users from scrolling item contents with arrow keys or PageUp/PageDown.",
+      "fix": "Add tabindex=\"0\" to #station-items-list so keyboard users can navigate and scroll the container independently.",
+      "evidence": "<div id=\"station-items-list\" class=\"space-y-2 max-h-[180px] overflow-y-auto custom-scroll pr-1\" role=\"list\">",
+      "component": "StationItemsList"
+    },
+    {
+      "rule": "A11Y-LABEL-001",
+      "wcag": "1.3.1 A",
+      "severity": "minor",
+      "location": "index.html:8836",
+      "summary": "Full multi-ingredient dish names inside aria-label for both Ra khay and Xóa buttons create excessive auditory verbosity for keyboard screen reader users.",
+      "fix": "Shorten button aria-label to a concise item identifier (e.g. Cất món 1 ra Khay Tạm) and expose full ingredient names via aria-describedby or an item details disclosure.",
+      "evidence": "aria-label=\"Cất ${it.name} ra Khay Tạm\" / aria-label=\"Bỏ ${it.name}\"",
+      "component": "StationItemsList"
+    },
+    {
+      "rule": "A11Y-TEXT-001",
+      "wcag": "1.3.1 A",
+      "severity": "minor",
+      "location": "index.html:8831",
+      "summary": "Compound multi-ingredient names in #station-items-list are truncated with CSS ellipsis without a title attribute or focusable disclosure for sighted keyboard users.",
+      "fix": "Add title=\"${it.name}\" or a keyboard-focusable inspect trigger to allow sighted keyboard users to view the complete list of ingredients in compound dishes.",
+      "evidence": "<div class=\"font-bold text-stone-900 truncate\">${idx + 1}. ${it.name}</div>",
+      "component": "StationItemsList"
+    }
+  ],
+  "passed": [
+    "Station 18 (mixing_table) is fully reachable via keyboard in #station-selector-grid via Tab, Arrow keys, and End key.",
+    "Station 18 action buttons (mix_toss, knead_dough, whisk_batter) are native HTML buttons in normal Tab order and operable via Space and Enter.",
+    "Single-key shortcuts (C, K, W) for Station 18 are properly guarded against modifier keys (Ctrl, Alt, Meta) and text entry inputs.",
+    "Single-key shortcuts can be completely disabled via #setting-single-key-shortcuts meeting WCAG 2.1.4 Level A.",
+    "Focus is maintained in-place on #station-action-buttons across action executions without losing focus to document.body.",
+    "Item deletion and transfer in #station-items-list preserve focus to adjacent buttons or fall back safely to #panel-workbench.",
+    "No positive tabindex values exist in index.html or js/main-menu.js.",
+    "Global :focus-visible provides high-visibility 3px outline on all interactive kitchen elements."
+  ],
+  "notes": [
+    "Multi-ingredient names on Mixing Table (Station 18) do not break the index-based focus retention logic upon item removal or staging transfer.",
+    "Station 18 actions C, K, W trigger globally when kitchen screen is active; if activeStationId is not mixing_table, K and W provide polite NVDA guidance instead of executing."
+  ]
+}

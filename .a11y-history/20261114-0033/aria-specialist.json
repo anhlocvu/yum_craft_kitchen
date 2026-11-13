@@ -1,0 +1,159 @@
+{
+  "skill": "aria-specialist",
+  "scope": [
+    "index.html"
+  ],
+  "findings": [
+    {
+      "rule": "ARIA-NAME-TRUNCATION",
+      "wcag": "1.3.1 A",
+      "severity": "serious",
+      "location": "index.html:6805-6807",
+      "component": "mixing_table",
+      "summary": "Mixing Table truncates multi-ingredient dish names with (+N) when mixing 4 or more ingredients, causing assistive technologies to lose critical ingredient information.",
+      "evidence": "const previewNames = names.slice(0, 3).join(\" & \"); const extraSuffix = names.length > 3 ? ` (+${names.length - 3})` : \"\"; const defaultMixedName = `${previewNames}${extraSuffix} (${methodLabel})`;",
+      "fix": "Generate defaultMixedName with the full list of ingredients (names.join(\" & \")) without (+N) truncation, matching Station 10 beverage_station to ensure complete sensory information reaches NVDA users."
+    },
+    {
+      "rule": "ARIA-LABEL-IN-NAME",
+      "wcag": "2.5.3 A",
+      "severity": "serious",
+      "location": "index.html:8839",
+      "component": "#station-items-list",
+      "summary": "Delete button in station items list displays visible text \"Xóa\" but sets aria-label=\"Bỏ ${it.name}\", omitting the visible label string and breaking speech input activation.",
+      "evidence": "<button type=\"button\" data-del-st=\"${idx}\" ... aria-label=\"Bỏ ${it.name}\">\n  Xóa\n</button>",
+      "fix": "Change aria-label to begin with or contain the visible label text \"Xóa\", for example aria-label=\"Xóa ${it.name} khỏi bếp\"."
+    },
+    {
+      "rule": "ARIA-LABEL-IN-NAME",
+      "wcag": "2.5.3 A",
+      "severity": "moderate",
+      "location": "index.html:8836",
+      "component": "#station-items-list",
+      "summary": "Staging transfer button with visible text \"Ra khay\" specifies aria-label=\"Cất ${it.name} ra Khay Tạm\", failing to include the exact visible label phrase.",
+      "evidence": "<button type=\"button\" data-to-staging=\"${idx}\" ... aria-label=\"Cất ${it.name} ra Khay Tạm\">\n  Ra khay\n</button>",
+      "fix": "Update aria-label to include the visible text phrase, for example aria-label=\"Ra khay: Cất ${it.name} ra Khay Tạm\"."
+    },
+    {
+      "rule": "ARIA-LABEL-IN-NAME",
+      "wcag": "2.5.3 A",
+      "severity": "moderate",
+      "location": "index.html:8912",
+      "component": "#staging-items-list",
+      "summary": "Workbench transfer button with visible text \"Vào bếp\" sets aria-label=\"Đưa ${it.name} vào Bếp hiện tại\", failing to include the exact visible text phrase.",
+      "evidence": "<button type=\"button\" data-to-st=\"${idx}\" ... aria-label=\"Đưa ${it.name} vào Bếp hiện tại\">\n  Vào bếp\n</button>",
+      "fix": "Update aria-label to include the exact visible label text, for example aria-label=\"Vào bếp: Đưa ${it.name} vào Bếp hiện tại\"."
+    },
+    {
+      "rule": "ARIA-LABEL-IN-NAME",
+      "wcag": "2.5.3 A",
+      "severity": "serious",
+      "location": "index.html:8639",
+      "component": "#station-selector-grid",
+      "summary": "Station selector buttons visibly show short names like \"18. Bàn Trộn\" but use aria-label=\"${st.name}. ${st.desc}\", omitting the visible index and name string.",
+      "evidence": "btn.setAttribute(\"aria-label\", `${st.name}. ${st.desc}`); ... <span>${st.shortName}</span>",
+      "fix": "Set aria-label to include the visible text (e.g. `${st.shortName}: ${st.name}`) and move the station description to aria-describedby instead of replacing the accessible name."
+    },
+    {
+      "rule": "ARIA-LABEL-IN-NAME",
+      "wcag": "2.5.3 A",
+      "severity": "moderate",
+      "location": "index.html:8802-8805",
+      "component": "#station-action-buttons",
+      "summary": "When cooking is busy, action buttons visibly display \"⏳ Đang chế biến...\" while aria-label is set to \"Đang xử lý: ${act.label}\", omitting the visible text.",
+      "evidence": "btn.setAttribute(\"aria-label\", `Đang xử lý: ${act.label}`); btn.textContent = \"⏳ Đang chế biến...\";",
+      "fix": "Align the accessible name with the visible label text, for example aria-label=\"Đang chế biến: ${act.label}\"."
+    },
+    {
+      "rule": "ARIA-SEMANTIC-HTML",
+      "wcag": "1.3.1 A",
+      "severity": "moderate",
+      "location": "index.html:909",
+      "component": "#station-items-list",
+      "summary": "Station and staging item lists use generic <div> with role=\"list\" and role=\"listitem\" instead of semantic HTML <ul> and <li> elements.",
+      "evidence": "<div id=\"station-items-list\" ... role=\"list\"> and row.setAttribute(\"role\", \"listitem\")",
+      "fix": "Replace container <div> elements with semantic <ul> elements and row elements with native <li> elements, removing explicit role=\"list\" and role=\"listitem\"."
+    },
+    {
+      "rule": "ARIA-ROLE-MISMATCH",
+      "wcag": "1.3.1 A",
+      "severity": "serious",
+      "location": "index.html:8820",
+      "component": "#station-items-list",
+      "summary": "Empty state placeholder message is given role=\"listitem\", causing screen readers to falsely announce that the list contains 1 item when it is empty.",
+      "evidence": "listEl.innerHTML = `<div role=\"listitem\" ...>Bếp đang trống. Hãy lấy nguyên liệu từ Tủ Lạnh (Alt+1) bỏ vào đây!</div>`;",
+      "fix": "Remove role=\"listitem\" from the empty state placeholder so screen readers accurately announce an empty list (0 items)."
+    },
+    {
+      "rule": "ARIA-ROLE-MISMATCH",
+      "wcag": "4.1.2 A",
+      "severity": "moderate",
+      "location": "index.html:832",
+      "component": "#station-selector-grid",
+      "summary": "Station selector grid uses role=\"toolbar\" and aria-pressed for single-selection stations, misrepresenting mutually exclusive stations as independent toggle buttons.",
+      "evidence": "<div id=\"station-selector-grid\" ... role=\"toolbar\"> with btn.setAttribute(\"aria-pressed\", isAct ? \"true\" : \"false\")",
+      "fix": "Change container role to \"radiogroup\" with aria-labelledby=\"heading-station-picker\" and child buttons to role=\"radio\" with aria-checked."
+    },
+    {
+      "rule": "ARIA-NAME-TRUNCATION",
+      "wcag": "1.3.1 A",
+      "severity": "minor",
+      "location": "index.html:8831",
+      "component": "#station-items-list",
+      "summary": "Multi-ingredient dish names are visually clipped with CSS truncate without a title attribute or accessible tooltip, obscuring full recipe contents from sighted and magnification users.",
+      "evidence": "<div class=\"font-bold text-stone-900 truncate\">${idx + 1}. ${it.name}</div>",
+      "fix": "Add title=\"${it.name}\" to the dish name container and consider allowing multi-line wrapping so full ingredient combinations remain readable on hover and focus."
+    },
+    {
+      "rule": "ARIA-VERBOSE-NAME",
+      "wcag": "4.1.2 A",
+      "severity": "minor",
+      "location": "index.html:8808",
+      "component": "#station-action-buttons",
+      "summary": "Station action buttons pack multi-sentence descriptions into aria-label, causing screen readers to read lengthy paragraphs as the button accessible name.",
+      "evidence": "btn.setAttribute(\"aria-label\", `${act.label}. ${act.desc}`);",
+      "fix": "Keep aria-label concise (e.g. act.label) and associate the action description via aria-describedby or visible helper text."
+    },
+    {
+      "rule": "ARIA-GROUP-LABEL",
+      "wcag": "1.3.1 A",
+      "severity": "minor",
+      "location": "index.html:885",
+      "component": "#station-action-buttons",
+      "summary": "Station action buttons container groups related culinary actions but lacks role=\"group\" and an accessible name referencing the station actions heading.",
+      "evidence": "<div id=\"station-action-buttons\" class=\"grid grid-cols-2 sm:grid-cols-3 gap-2\">",
+      "fix": "Add role=\"group\" and aria-labelledby=\"heading-station-actions\" to #station-action-buttons."
+    },
+    {
+      "rule": "ARIA-BUSY-MISUSE",
+      "wcag": "4.1.2 A",
+      "severity": "minor",
+      "location": "index.html:8781",
+      "component": "#station-action-buttons",
+      "summary": "Attribute aria-busy is set on a static generic <div> container without aria-live or a widget role, rendering the busy state inert to assistive technologies.",
+      "evidence": "actionsEl.setAttribute(\"aria-busy\", state.isCookingBusy ? \"true\" : \"false\");",
+      "fix": "Remove aria-busy from #station-action-buttons or add aria-live=\"polite\" to the container if dynamic state observation is intended."
+    },
+    {
+      "rule": "ARIA-ICON-HIDDEN",
+      "wcag": "1.1.1 A",
+      "severity": "minor",
+      "location": "index.html:902",
+      "component": "#panel-workbench",
+      "summary": "Package emoji in #btn-station-to-staging is bare inline text without aria-hidden=\"true\", causing screen readers to announce the unicode emoji name before the button label.",
+      "evidence": "<button id=\"btn-station-to-staging\" ...>\n  📦 Cất ra Khay Tạm (T)\n</button>",
+      "fix": "Wrap the emoji in <span aria-hidden=\"true\">📦</span> matching other kitchen buttons."
+    }
+  ],
+  "passed": [
+    "#panel-workbench has valid role=\"tabpanel\", tabindex=\"0\", and aria-labelledby=\"tab-workbench\" linking to tab trigger.",
+    "Station action buttons maintain focus in-place and use aria-disabled instead of disabling elements during audio playback, preventing focus loss.",
+    "Roving tabindex keyboard navigation works across station buttons with Arrow keys, Home, and End.",
+    "Dynamic wrapper and vessel selector correctly uses role=\"radiogroup\" with aria-labelledby pointing to visible title and role=\"radio\" on options.",
+    "NVDA live announcements for station switching and cooking completion are dispatched with polite politeness level."
+  ],
+  "notes": [
+    "Mixing Table (mixing_table) was added as Station 18; generating full multi-ingredient dish names without (+N) truncation ensures screen readers convey full recipe content, but requires accessible names on list buttons to remain concise and conform to WCAG 2.5.3 (Label in Name).",
+    "Semantic HTML refactoring of #station-items-list and #staging-items-list to native <ul> and <li> will eliminate custom ARIA roles and automatically announce correct item counts."
+  ]
+}

@@ -234,7 +234,7 @@
       <p class="text-sm text-stone-500 mb-6">Nhập thông tin tài khoản để bước vào gian bếp ẩm thực của bạn.</p>
 
       <!-- Alert Box -->
-      <div id="login-alert-box" role="alert" aria-live="assertive" class="hidden mb-4 p-3.5 rounded-2xl text-sm font-semibold border"></div>
+      <div id="login-alert-box" role="alert" aria-live="assertive" class="sr-only mb-4 p-3.5 rounded-2xl text-sm font-semibold border"></div>
 
       <form id="form-login" class="flex flex-col gap-4" novalidate>
         <div>
@@ -331,7 +331,7 @@
       <p class="text-sm text-stone-500 mb-6">Tạo hồ sơ ẩm thực và thương hiệu nhà bếp của bạn.</p>
 
       <!-- Alert Box -->
-      <div id="reg-alert-box" role="alert" aria-live="assertive" class="hidden mb-4 p-3.5 rounded-2xl text-sm font-semibold border"></div>
+      <div id="reg-alert-box" role="alert" aria-live="assertive" class="sr-only mb-4 p-3.5 rounded-2xl text-sm font-semibold border"></div>
 
       <form id="form-register" class="flex flex-col gap-4" novalidate>
         <!-- Tên người dùng -->
@@ -882,7 +882,7 @@
             <div class="text-[11px] font-bold text-stone-600 mb-1.5 uppercase font-game">
               Bấm nút để thực hiện thao tác chế biến:
             </div>
-            <div id="station-action-buttons" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div id="station-action-buttons" class="grid grid-cols-2 sm:grid-cols-3 gap-2" role="group" aria-labelledby="heading-station-actions">
               <!-- Populated by JS -->
             </div>
           </div>
@@ -898,15 +898,16 @@
               <span>3. Nguyên Liệu Đang Có Trong Bếp</span>
             </h3>
             <div class="flex items-center gap-2">
-              <button id="btn-station-to-staging" type="button" class="text-xs font-bold text-amber-800 bg-amber-100 hover:bg-amber-200 px-3 py-1 rounded-xl transition" title="Cất đồ ăn từ Bếp ra Khay Tạm (Phím T)">
-                📦 Cất ra Khay Tạm (T)
+              <button id="btn-station-to-staging" type="button" class="text-xs font-bold text-amber-800 bg-amber-100 hover:bg-amber-200 px-3 py-1 rounded-xl transition flex items-center gap-1" title="Cất đồ ăn từ Bếp ra Khay Tạm (Phím T)">
+                <span aria-hidden="true">📦</span>
+                <span>Cất ra Khay Tạm (T)</span>
               </button>
               <button id="btn-clear-station-items" type="button" class="text-xs text-stone-500 hover:text-red-700 underline font-semibold">
                 Dọn sạch bếp
               </button>
             </div>
           </div>
-          <div id="station-items-list" class="space-y-2 max-h-[180px] overflow-y-auto custom-scroll pr-1" role="list" aria-label="Danh sách nguyên liệu trong dụng cụ chế biến">
+          <div id="station-items-list" tabindex="0" class="space-y-2 max-h-[180px] overflow-y-auto custom-scroll pr-1" role="list" aria-label="Danh sách nguyên liệu trong dụng cụ chế biến">
             <!-- Populated by JS -->
           </div>
         </div>
@@ -1141,7 +1142,7 @@
           🏷️ Tự Đặt Tên Món Ăn Của Bạn (Hoặc giữ tên gợi ý bên dưới):
         </label>
         <div class="relative">
-          <input id="input-custom-dish-name" type="text" maxlength="80" class="w-full px-4 py-3 rounded-2xl border-2 border-amber-300 focus:border-orange-500 text-sm sm:text-base font-bold text-stone-900 shadow-inner bg-amber-50/40" placeholder="Ví dụ: Bò Cuộn Pate Đệ Nhất, Xúc Xích Nhồi Phô Mai..." />
+          <input id="input-custom-dish-name" type="text" maxlength="2000" class="w-full px-4 py-3 rounded-2xl border-2 border-amber-300 focus:border-orange-500 text-sm sm:text-base font-bold text-stone-900 shadow-inner bg-amber-50/40" placeholder="Ví dụ: Bò Cuộn Pate Đệ Nhất, Xúc Xích Nhồi Phô Mai..." />
           <button id="btn-suggest-dish-name" type="button" class="absolute right-2 top-2 bottom-2 px-3 rounded-xl bg-amber-200 hover:bg-amber-300 text-amber-950 font-bold text-xs flex items-center gap-1 transition" title="Gợi ý tên món mới">
             <span>✨ Gợi ý tên</span>
           </button>
@@ -5209,6 +5210,7 @@
       ttsEnabled: false,
       singleKeyShortcutsEnabled: true,
       liveToggleBuffer: false,
+      liveRegionTimer: null,
       cravingIndex: 0,
 
       // External Audio & Action Busy Locks
@@ -5243,11 +5245,17 @@
       const targetEl = document.getElementById(targetId);
       const clearEl = document.getElementById(clearId);
 
+      if (state.liveRegionTimer) {
+        clearTimeout(state.liveRegionTimer);
+        state.liveRegionTimer = null;
+      }
+
       if (clearEl) clearEl.textContent = '';
       if (targetEl) {
         targetEl.textContent = '';
-        setTimeout(() => {
+        state.liveRegionTimer = setTimeout(() => {
           targetEl.textContent = message;
+          state.liveRegionTimer = null;
         }, 60);
       }
 
@@ -6170,7 +6178,7 @@
       }
 
       if (targetArray.length === 0) {
-        announceNVDA(`Chưa có thức ăn nào trong ${targetName} để nêm ${spice.name}! Hãy lấy đồ ăn vào trước.`, 'assertive');
+        announceNVDA(`Chưa có thức ăn nào trong ${targetName} để nêm ${spice.name}! Hãy lấy đồ ăn vào trước.`, 'polite');
         return;
       }
 
@@ -6217,7 +6225,7 @@
       if (!station) return;
 
       if (state.stationItems.length === 0) {
-        announceNVDA(`${station.name} đang trống! Hãy chọn nguyên liệu từ Tủ Lạnh (Alt+1) bỏ vào đây trước.`, 'assertive');
+        announceNVDA(`${station.name} đang trống! Hãy chọn nguyên liệu từ Tủ Lạnh (Alt+1) bỏ vào đây trước.`, 'polite');
         return;
       }
 
@@ -6250,7 +6258,7 @@
       // 2. Bàn Cuốn Đa Năng (Rolling Mat) - ROLL WITH ANY INGREDIENT AS WRAPPER!
       if (actionId === 'roll_tight') {
         if (state.stationItems.length < 2) {
-          announceNVDA('Để cuốn, bạn cần ít nhất 2 nguyên liệu: 1 nguyên liệu làm lớp vỏ ngoài (như bánh tráng, rong biển, lá lốt hoặc lát thịt bò) và các nguyên liệu làm nhân bên trong!', 'assertive');
+          announceNVDA('Để cuốn, bạn cần ít nhất 2 nguyên liệu: 1 nguyên liệu làm lớp vỏ ngoài (như bánh tráng, rong biển, lá lốt hoặc lát thịt bò) và các nguyên liệu làm nhân bên trong!', 'polite');
           return;
         }
 
@@ -6340,7 +6348,7 @@
       // 3. Trạm Kẹp & Nhồi Nhân (Stuffing Station) - STUFF WITH ANY INGREDIENT AS VESSEL!
       if (actionId === 'stuff_pack') {
         if (state.stationItems.length < 2) {
-          announceNVDA('Để nhồi, bạn cần ít nhất 2 nguyên liệu: 1 nguyên liệu làm vỏ nhồi (như ổ bánh mì, cây xúc xích, quả ớt chuông, mực, hoặc bánh oreo) và các nguyên liệu làm nhân nhồi vào ruột!', 'assertive');
+          announceNVDA('Để nhồi, bạn cần ít nhất 2 nguyên liệu: 1 nguyên liệu làm vỏ nhồi (như ổ bánh mì, cây xúc xích, quả ớt chuông, mực, hoặc bánh oreo) và các nguyên liệu làm nhân nhồi vào ruột!', 'polite');
           return;
         }
 
@@ -6439,7 +6447,17 @@
 
         await playExternalAudio('blender.ogg', true);
 
-        const names = state.stationItems.map(i => i.name);
+        // Làm phẳng danh sách nguyên liệu gốc khi xay nhiều lần liên tiếp
+        const blendSourceItems = [];
+        state.stationItems.forEach(item => {
+          if ((item.kind === 'blended' || item.kind === 'mixed') && item.subItems && item.subItems.length > 0) {
+            item.subItems.forEach(sub => blendSourceItems.push(sub));
+          } else {
+            blendSourceItems.push(item);
+          }
+        });
+
+        const names = blendSourceItems.map(i => i.name);
         const combinedFlavors = combineFlavorProfiles(state.stationItems);
         combinedFlavors.aroma += 1.0;
         combinedFlavors.crunch = 0.0;
@@ -6451,8 +6469,8 @@
           item.spicesApplied.forEach(sp => combinedSpices.push({ ...sp }));
         });
 
-        const isSweetDrink = state.stationItems.every(i => i.category === 'sweets' || i.category === 'veg' || i.baseId === 'milk' || i.baseId === 'chocolate' || i.baseId === 'oreo');
-        const defaultBlendName = `${names.slice(0, 3).join(' & ')} (xay nhuyễn)`;
+        const isSweetDrink = blendSourceItems.every(i => i.category === 'sweets' || i.category === 'veg' || i.baseId === 'milk' || i.baseId === 'chocolate' || i.baseId === 'oreo');
+        const defaultBlendName = `${names.join(' & ')} (xay nhuyễn)`;
 
         const hasIceInBlender = state.stationItems.some(i => itemContainsIce(i));
 
@@ -6484,7 +6502,7 @@
           color: state.stationItems[0].color,
           cookedColor: state.stationItems[0].cookedColor,
           needsCooking: anyRaw,
-          isFreshBalancer: state.stationItems.some(i => i.isFreshBalancer),
+          isFreshBalancer: blendSourceItems.some(i => i.isFreshBalancer),
           cutState: 'minced',
           cookLevel: anyRaw ? 0 : 1,
           cookMethod: 'blended',
@@ -6496,7 +6514,7 @@
           hasIce: hasIceInBlender,
           outerTexture: null,
           spicesApplied: combinedSpices,
-          subItems: [...state.stationItems],
+          subItems: [...blendSourceItems],
           outerItem: null,
           flavors: combinedFlavors
         };
@@ -6802,9 +6820,7 @@
         };
 
         const methodLabel = inheritedMixActions.map(a => mixShortLabels[a] || a).join(' ➔ ');
-        const previewNames = names.slice(0, 3).join(' & ');
-        const extraSuffix = names.length > 3 ? ` (+${names.length - 3})` : '';
-        const defaultMixedName = `${previewNames}${extraSuffix} (${methodLabel})`;
+        const defaultMixedName = `${names.join(' & ')} (${methodLabel})`;
 
         const currentBatchId = state.nextBatchId++;
         const mixedItem = {
@@ -7034,7 +7050,7 @@
     // STAGING TRAY TRANSFERS (KHAY TẠM)
     function moveStationToStaging() {
       if (state.stationItems.length === 0) {
-        announceNVDA('Không có thức ăn nào trên bếp để cất vào Khay Tạm!', 'assertive');
+        announceNVDA('Không có thức ăn nào trên bếp để cất vào Khay Tạm!', 'polite');
         return;
       }
       playSoundEffect('pick');
@@ -7048,7 +7064,7 @@
 
     function moveStagingToStation() {
       if (state.stagingItems.length === 0) {
-        announceNVDA('Khay tạm đang trống, không có món nào để lấy vào bếp!', 'assertive');
+        announceNVDA('Khay tạm đang trống, không có món nào để lấy vào bếp!', 'polite');
         return;
       }
       playSoundEffect('pick');
@@ -7066,7 +7082,7 @@
     function openFinishDishModal() {
       const finishingItems = [...state.stagingItems, ...state.stationItems];
       if (finishingItems.length === 0) {
-        announceNVDA('Chưa có bất kỳ thức ăn nào trong bếp hay khay tạm để hoàn thành! Hãy chọn nguyên liệu từ Tủ Lạnh (Alt+1) trước.', 'assertive');
+        announceNVDA('Chưa có bất kỳ thức ăn nào trong bếp hay khay tạm để hoàn thành! Hãy chọn nguyên liệu từ Tủ Lạnh (Alt+1) trước.', 'polite');
         return;
       }
 
@@ -8202,7 +8218,7 @@
 
       const char = CHARACTERS.find(c => c.id === state.activeCharacterId) || CHARACTERS[0];
       if (state.plateItems.length === 0) {
-        announceNVDA(`Dĩa thức ăn đang trống! Hãy chế biến đồ ăn trong bếp (Alt+2), bấm nút Hoàn Thành Món (Phím P) để bày ra dĩa rồi mới đút cho ${char.name} ăn nhé.`, 'assertive');
+        announceNVDA(`Dĩa thức ăn đang trống! Hãy chế biến đồ ăn trong bếp (Alt+2), bấm nút Hoàn Thành Món (Phím P) để bày ra dĩa rồi mới đút cho ${char.name} ăn nhé.`, 'polite');
         return;
       }
 
@@ -8321,7 +8337,7 @@
       }
 
       // NVDA công bố toàn bộ lời nhận xét của thực khách
-      announceNVDA(`${char.name} vừa thưởng thức ${finalDishTitle}. Nhận xét: ${review.speech}`, 'assertive');
+      announceNVDA(`${char.name} vừa thưởng thức ${finalDishTitle}. Nhận xét: ${review.speech}`, 'polite');
       renderAll();
     }
 
@@ -8347,7 +8363,7 @@
       const place = state.plateItems.length > 0 ? 'trên Đĩa Ăn' : (state.stationItems.length > 0 ? 'trong Bếp' : 'trên Khay Tạm');
 
       if (allItems.length === 0) {
-        announceNVDA('Hiện tại không có thức ăn nào trên đĩa, bếp hay khay tạm. Hãy lấy nguyên liệu từ Tủ Lạnh (Alt+1)!', 'assertive');
+        announceNVDA('Hiện tại không có thức ăn nào trên đĩa, bếp hay khay tạm. Hãy lấy nguyên liệu từ Tủ Lạnh (Alt+1)!', 'polite');
         return;
       }
 
@@ -8627,7 +8643,6 @@
         stationGrid.innerHTML = '';
         attachRovingKeyNavigation(stationGrid, 'button', (targetBtn) => {
           targetBtn.click();
-          targetBtn.focus();
         });
         STATIONS.forEach(st => {
           const isAct = st.id === state.activeStationId;
@@ -8636,7 +8651,8 @@
           btn.dataset.stationId = st.id;
           btn.setAttribute('aria-pressed', isAct ? 'true' : 'false');
           btn.setAttribute('tabindex', isAct ? '0' : '-1');
-          btn.setAttribute('aria-label', `${st.name}. ${st.desc}`);
+          btn.setAttribute('aria-label', `${st.shortName} - ${st.name}`);
+          btn.title = st.desc;
           btn.className = `p-2 rounded-2xl border text-left transition flex items-center gap-1.5 ${
             isAct ? 'station-btn-active font-bold' : 'bg-stone-50 hover:bg-amber-50 border-stone-200 text-stone-800'
           }`;
@@ -8708,13 +8724,14 @@
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.dataset.uid = String(it.uid);
+            btn.title = it.name;
             btn.setAttribute('role', 'radio');
             btn.setAttribute('aria-checked', isSel ? 'true' : 'false');
             btn.setAttribute('tabindex', isSel ? '0' : '-1');
-            btn.className = `p-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 truncate ${
+            btn.className = `p-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 ${
               isSel ? 'bg-orange-600 text-white border-orange-700' : 'bg-white text-stone-800 border-amber-200 hover:bg-orange-50'
             }`;
-            btn.innerHTML = `<span aria-hidden="true">${it.emoji}</span><span class="truncate">${it.name}</span>`;
+            btn.innerHTML = `<span class="shrink-0" aria-hidden="true">${it.emoji}</span><span class="break-words text-left leading-snug">${it.name}</span>`;
             btn.addEventListener('click', () => {
               const hadFocus = wvOptionsList.contains(document.activeElement);
               state.selectedWrapperUid = it.uid;
@@ -8746,13 +8763,14 @@
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.dataset.uid = String(it.uid);
+            btn.title = it.name;
             btn.setAttribute('role', 'radio');
             btn.setAttribute('aria-checked', isSel ? 'true' : 'false');
             btn.setAttribute('tabindex', isSel ? '0' : '-1');
-            btn.className = `p-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 truncate ${
+            btn.className = `p-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 ${
               isSel ? 'bg-orange-600 text-white border-orange-700' : 'bg-white text-stone-800 border-amber-200 hover:bg-orange-50'
             }`;
-            btn.innerHTML = `<span aria-hidden="true">${it.emoji}</span><span class="truncate">${it.name}</span>`;
+            btn.innerHTML = `<span class="shrink-0" aria-hidden="true">${it.emoji}</span><span class="break-words text-left leading-snug">${it.name}</span>`;
             btn.addEventListener('click', () => {
               const hadFocus = wvOptionsList.contains(document.activeElement);
               state.selectedVesselUid = it.uid;
@@ -8800,12 +8818,14 @@
           btn.disabled = false;
           if (state.isCookingBusy) {
             btn.setAttribute('aria-disabled', 'true');
-            btn.setAttribute('aria-label', `Đang xử lý: ${act.label}`);
+            btn.setAttribute('aria-label', `Đang chế biến: ${act.label}`);
+            btn.title = act.desc;
             btn.className = 'game-btn btn-3d-orange py-2.5 px-3 rounded-2xl text-xs sm:text-sm font-extrabold font-game flex items-center justify-center gap-1.5 col-span-full sm:col-span-1 shadow-md opacity-60 cursor-not-allowed';
             btn.textContent = '⏳ Đang chế biến...';
           } else {
             btn.removeAttribute('aria-disabled');
-            btn.setAttribute('aria-label', `${act.label}. ${act.desc}`);
+            btn.setAttribute('aria-label', act.label);
+            btn.title = act.desc;
             btn.className = 'game-btn btn-3d-orange py-2.5 px-3 rounded-2xl text-xs sm:text-sm font-extrabold font-game flex items-center justify-center gap-1.5 col-span-full sm:col-span-1 shadow-md';
             btn.textContent = act.label;
           }
@@ -8825,18 +8845,18 @@
             row.setAttribute('role', 'listitem');
             row.className = 'p-2 rounded-2xl bg-amber-50/80 border border-amber-200 flex items-center justify-between gap-2 text-xs';
             row.innerHTML = `
-              <div class="flex items-center gap-2 min-w-0">
+              <div class="flex items-start gap-2 min-w-0">
                 <span class="text-xl shrink-0" aria-hidden="true">${it.emoji}</span>
                 <div class="min-w-0">
-                  <div class="font-bold text-stone-900 truncate">${idx + 1}. ${it.name}</div>
-                  <div class="text-[10px] text-stone-600 truncate">${desc}</div>
+                  <div class="font-bold text-stone-900 break-words leading-snug" title="${it.name}">${idx + 1}. ${it.name}</div>
+                  <div class="text-[10px] text-stone-600 break-words leading-snug" title="${desc}">${desc}</div>
                 </div>
               </div>
               <div class="flex items-center gap-1 shrink-0">
-                <button type="button" data-to-staging="${idx}" class="px-2 py-1 rounded-lg bg-amber-200 hover:bg-amber-300 text-amber-950 font-bold text-[10px]" aria-label="Cất ${it.name} ra Khay Tạm">
+                <button type="button" data-to-staging="${idx}" class="px-2 py-1 rounded-lg bg-amber-200 hover:bg-amber-300 text-amber-950 font-bold text-[10px]" aria-label="Ra khay: Cất ${it.name} ra Khay Tạm">
                   Ra khay
                 </button>
-                <button type="button" data-del-st="${idx}" class="px-2 py-1 rounded-lg bg-stone-200 hover:bg-red-200 text-stone-700 hover:text-red-900 font-bold text-[10px]" aria-label="Bỏ ${it.name}">
+                <button type="button" data-del-st="${idx}" class="px-2 py-1 rounded-lg bg-stone-200 hover:bg-red-200 text-stone-700 hover:text-red-900 font-bold text-[10px]" aria-label="Xóa ${it.name} khỏi bếp">
                   Xóa
                 </button>
               </div>
@@ -8901,15 +8921,15 @@
         row.setAttribute('role', 'listitem');
         row.className = 'p-2 rounded-2xl bg-white border border-amber-300 flex items-center justify-between gap-2 text-xs shadow-sm';
         row.innerHTML = `
-          <div class="flex items-center gap-2 min-w-0">
+          <div class="flex items-start gap-2 min-w-0">
             <span class="text-xl shrink-0" aria-hidden="true">${it.emoji}</span>
             <div class="min-w-0">
-              <div class="font-bold text-stone-900 truncate">${idx + 1}. ${it.name}</div>
-              <div class="text-[10px] text-stone-600 truncate">${desc}</div>
+              <div class="font-bold text-stone-900 break-words leading-snug" title="${it.name}">${idx + 1}. ${it.name}</div>
+              <div class="text-[10px] text-stone-600 break-words leading-snug" title="${desc}">${desc}</div>
             </div>
           </div>
           <div class="flex items-center gap-1 shrink-0">
-            <button type="button" data-to-st="${idx}" class="px-2 py-1 rounded-lg bg-orange-100 hover:bg-orange-200 text-orange-950 font-bold text-[10px]" aria-label="Đưa ${it.name} vào Bếp hiện tại">
+            <button type="button" data-to-st="${idx}" class="px-2 py-1 rounded-lg bg-orange-100 hover:bg-orange-200 text-orange-950 font-bold text-[10px]" aria-label="Vào bếp: Đưa ${it.name} vào Bếp hiện tại">
               Vào bếp
             </button>
             <button type="button" data-del-stag="${idx}" class="px-2 py-1 rounded-lg bg-stone-100 hover:bg-red-100 text-stone-600 hover:text-red-800 font-bold text-[10px]" aria-label="Xóa ${it.name} khỏi khay">
@@ -9093,12 +9113,14 @@
               ? ` (${dish.items.map(i => i.name).join(', ')})`
               : (dish.items[0] && dish.items[0].name !== dish.name ? ` (${dish.items[0].name})` : '');
             row.innerHTML = `
-              <div class="flex items-center gap-1.5 min-w-0">
+              <div class="flex items-start gap-1.5 min-w-0">
                 <span class="text-lg shrink-0" aria-hidden="true">${iconEmoji}</span>
-                <span class="font-bold text-stone-900 truncate" title="${dish.name}${summaryText}">${idx + 1}. ${dish.name}</span>
-                <span class="text-[10px] text-stone-500 truncate hidden sm:inline">${summaryText}</span>
+                <div class="min-w-0">
+                  <div class="font-bold text-stone-900 break-words leading-snug" title="${dish.name}${summaryText}">${idx + 1}. ${dish.name}</div>
+                  ${summaryText ? `<div class="text-[10px] text-stone-600 break-words leading-snug">${summaryText.trim()}</div>` : ''}
+                </div>
               </div>
-              <button type="button" data-del-dish="${dish.id}" data-del-dish-idx="${idx}" class="px-2 py-0.5 rounded bg-stone-200 hover:bg-red-200 text-stone-700 hover:text-red-900 font-bold text-[10px]" aria-label="Bỏ món ${dish.name} khỏi dĩa">
+              <button type="button" data-del-dish="${dish.id}" data-del-dish-idx="${idx}" class="px-2 py-0.5 rounded bg-stone-200 hover:bg-red-200 text-stone-700 hover:text-red-900 font-bold text-[10px] shrink-0" aria-label="Xóa món ${dish.name} khỏi dĩa">
                 Xóa
               </button>
             `;
@@ -9140,9 +9162,9 @@
             row.innerHTML = `
               <div class="flex items-center gap-1.5 min-w-0">
                 <span class="text-lg shrink-0" aria-hidden="true">${it.emoji}</span>
-                <span class="font-bold text-stone-900 truncate">${idx + 1}. ${displayName}</span>
+                <span class="font-bold text-stone-900 break-words leading-snug" title="${displayName}">${idx + 1}. ${displayName}</span>
               </div>
-              <button type="button" data-del-plate="${idx}" class="px-2 py-0.5 rounded bg-stone-200 hover:bg-red-200 text-stone-700 hover:text-red-900 font-bold text-[10px]" aria-label="Bỏ món ${displayName} khỏi dĩa">
+              <button type="button" data-del-plate="${idx}" class="px-2 py-0.5 rounded bg-stone-200 hover:bg-red-200 text-stone-700 hover:text-red-900 font-bold text-[10px] shrink-0" aria-label="Xóa món ${displayName} khỏi dĩa">
                 Xóa
               </button>
             `;
@@ -9837,6 +9859,7 @@
       const finishModal = document.getElementById('modal-finish-dish');
       bindDialogFocusRestore(finishModal);
       const modalSettings = document.getElementById('modal-settings');
+      bindDialogFocusRestore(modalSettings);
       document.getElementById('btn-close-finish-modal').addEventListener('click', () => finishModal.close());
       document.getElementById('btn-cancel-finish').addEventListener('click', () => finishModal.close());
       document.getElementById('btn-confirm-plate-dish').addEventListener('click', confirmPlatingDish);
@@ -9941,7 +9964,7 @@
             if (hasIngredients) {
               openFinishDishModal();
             } else {
-              announceNVDA('Bếp và Khay Tạm đang trống, chưa có nguyên liệu nào để hoàn thành món! Hãy lấy nguyên liệu từ Tủ Lạnh (Alt+1) trước.', 'assertive');
+              announceNVDA('Bếp và Khay Tạm đang trống, chưa có nguyên liệu nào để hoàn thành món! Hãy lấy nguyên liệu từ Tủ Lạnh (Alt+1) trước.', 'polite');
             }
           } else if (k === 'f') {
             e.preventDefault();

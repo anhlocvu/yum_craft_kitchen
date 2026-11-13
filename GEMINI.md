@@ -12,7 +12,25 @@
 
 # NHẬT KÝ DỰ ÁN — YUMCRAFT KITCHEN
 
-## 1. Thông Tin Phiên Làm Việc Mới Nhất (13/11/2026 - Bàn Trộn Đa Năng Số 18 & Nâng Cấp Trợ Năng Bếp Toàn Diện WCAG 2.2 AA/AAA)
+## 1. Thông Tin Phiên Làm Việc Mới Nhất (14/11/2026 - Hiển Thị Đầy Đủ Toàn Bộ Nguyên Liệu Trên Bàn Trộn & Máy Xay + Khắc Phục Trợ Năng WCAG 2.2)
+- **Ngày thực hiện**: 14/11/2026 (Phiên sửa cắt ngắn tên nguyên liệu `(+1)/(+N)` tại `mixing_table` & `blend_smooth`, tích hợp các sửa lỗi trợ năng từ `accessibility-lead`)
+- **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
+- **Quy trình áp dụng**: Tuân thủ nghiêm ngặt quy trình **Specify** ([`specs/003-mixing-blender-full-names-and-a11y/spec.md`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/specs/003-mixing-blender-full-names-and-a11y/spec.md), [`plan.md`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/specs/003-mixing-blender-full-names-and-a11y/plan.md), [`tasks.md`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/specs/003-mixing-blender-full-names-and-a11y/tasks.md)) và kiểm toán trợ năng 4 specialist ([`WEB-ACCESSIBILITY-AUDIT.md`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/WEB-ACCESSIBILITY-AUDIT.md)).
+- **Mục tiêu hoàn thành**:
+  1. **Hiển thị 100% tên mọi nguyên liệu (không cắt `(+1)/(+N)`) trên Bàn Trộn & Máy Xay**:
+     - Trong [`index.html`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html), nhánh `mixing_table` (cả 3 thao tác `mix_toss`, `knead_dough`, `whisk_batter`): bỏ `names.slice(0, 3)` và `(+N)`, dùng `${names.join(' & ')} (${methodLabel})` để hiện đủ toàn bộ nguyên liệu.
+     - Trong [`index.html`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html), nhánh `blend_smooth`: làm phẳng `subItems` khi xay nối tiếp hỗn hợp/sinh tố sẵn có và dùng `${names.join(' & ')} (xay nhuyễn)` thay cho `names.slice(0, 3)`.
+     - Nâng `maxlength` của `#input-custom-dish-name` từ `80` lên `2000` để không cắt tên món nhiều nguyên liệu.
+     - Ghi chú nghiệp vụ: Khi hỗn hợp có `egg` (`Trứng gà ta`, `needsCooking: true`), câu nhắc *"Hỗn hợp còn thành phần cần làm chín, bạn có thể mang đi chiên, nướng, hấp hoặc luộc!"* được giữ nguyên theo đúng thuộc tính an toàn thực phẩm.
+  2. **Khắc phục Trợ năng WCAG 2.2 (UI Wrapping, Live Region, ARIA, Keyboard & Focus)**:
+     - Thay `.truncate` bằng `break-words leading-snug` + `title` trong `#station-items-list`, `#staging-items-list`, `#plate-items-list` và `#wrap-vessel-options-container`; gỡ `hidden sm:inline` ở tóm tắt món trên dĩa.
+     - Chuẩn hóa WCAG 2.5.3 (Label in Name) & ARIA: `role="group" aria-labelledby="heading-station-actions"` trên `#station-action-buttons`; `aria-label` bắt đầu bằng tên hiển thị cho nút dụng cụ (`18. Bàn Trộn - ...`), nút thao tác (`Đang chế biến: ...` / `act.label`), nút `Ra khay:`, `Xóa `, `Vào bếp:`; bọc emoji `📦` bằng `aria-hidden="true"`.
+     - Sửa Live Region: Thêm `state.liveRegionTimer` + `clearTimeout` trong `announceNVDA`, chuyển các thông báo thông thường / kết quả `feedCharacter` sang `'polite'`; đổi `#login-alert-box` và `#reg-alert-box` dùng `sr-only` thay `hidden` (đồng bộ `showAlert` / `clearAlert` trong [`js/main-menu.js`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/js/main-menu.js)).
+     - Sửa Focus & Keyboard: Gắn `bindDialogFocusRestore(modalSettings)` trong [`index.html`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/index.html), gán `_returnFocusEl` khi mở `#modal-settings` / `#modal-help` trong [`js/main-menu.js`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/js/main-menu.js), thêm `tabindex="0"` trên `#station-items-list`, bỏ `targetBtn.focus()` thừa trong callback `attachRovingKeyNavigation`.
+  3. **Kiểm Thử Tự Động ([`tests/test_mixing_table_and_a11y.js`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/tests/test_mixing_table_and_a11y.js))**:
+     - Bổ sung T11–T15 kiểm chứng trường hợp 4 nguyên liệu thực tế (`chocolate`, `brewed_coffee`, `egg`, `milk`), mở rộng **5, 6, 10, 20 nguyên liệu** cho cả `mixing_table` (trộn nối tiếp nhiều bước) và `blend_smooth`, cùng các kiểm tra DOM/ARIA/live-region/focus. Kết quả: **15/15 PASS**.
+
+## 2. Thông Tin Phiên Làm Việc Trước (13/11/2026 - Bàn Trộn Đa Năng Số 18 & Nâng Cấp Trợ Năng Bếp Toàn Diện WCAG 2.2 AA/AAA)
 - **Ngày thực hiện**: 13/11/2026 (Phiên Triển Khai Dụng Cụ Số 18 `mixing_table` — Bàn Trộn Đa Năng Tự Do Sandbox & Tích Hợp Bản Sửa Lỗi Trợ Năng Chuyên Sâu Từ `accessibility-lead`)
 - **Người phát triển**: Vũ Anh Lộc (LC Boy) & Antigravity (Google DeepMind)
 - **Quy trình áp dụng**: Tuân thủ nghiêm ngặt quy trình **Specify** ([`specs/002-mixing-table-and-a11y/spec.md`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/specs/002-mixing-table-and-a11y/spec.md), [`plan.md`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/specs/002-mixing-table-and-a11y/plan.md), [`tasks.md`](file:///C:/Users/LCBoy/Desktop/data/web/yum_craft_kitchen/specs/002-mixing-table-and-a11y/tasks.md)) và kiểm chứng bằng 3 subagent trợ năng chuyên sâu (`keyboard-navigator`, `aria-specialist`, `live-region-controller`) cùng bài kiểm thử tự động Node.js.
