@@ -17,6 +17,9 @@ import {
 import { state, resetKitchenItemsState } from '../js/core/state.js';
 import { getMockUsers, saveMockUsers, readStorageJson, writeStorageJson } from '../js/services/mock-storage.js';
 import { escapeHtml } from '../js/ui/dom-helpers.js';
+import { toggleMember, getFollowingIds, getFollowedFeed, isPresenceFresh, getConversationId, normalizeChatMessage, isChefBlocked, toggleBlockedChef, filterBlockedChefs, filterOnlineChefs, normalizePrivacySettings, canViewChefProfile, canReceiveKitchenInvites, canReceiveDirectMessages, getChefRecipes, filterBlockedRecipes, getPostLikeState, getStoredChatMessages, getLocalConversationSummary, matchesOnlineChefSearch, matchesCommunityRecipeSearch } from '../js/social-data.js';
+import { PROFILE_GENDERS, normalizeProfileGender, getProfileGenderLabel } from '../js/profile-data.js';
+import { validatePassword, validateDisplayName, validateKitchenName, validateProfileBio } from '../js/auth-data.js';
 import { createFoodItem, describeItemStateShort, itemContainsIce, formatNaturalList } from '../js/cooking/food-item.js';
 import { analyzeCulinaryChemistry, combineFlavorProfiles, generateSmartDishTitle } from '../js/cooking/chemistry.js';
 import {
@@ -196,6 +199,7 @@ await test('U7: Modular refactor & accessibility structural checks (index.html, 
   const authServiceJs = fs.readFileSync(path.join(rootDir, 'js', 'auth-service.js'), 'utf8');
   const communityServiceJs = fs.readFileSync(path.join(rootDir, 'js', 'community-service.js'), 'utf8');
   const adminServiceJs = fs.readFileSync(path.join(rootDir, 'js', 'admin-service.js'), 'utf8');
+  const socialServiceJs = fs.readFileSync(path.join(rootDir, 'js', 'social-service.js'), 'utf8');
 
   // Pure HTML + external ES modules only (except optional Tailwind config or none)
   assert.ok(html.includes('<script type="module" src="js/main-menu.js"></script>'));
@@ -207,6 +211,34 @@ await test('U7: Modular refactor & accessibility structural checks (index.html, 
   assert.ok(html.includes('id="screen-main-menu" hidden'));
   assert.ok(html.includes('id="screen-character-select" hidden'));
   assert.ok(html.includes('id="screen-kitchen" hidden'));
+  assert.ok(html.includes('id="blocked-chefs-list"'), 'Settings should expose a way to review and unblock chefs');
+  assert.ok(html.includes('setting-privacy-kitchen-invites'));
+  assert.ok(html.includes('setting-privacy-direct-messages'));
+  assert.ok(html.includes('id="community-online-chefs-list"'));
+  assert.ok(html.includes('id="community-kitchen-invites-list"'));
+  assert.ok(html.includes('id="modal-community-online-chefs"') && html.includes('id="modal-community-kitchen-invites"'));
+  assert.ok(html.includes('id="btn-community-online-chefs"') && html.includes('aria-haspopup="dialog"'));
+  assert.ok(html.includes('id="community-online-chefs-search"') && html.includes('id="community-search-input"'));
+  assert.ok(html.includes('id="btn-close-community-online-chefs"') && html.includes('id="btn-close-community-kitchen-invites"'));
+  assert.ok(html.includes('id="direct-chat-messages"') && html.includes('id="form-direct-chat"'));
+  assert.ok(html.includes('id="modal-kitchen-social"') && html.includes('id="kitchen-chats-list"'));
+  assert.ok(html.includes('id="kitchen-online-search"'));
+  assert.ok(html.includes('id="chef-public-profile-recipe-count"') && html.includes('id="btn-view-chef-recipes"'));
+  assert.strictEqual(html.includes('id="modal-chef-recipes"'), false, 'Chef recipes should use the searchable community page rather than a separate dialog');
+  assert.ok(html.includes('id="chef-public-profile-details-heading"') && html.includes('id="chef-public-profile-stats-heading"'));
+  assert.strictEqual(html.includes('aria-expanded="false"'), false, 'Social list controls should open dialogs rather than expand inline content');
+  assert.ok(html.includes('id="community-detail-like-count"') && html.includes('id="btn-community-detail-like"'));
+  assert.ok(html.includes('id="btn-kitchen-social"') && html.includes('id="kitchen-invites-list"'));
+  assert.ok(html.includes('id="btn-menu-edit-profile"') && html.includes('id="form-edit-profile"') && html.includes('id="profile-gender"'));
+  assert.ok(html.includes('id="profile-current-password"') && html.includes('id="profile-new-password"'));
+  assert.ok(mainMenuJs.includes('blockChef(chef.uid)'), 'Online chef lists should provide a block action');
+  assert.ok(mainMenuJs.includes('unblockChef(chef.uid)'), 'Blocked chef settings should provide an unblock action');
+  assert.ok(socialServiceJs.includes('export async function blockChef'));
+  assert.ok(socialServiceJs.includes('export async function unblockChef'));
+  assert.ok(socialServiceJs.includes('export async function sendKitchenInvite'));
+  assert.ok(socialServiceJs.includes('export async function sendDirectMessage'));
+  assert.ok(authServiceJs.includes('updateCurrentUserPrivacySettings'));
+  assert.ok(authServiceJs.includes('changeCurrentUserPassword'));
 
   // Zero native browser confirm/prompt/alert left in main-menu.js
   assert.strictEqual(/\b(?:window\.)?(?:confirm|prompt|alert)\s*\(/.test(mainMenuJs), false, 'main-menu.js should use accessible custom dialogs');
@@ -330,6 +362,153 @@ await test('U9: Pure sensory & multi-dish review across salty/spicy/burnt/raw-me
   ], chef);
   assert.strictEqual(multiReview.reactionType, 'bad');
   assert.ok(multiReview.speech.length > 10);
+});
+
+await test('U10: Social membership is idempotent, deduplicated, and followed feed filters by chef', () => {
+  const liked = toggleMember(['u1', 'u1', 'u2'], 'u1');
+  assert.deepStrictEqual(liked, { members: ['u2'], active: false });
+  const added = toggleMember(liked.members, 'u1');
+  assert.deepStrictEqual(added, { members: ['u2', 'u1'], active: true });
+  assert.deepStrictEqual(getFollowingIds({ u1: true, u2: false, u3: 1 }), ['u1', 'u3']);
+  assert.deepStrictEqual(getFollowingIds(['u1', 'u1', null]), ['u1']);
+  const posts = [{ id: 'p1', chefUid: 'u1' }, { id: 'p2', chefUid: 'u2' }, { id: 'p3' }];
+  assert.deepStrictEqual(getFollowedFeed(posts, ['u2']), [posts[1]]);
+  assert.deepStrictEqual(getFollowedFeed(null, ['u1']), []);
+  assert.strictEqual(isPresenceFresh('2026-11-17T00:00:00.000Z', Date.parse('2026-11-17T00:01:00.000Z')), true);
+  assert.strictEqual(isPresenceFresh('2026-11-16T23:50:00.000Z', Date.parse('2026-11-17T00:00:00.000Z')), false);
+  assert.strictEqual(isPresenceFresh('invalid', Date.now()), false);
+  assert.strictEqual(normalizeProfileGender('female'), 'female');
+  assert.strictEqual(normalizeProfileGender('unexpected'), 'unspecified');
+  assert.strictEqual(getProfileGenderLabel('male'), 'Nam');
+  assert.strictEqual(getConversationId('chef_a', 'chef_b'), getConversationId('chef_b', 'chef_a'));
+  assert.strictEqual(normalizeChatMessage('  Chào bạn  '), 'Chào bạn');
+  assert.throws(() => normalizeChatMessage('  '), /không được để trống/);
+  assert.throws(() => normalizeChatMessage('x'.repeat(1001)), /1000 ký tự/);
+});
+
+await test('U11: Chef blocking is mutual, deduplicated, reversible, and filters social lists', () => {
+  assert.strictEqual(isChefBlocked(['chef_b'], [], 'chef_a', 'chef_b'), true, 'A chef is blocked when the current player blocks them');
+  assert.strictEqual(isChefBlocked([], ['chef_a'], 'chef_a', 'chef_b'), true, 'A chef is blocked when they block the current player');
+  assert.strictEqual(isChefBlocked([], [], 'chef_a', 'chef_b'), false);
+  assert.strictEqual(isChefBlocked(['chef_a'], [], 'chef_a', 'chef_a'), false, 'Self must not count as a blocked chef');
+
+  const blocked = toggleBlockedChef(['chef_b', 'chef_b'], 'chef_b');
+  assert.deepStrictEqual(blocked, ['chef_b'], 'Blocking an existing entry should not create duplicates');
+  const withAnother = toggleBlockedChef(blocked, 'chef_c');
+  assert.deepStrictEqual(withAnother, ['chef_b', 'chef_c']);
+  assert.deepStrictEqual(toggleBlockedChef(withAnother, 'chef_b', false), ['chef_c'], 'Unblocking should remove only the selected chef');
+  assert.throws(() => toggleBlockedChef([], ''), /Thiếu mã đầu bếp/);
+
+  const online = [
+    { uid: 'chef_a' },
+    { uid: 'chef_b' },
+    { uid: 'chef_c', blockedChefIds: ['chef_a'] },
+    { uid: 'chef_d' }
+  ];
+  assert.deepStrictEqual(filterBlockedChefs(online, ['chef_b'], 'chef_a'), [online[3]], 'Hide self, players blocked by the current user, and players who blocked them');
+  assert.deepStrictEqual(filterBlockedChefs(null, [], 'chef_a'), []);
+  assert.deepStrictEqual(filterBlockedRecipes([
+    { id: 'r1', chefUid: 'chef_b' }, { id: 'r2', chefUid: 'chef_c' }, { id: 'r3' }
+  ], ['chef_b']).map((post) => post.id), ['r2', 'r3'], 'Hide recipes from chefs the current player blocked');
+});
+
+await test('U12: Privacy defaults, visibility, contact permissions, recipe lists, and likes behave correctly', () => {
+  assert.deepStrictEqual(normalizePrivacySettings(), {
+    profileVisibility: 'public', showOnlineStatus: true, showGender: true, showBio: true,
+    allowKitchenInvites: true, allowDirectMessages: true
+  });
+  const privateSettings = normalizePrivacySettings({
+    profileVisibility: 'private', showOnlineStatus: false, showGender: false, showBio: false,
+    allowKitchenInvites: false, allowDirectMessages: false
+  });
+  assert.deepStrictEqual(privateSettings, {
+    profileVisibility: 'private', showOnlineStatus: false, showGender: false, showBio: false,
+    allowKitchenInvites: false, allowDirectMessages: false
+  });
+  assert.strictEqual(canViewChefProfile(privateSettings, 'viewer', 'chef'), false);
+  assert.strictEqual(canViewChefProfile(privateSettings, 'chef', 'chef'), true, 'Players can always view their own private profile');
+  assert.strictEqual(canViewChefProfile(undefined, 'viewer', 'chef'), true, 'Legacy profiles remain public by default');
+  assert.strictEqual(canReceiveKitchenInvites(privateSettings), false);
+  assert.strictEqual(canReceiveKitchenInvites(undefined), true);
+  assert.strictEqual(canReceiveDirectMessages(privateSettings), false);
+  assert.strictEqual(canReceiveDirectMessages(undefined), true);
+
+  const now = Date.parse('2026-11-17T12:00:00.000Z');
+  const online = [
+    { uid: 'visible', isOnline: true, lastSeenAt: new Date(now - 30_000).toISOString() },
+    { uid: 'private', isOnline: true, lastSeenAt: new Date(now - 30_000).toISOString(), privacySettings: { profileVisibility: 'private' } },
+    { uid: 'hidden', isOnline: true, lastSeenAt: new Date(now - 30_000).toISOString(), privacySettings: { showOnlineStatus: false } },
+    { uid: 'offline', isOnline: false, lastSeenAt: new Date(now - 30_000).toISOString() },
+    { uid: 'stale', isOnline: true, lastSeenAt: new Date(now - 300_000).toISOString() },
+    { uid: 'banned', isOnline: true, lastSeenAt: new Date(now - 30_000).toISOString(), isBanned: true },
+    { uid: 'blocked', isOnline: true, lastSeenAt: new Date(now - 30_000).toISOString() },
+    { uid: 'reciprocal-block', isOnline: true, lastSeenAt: new Date(now - 30_000).toISOString(), blockedChefIds: ['viewer'] },
+    { uid: 'viewer', isOnline: true, lastSeenAt: new Date(now - 30_000).toISOString() }
+  ];
+  assert.deepStrictEqual(filterOnlineChefs(online, ['blocked'], 'viewer', now), [online[0]], 'Online results respect freshness, visibility, bans, and mutual blocks');
+
+  const posts = [{ id: 'r1', chefUid: 'chef_a' }, { id: 'r2', chefUid: 'chef_b' }, { id: 'r3', chefUid: 'chef_a' }];
+  assert.deepStrictEqual(getChefRecipes(posts, 'chef_a'), [posts[0], posts[2]]);
+  assert.deepStrictEqual(getChefRecipes(null, 'chef_a'), []);
+
+  assert.deepStrictEqual(getPostLikeState({ likedBy: ['u1', 'u2'], likeCount: 4 }, 'u2'), { liked: true, likeCount: 4 });
+  assert.deepStrictEqual(getPostLikeState({ likedBy: ['u1', 'u1'] }, 'u2'), { liked: false, likeCount: 1 });
+  assert.deepStrictEqual(getPostLikeState({ likedBy: ['u1'], likeCount: 0 }, 'u1'), { liked: true, likeCount: 0 });
+  assert.deepStrictEqual(getPostLikeState(null, 'u1'), { liked: false, likeCount: 0 });
+
+  const legacyMessages = [
+    { senderUid: 'u1', text: 'Xin chào', createdAt: '2026-11-17T10:00:00.000Z' },
+    { senderUid: 'u2', senderName: 'Bếp B', text: 'Chào bạn', createdAt: '2026-11-17T10:01:00.000Z' }
+  ];
+  assert.deepStrictEqual(getStoredChatMessages(legacyMessages, 1), [legacyMessages[1]], 'Legacy array chats still return the most recent messages');
+  assert.deepStrictEqual(getStoredChatMessages({ messages: legacyMessages }, 50), legacyMessages, 'Object-format chats remain readable');
+  assert.deepStrictEqual(getStoredChatMessages(null), []);
+  assert.deepStrictEqual(getLocalConversationSummary('conversation-1', legacyMessages, 'u1', [{ uid: 'u2', username: 'chef_b', displayName: 'Bếp B' }]), {
+    uid: 'u2', username: 'chef_b', displayName: 'Bếp B', kitchenName: 'Nhà Bếp Sáng Tạo', allowDirectMessages: true,
+    conversationId: 'conversation-1', lastMessage: 'Chào bạn', lastSenderUid: 'u2', updatedAt: '2026-11-17T10:01:00.000Z'
+  });
+  assert.strictEqual(getLocalConversationSummary('conversation-self', [{ senderUid: 'u1', text: 'Chỉ có mình' }], 'u1'), null, 'Cannot infer a conversation partner from a one-sender legacy thread');
+  const objectConversation = getLocalConversationSummary('conversation-2', {
+    participants: ['u1', 'u2'], messages: legacyMessages, lastMessage: 'Tin cuối', lastSenderUid: 'u1', updatedAt: '2026-11-17T10:02:00.000Z'
+  }, 'u1', [{ uid: 'u2', privacySettings: { allowDirectMessages: false } }]);
+  assert.strictEqual(objectConversation.lastMessage, 'Tin cuối');
+  assert.strictEqual(objectConversation.allowDirectMessages, false);
+});
+
+await test('U13: Profile editing validates display name, kitchen name, bio, and gender choices', () => {
+  assert.deepStrictEqual(validateDisplayName('  Bếp A  '), { valid: true, sanitized: 'Bếp A' });
+  assert.strictEqual(validateDisplayName('A').valid, false);
+  assert.strictEqual(validateDisplayName('N'.repeat(51)).valid, false);
+  assert.deepStrictEqual(validateKitchenName('  Bếp nhà  '), { valid: true, sanitized: 'Bếp nhà' });
+  assert.strictEqual(validateKitchenName('X').valid, false);
+  assert.strictEqual(validateKitchenName('K'.repeat(61)).valid, false);
+  assert.deepStrictEqual(validateProfileBio('  Xin chào!  '), { valid: true, sanitized: 'Xin chào!' });
+  assert.strictEqual(validateProfileBio('B'.repeat(161)).valid, false);
+  assert.strictEqual(validateProfileBio(null).valid, false);
+  assert.deepStrictEqual(PROFILE_GENDERS, ['female', 'male', 'other', 'unspecified']);
+  assert.strictEqual(normalizeProfileGender('unexpected'), 'unspecified');
+});
+
+await test('U14: Password change validation rejects missing, short, and mismatched passwords', () => {
+  assert.strictEqual(validatePassword('').valid, false);
+  assert.strictEqual(validatePassword('short').valid, false);
+  assert.strictEqual(validatePassword('long-enough', 'different').valid, false);
+  assert.deepStrictEqual(validatePassword('long-enough', 'long-enough'), { valid: true });
+  assert.deepStrictEqual(validatePassword('long-enough'), { valid: true }, 'Sign-in may validate without a confirmation field');
+});
+
+await test('U15: Player and recipe search matches usernames, display names, kitchens, and Vietnamese accents', () => {
+  const chef = { username: 'chef_daubep', displayName: 'Bếp Đỏ', kitchenName: 'Nhà Bếp Sáng Tạo' };
+  assert.strictEqual(matchesOnlineChefSearch(chef, '@CHEF_DA'), true, 'Player lookup accepts @username and ignores case');
+  assert.strictEqual(matchesOnlineChefSearch(chef, 'bep do'), true, 'Player lookup ignores Vietnamese accent marks');
+  assert.strictEqual(matchesOnlineChefSearch(chef, 'sang tao'), true, 'Player lookup searches kitchen names');
+  assert.strictEqual(matchesOnlineChefSearch(chef, 'not-a-chef'), false);
+
+  const recipe = { headingTitle: 'Phở Bò', chefUsername: 'pho_master', chefDisplayName: 'Bếp Phở', kitchenName: 'Bếp Hà Nội' };
+  assert.strictEqual(matchesCommunityRecipeSearch(recipe, 'pho bo'), true, 'Recipe lookup searches dish titles without accents');
+  assert.strictEqual(matchesCommunityRecipeSearch(recipe, '@PHO_M'), true, 'Recipe lookup searches usernames');
+  assert.strictEqual(matchesCommunityRecipeSearch(recipe, 'ha noi'), true, 'Recipe lookup searches kitchen names');
+  assert.strictEqual(matchesCommunityRecipeSearch(recipe, 'khong co'), false);
 });
 
 console.log(`\nUNIT SUMMARY: ${passed} passed, ${failed} failed.`);

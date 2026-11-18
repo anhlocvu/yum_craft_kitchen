@@ -11,6 +11,9 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   updateProfile,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
   signOut as fbSignOut,
   onAuthStateChanged,
   setPersistence,
@@ -34,6 +37,10 @@ import {
   getMaintenanceConfig
 } from "./admin-service.js";
 import { getMockUsers, saveMockUsers } from "./services/mock-storage.js";
+import { PROFILE_GENDERS, normalizeProfileGender } from "./profile-data.js";
+import { normalizePrivacySettings } from "./social-data.js";
+import { validatePassword, validateDisplayName, validateKitchenName, validateProfileBio } from "./auth-data.js";
+export { validatePassword, validateDisplayName, validateKitchenName, validateProfileBio } from "./auth-data.js";
 
 // Khóa lưu trữ cục bộ cho Mock Mode
 const MOCK_SESSION_KEY = "yumcraft_mock_current_session";
@@ -91,38 +98,94 @@ export function validateUsername(username) {
   return { valid: true, sanitized: trimmed };
 }
 
-/**
- * Kiểm tra tính hợp lệ của Tên hiển thị (Display Name)
- */
-export function validateDisplayName(displayName) {
-  if (!displayName || typeof displayName !== "string") {
-    return { valid: false, message: "Vui lòng nhập tên hiển thị." };
+/** Update the signed-in chef's public profile without changing account identity. */
+export async function updateCurrentUserProfile({ displayName, kitchenName, bio = "", gender = "unspecified" }) {
+  const current = getActiveProfileCache();
+  if (!current?.uid) throw new Error("Vui lòng đăng nhập để chỉnh sửa hồ sơ.");
+  const validDisplayName = validateDisplayName(displayName);
+  if (!validDisplayName.valid) throw new Error(validDisplayName.message);
+  const validKitchenName = validateKitchenName(kitchenName);
+  if (!validKitchenName.valid) throw new Error(validKitchenName.message);
+  const validBio = validateProfileBio(bio);
+  if (!validBio.valid) throw new Error(validBio.message);
+  if (!PROFILE_GENDERS.includes(gender)) throw new Error("Vui lòng chọn một giá trị giới tính hợp lệ.");
+
+  const updates = {
+    displayName: validDisplayName.sanitized,
+    kitchenName: validKitchenName.sanitized,
+    bio: validBio.sanitized,
+    gender: normalizeProfileGender(gender),
+    profileUpdatedAt: new Date().toISOString()
+  };
+
+  if (isFirebaseConfigured() && auth && db) {
+    if (auth.currentUser) await updateProfile(auth.currentUser, { displayName: updates.displayName });
+    await setDoc(doc(db, "users", current.uid), updates, { merge: true });
+  } else {
+    const users = getMockUsers();
+    const index = users.findIndex((user) => user.uid === current.uid);
+    if (index < 0) throw new Error("Không tìm thấy tài khoản hiện tại.");
+    Object.assign(users[index], updates);
+    saveMockUsers(users);
   }
-  const trimmed = displayName.trim();
-  if (trimmed.length < 2) {
-    return { valid: false, message: "Tên hiển thị phải có tối thiểu 2 ký tự." };
-  }
-  if (trimmed.length > 50) {
-    return { valid: false, message: "Tên hiển thị không được vượt quá 50 ký tự." };
-  }
-  return { valid: true, sanitized: trimmed };
+
+  const updatedProfile = { ...current, ...updates };
+  setActiveProfileCache(updatedProfile);
+  return updatedProfile;
 }
 
-/**
- * Kiểm tra tính hợp lệ của Tên nhà bếp (Kitchen Name)
- */
-export function validateKitchenName(kitchenName) {
-  if (!kitchenName || typeof kitchenName !== "string") {
-    return { valid: false, message: "Vui lòng nhập tên nhà bếp." };
+/** Save the signed-in user's privacy choices. Unspecified options retain public defaults for older accounts. */
+export async function updateCurrentUserPrivacySettings(settings) {
+  const current = getActiveProfileCache();
+  if (!current?.uid) throw new Error("Vui lòng đăng nhập để chỉnh sửa quyền riêng tư.");
+  const privacySettings = normalizePrivacySettings(settings);
+  if (isFirebaseConfigured() && db) {
+    await setDoc(doc(db, "users", current.uid), { privacySettings }, { merge: true });
+  } else {
+    const users = getMockUsers();
+    const index = users.findIndex((user) => user.uid === current.uid);
+    if (index < 0) throw new Error("Không tìm thấy tài khoản hiện tại.");
+    users[index].privacySettings = privacySettings;
+    saveMockUsers(users);
   }
-  const trimmed = kitchenName.trim();
-  if (trimmed.length < 2) {
-    return { valid: false, message: "Tên nhà bếp phải có tối thiểu 2 ký tự." };
+  const updatedProfile = { ...current, privacySettings };
+  setActiveProfileCache(updatedProfile);
+  return updatedProfile;
+}
+
+/** Change the current account password after confirming the existing credential. */
+export async function changeCurrentUserPassword({ currentPassword, newPassword, confirmPassword }) {
+  const profile = getActiveProfileCache();
+  if (!profile?.uid) throw new Error("Vui lòng đăng nhập để đổi mật khẩu.");
+  const validation = validatePassword(newPassword, confirmPassword);
+  if (!validation.valid) throw new Error(validation.message);
+  if (!currentPassword) throw new Error("Vui lòng nhập mật khẩu hiện tại.");
+  if (currentPassword === newPassword) throw new Error("Mật khẩu mới phải khác mật khẩu hiện tại.");
+
+  if (isFirebaseConfigured() && auth && db) {
+    if (profile.adminPassword || profile.mockPassword) {
+      const savedPassword = profile.adminPassword || profile.mockPassword;
+      if (currentPassword !== savedPassword) throw new Error("Mật khẩu hiện tại không chính xác.");
+      const updates = { adminPassword: newPassword, mockPassword: newPassword };
+      await setDoc(doc(db, "users", profile.uid), updates, { merge: true });
+      setActiveProfileCache({ ...profile, ...updates });
+      return true;
+    }
+    const user = auth.currentUser;
+    if (!user?.email) throw new Error("Phiên đăng nhập không còn hợp lệ. Vui lòng đăng nhập lại.");
+    const credential = EmailAuthProvider.credential(user.email, currentPassword);
+    await reauthenticateWithCredential(user, credential);
+    await updatePassword(user, newPassword);
+
+    return true;
   }
-  if (trimmed.length > 60) {
-    return { valid: false, message: "Tên nhà bếp không được vượt quá 60 ký tự." };
-  }
-  return { valid: true, sanitized: trimmed };
+
+  const users = getMockUsers();
+  const user = users.find((entry) => entry.uid === profile.uid);
+  if (!user || user.password !== currentPassword) throw new Error("Mật khẩu hiện tại không chính xác.");
+  user.password = newPassword;
+  saveMockUsers(users);
+  return true;
 }
 
 /**
@@ -141,22 +204,6 @@ export function validateEmail(email) {
 }
 
 /**
- * Kiểm tra tính hợp lệ của Mật khẩu
- */
-export function validatePassword(password, confirmPassword = null) {
-  if (!password || typeof password !== "string") {
-    return { valid: false, message: "Vui lòng nhập mật khẩu." };
-  }
-  if (password.length < 8) {
-    return { valid: false, message: "Mật khẩu phải có tối thiểu 8 ký tự." };
-  }
-  if (confirmPassword !== null && password !== confirmPassword) {
-    return { valid: false, message: "Mật khẩu nhập lại không trùng khớp." };
-  }
-  return { valid: true };
-}
-
-/**
  * ĐĂNG KÝ TÀI KHOẢN MỚI
  */
 export async function registerUser({
@@ -166,6 +213,7 @@ export async function registerUser({
   password,
   confirmPassword,
   kitchenName,
+  gender = "unspecified",
   rememberMe = true
 }) {
   // 1. Kiểm tra validation phía client
@@ -183,6 +231,8 @@ export async function registerUser({
 
   const validKitchen = validateKitchenName(kitchenName);
   if (!validKitchen.valid) throw new Error(validKitchen.message);
+  if (!PROFILE_GENDERS.includes(gender)) throw new Error("Vui lòng chọn một giá trị giới tính hợp lệ.");
+  const cleanGender = normalizeProfileGender(gender);
 
   const cleanUsername = validUsername.sanitized;
   const usernameLower = cleanUsername.toLowerCase();
@@ -226,6 +276,7 @@ export async function registerUser({
         usernameLower: usernameLower,
         displayName: cleanDisplayName,
         kitchenName: cleanKitchenName,
+        gender: cleanGender,
         email: cleanEmail,
         isAdmin: isDefaultAdmin,
         isBanned: false,
@@ -289,6 +340,7 @@ export async function registerUser({
             usernameLower: usernameLower,
             displayName: cleanDisplayName,
             kitchenName: cleanKitchenName,
+            gender: cleanGender,
             email: cleanEmail,
             adminPassword: password, // Mật khẩu mới người chơi vừa đặt khi tạo tài khoản
             mockPassword: password,
@@ -350,6 +402,7 @@ export async function registerUser({
     usernameLower: usernameLower,
     displayName: cleanDisplayName,
     kitchenName: cleanKitchenName,
+    gender: cleanGender,
     email: cleanEmail,
     password: password, // Chỉ dùng trong mock mode nội bộ
     isAdmin: isDefaultAdmin,
